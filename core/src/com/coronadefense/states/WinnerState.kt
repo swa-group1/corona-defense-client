@@ -1,13 +1,33 @@
 package com.coronadefense.states
 
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.utils.viewport.StretchViewport
+import com.badlogic.gdx.utils.viewport.Viewport
+import com.coronadefense.Game
 import com.coronadefense.GameStateManager
+import com.badlogic.gdx.scenes.scene2d.Stage
 
-class WinnerState(stateManager: GameStateManager) : State(stateManager) {
-    protected val backButton: BackButton = BackButton(stateManager)
-    override fun render(sprites: SpriteBatch) {
-        backButton.draw()
+
+
+class WinnerState(stateManager: GameStateManager): State(stateManager) {
+    init {
+        camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     }
-    override fun dispose() {
-        backButton.dispose()
+    private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
+    private val stage: Stage = Stage(viewport, Game.batch)
+
+    private val background: Texture = Texture("player_wins_state.jpg")
+
+    override fun handleInput() {}
+    override fun update(deltaTime: Float) {
+        handleInput()
+    }
+    override fun render(sprites: SpriteBatch) {
+        sprites.projectionMatrix = camera.combined
+        stage.draw()
+    }
+    override fun dispose(){
+        stage.dispose()
+    }
 }

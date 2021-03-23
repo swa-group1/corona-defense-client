@@ -5,12 +5,4 @@ import com.coronadefense.GameStateManager
 
 
 abstract class PlayStatePlacement(stateManager: GameStateManager) : State(stateManager) {
-    protected val backButton: BackButton = BackButton(stateManager)
-    override fun render(sprites: SpriteBatch) {
-        backButton.draw()
-    }
-
-    override fun dispose() {
-        backButton.dispose()
-    }
 }
