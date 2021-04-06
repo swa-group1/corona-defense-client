@@ -18,13 +18,13 @@ class Game : ApplicationAdapter() {
     override fun create() {
         batch = SpriteBatch()
         stateManager = GameStateManager()
-        Gdx.input.setInputProcessor(InputMultiplexer())
+        Gdx.input.inputProcessor = InputMultiplexer()
         Gdx.gl.glClearColor(0F, 0F, 0F, 1F)
         stateManager?.push(MenuState(stateManager!!))
     }
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        stateManager?.update(Gdx.graphics.getDeltaTime())
+        stateManager?.update(Gdx.graphics.deltaTime)
         stateManager?.render(batch!!)
     }
 
