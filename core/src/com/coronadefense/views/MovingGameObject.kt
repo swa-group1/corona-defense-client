@@ -9,6 +9,7 @@ class MovingGameObject(
   texturePath: String,
   x: Float,
   y: Float,
+  targetPositions: Array<Pair<Float, Float>>,
   val endX: Float,
   val endY: Float,
   val speed: Float
