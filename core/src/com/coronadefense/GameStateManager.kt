@@ -1,7 +1,8 @@
 package com.coronadefense
 
 import com.coronadefense.states.State
-import com.badlogic.gdx.graphics.g2d.SpriteBatch import java.util.*
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import java.util.*
 
 class GameStateManager {
 
