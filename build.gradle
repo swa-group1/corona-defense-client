@@ -33,6 +33,7 @@ allprojects {
         box2DLightsVersion = '1.5'
         ashleyVersion = '1.7.3'
         aiVersion = '1.8.2'
+        ktorVersion = '1.5.3'
     }
 
     repositories {
@@ -102,10 +103,11 @@ project(":core") {
     apply plugin: 'kotlinx-serialization'
 
     dependencies {
-        implementation "io.ktor:ktor:1.5.3"
-        implementation "io.ktor:ktor-client-core:1.5.3"
-        implementation "io.ktor:ktor-client-cio:1.5.3"
         implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+        implementation "io.ktor:ktor:$ktorVersion"
+        implementation "io.ktor:ktor-client-core:$ktorVersion"
+        implementation "io.ktor:ktor-client-cio:$ktorVersion"
+        implementation "io.ktor:ktor-client-serialization:$ktorVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
