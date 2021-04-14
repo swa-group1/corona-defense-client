@@ -1,12 +1,12 @@
 package com.coronadefense.api
 
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.serialization.*
 
-const val baseUrl = "localhost:5000"
+const val baseUrl = "http://localhost:5000"
 
 @Serializable
 data class HighScore(val name: String, val value: Int)
@@ -19,9 +19,14 @@ data class HighScoreList(
 )
 
 class ApiClient {
-  val client = HttpClient(CIO)
+  val client = HttpClient {
+    install(JsonFeature) {
+      serializer = KotlinxSerializer()
+    }
+  }
   suspend fun getHighScoreList(): List<HighScore> {
-    val highScoreList = client.get<HighScoreList>("${baseUrl}/HighScoreList")
+    val highScoreList: HighScoreList = client.get("${baseUrl}/HighScoreList")
+    client.close()
     if (highScoreList.success) {
       return highScoreList.scores
     } else {

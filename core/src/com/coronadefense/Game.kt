@@ -29,8 +29,10 @@ class Game : ApplicationAdapter() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batch?.begin()
         if (highScores != null) {
-            for (i in 0..highScores!!.size) {
-                font!!.draw(batch, "hei bitch", 10f, 10f * (i + 1))
+            for (i in 0 until highScores!!.size) {
+                font!!.draw(
+                  batch, "${highScores!![i].name}: ${highScores!![i].value}", 10f, 30f * (i + 1)
+                )
             }
         }
         batch?.end()
