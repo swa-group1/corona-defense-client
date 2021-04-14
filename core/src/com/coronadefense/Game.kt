@@ -15,10 +15,10 @@ class Game : ApplicationAdapter() {
     var img: Texture? = null
     val apiClient: ApiClient = ApiClient()
     var highScores: List<HighScore>? = null
-    val font: BitmapFont = BitmapFont()
+    var font: BitmapFont? = null
     override fun create() {
         batch = SpriteBatch()
-        img = Texture("badlogic.jpg")
+        font = BitmapFont()
         GlobalScope.launch {
             highScores = apiClient.getHighScoreList()
         }
@@ -30,7 +30,7 @@ class Game : ApplicationAdapter() {
         batch?.begin()
         if (highScores != null) {
             for (i in 0..highScores!!.size) {
-                font.draw(batch, "${highScores!![i].name}: ${highScores!![i].value}", 10f, 10f * (i + 1))
+                font!!.draw(batch, "hei bitch", 10f, 10f * (i + 1))
             }
         }
         batch?.end()
