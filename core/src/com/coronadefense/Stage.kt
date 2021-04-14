@@ -86,7 +86,7 @@ class Stage(
 
         var cumulativePathLength = 0.0
 
-        for (i:Int in 1 until this.PathPoints.size step 1){
+        for (i:Int in 1 until this.PathPoints.size step 1) {
             val first: Point = this.PathPoints[i - 1]
             val second: Point = this.PathPoints[i]
             val deltaX: Double = second.X - first.X
@@ -154,7 +154,7 @@ class Stage(
             this.b = value0 - this.a * pathLength0
         }
 
-        private constructor(a: Double, b: Double){
+        private constructor(a: Double, b: Double) {
             this.a = a
             this.b = b
         }
@@ -174,7 +174,7 @@ class Stage(
      * @param Y Y coordinate.
      */
     @Serializable
-    class Point(val X: Double, val Y: Double){
+    class Point(val X: Double, val Y: Double) {
         override fun toString(): String {
             return "Point { X: $X, Y: $Y }"
         }
@@ -186,5 +186,5 @@ class Stage(
      * @param Y Y coordinate.
      */
     @Serializable
-    class Tile(val X: Int, val Y: Int){}
+    class Tile(val X: Int, val Y: Int) {}
 }
