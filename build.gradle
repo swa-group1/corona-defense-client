@@ -103,6 +103,8 @@ project(":core") {
 
     dependencies {
         implementation "io.ktor:ktor:1.5.3"
+        implementation "io.ktor:ktor-client-core:1.5.3"
+        implementation "io.ktor:ktor-client-cio:1.5.3"
         implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
