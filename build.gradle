@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.4.30'
+    ext.kotlinVersion = '1.4.32'
 
     repositories {
         mavenLocal()
@@ -10,10 +10,9 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.12'
+        classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
+        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.12'
     }
 }
 
@@ -28,11 +27,12 @@ allprojects {
     version = '1.0'
     ext {
         appName = "frontend"
-        gdxVersion = '1.9.13'
-        roboVMVersion = '2.3.12'
-        box2DLightsVersion = '1.5'
-        ashleyVersion = '1.7.3'
         aiVersion = '1.8.2'
+        ashleyVersion = '1.7.3'
+        box2DLightsVersion = '1.5'
+        gdxVersion = '1.9.13'
+        ktorVersion = '1.5.3'
+        roboVMVersion = '2.3.12'
     }
 
     repositories {
@@ -102,7 +102,7 @@ project(":core") {
     apply plugin: 'kotlinx-serialization'
 
     dependencies {
-        implementation "io.ktor:ktor:1.5.3"
+        implementation "io.ktor:ktor-network:$ktorVersion"
         implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
