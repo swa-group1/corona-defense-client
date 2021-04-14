@@ -5,8 +5,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.math.sqrt
 
-private const val HALF_OF_STEP_SIZE:Int = 10
-private const val STEPS_IN_TILE:Int = 2 * HALF_OF_STEP_SIZE
+private const val HALF_OF_STEP_SIZE: Int = 10
+private const val STEPS_IN_TILE: Int = 2 * HALF_OF_STEP_SIZE
 
 /**
  * Data class for stages.
