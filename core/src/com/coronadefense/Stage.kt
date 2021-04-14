@@ -86,7 +86,7 @@ class Stage(
 
         var cumulativePathLength = 0.0
 
-        for (i:Int in 1 until this.PathPoints.size step 1) {
+        for (i:Int in 1..this.PathPoints.size) {
             val first: Point = this.PathPoints[i - 1]
             val second: Point = this.PathPoints[i]
             val deltaX: Double = second.X - first.X
@@ -139,7 +139,7 @@ class Stage(
      * Line segment for linear movement.
      */
     @Serializable
-    class AffineLine {
+    private class AffineLine {
         companion object {
             fun constant(constant: Double): AffineLine {
                 return AffineLine(0.0, constant)
