@@ -1,34 +1,89 @@
 package com.coronadefense.receiver
 
+import com.coronadefense.receiver.messages.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import java.net.InetSocketAddress
+import java.nio.ByteBuffer
+import kotlin.concurrent.thread
 
 private const val PORT_NUMBER: Int = 19001
-private const val SERVER_ADDRESS: String = "::1";
+private const val SERVER_ADDRESS: String = "::1"
 
 fun main() {
     runBlocking {
-        val receiver: Receiver = Receiver()
-        receiver.connectAsync()
+        //val receiver: Receiver = Receiver()
+        //receiver.connectAsync()
     }
 }
 
 class Receiver(private val observers: List<IReceiverObserver>) {
     private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
     private var socket: Socket? = null
+    private var input: ByteReadChannel? = null
 
+    @ExperimentalUnsignedTypes
     suspend fun connectAsync(): Long {
         socket = socketBuilder.connect(InetSocketAddress(SERVER_ADDRESS, PORT_NUMBER))
-        val input: ByteReadChannel = socket!!.openReadChannel()
-        val connectionNumber: Long = input.readLong()
+        this.input = socket!!.openReadChannel()
+        val connectionNumber: Long = input!!.readLong()
 
-        // Begin other stuff
+        thread {
+            runBlocking {
+                listen()
+            }
+        }
 
         return connectionNumber
+    }
+
+    @ExperimentalUnsignedTypes
+    private suspend fun listen() {
+        while (true){
+            input!!.read(min = 2, consumer = ::consumeBytesForward);
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    private fun consumeBytesForward(buffer: ByteBuffer) {
+        runBlocking {
+            consumeBytes(buffer)
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    private suspend fun consumeBytes(buffer: ByteBuffer) {
+        val byteCode = buffer[0]
+        val length = buffer[1]
+        fun consumeMoreBytes(buffer: ByteBuffer){
+            val message: IMessage = getMessageType(byteCode).parse(buffer.array())
+            notifyObservers(message)
+        }
+        input!!.read(min = length.toInt(), consumer=::consumeMoreBytes)
+    }
+
+    private fun notifyObservers (message: IMessage){
+        for (observer:IReceiverObserver in this.observers) {
+            when(message) {
+                is PingMessage -> observer.handlePingMessage(message = message)
+                is FightRoundMessage -> observer.handleFightRoundMessage(message = message)
+                is GameModeMessage -> observer.handleGameModeMessage(message = message)
+                is InputRoundMessage -> observer.handleInputRoundMessage(message = message)
+                is LobbyModeMessage -> observer.handleLobbyModeMessage(message = message)
+                is HealthUpdateMessage -> observer.handleHealthUpdateMessage(message = message)
+                is MoneyUpdateMessage -> observer.handleMoneyUpdateMessage(message = message)
+                is PlayerCountUpdateMessage -> observer.handlePlayerCountUpdateMessage(message = message)
+                is TowerPositionMessage -> observer.handleTowerPositionMessage(message = message)
+                is TowerRemovedMessage -> observer.handleTowerRemovedMessage(message = message)
+                is AnimationConfirmationMessage -> observer.handleAnimationConfirmationMessage(message = message)
+                is BoardToPathAnimationMessage -> observer.handleBoardToPathAnimationMessage(message = message)
+                is PathToPathAnimationMessage -> observer.handlePathToPathAnimationMessage(message = message)
+                is TowerAnimationMessage -> observer.handleTowerAnimationMessage(message = message)
+            }
+        }
     }
 
     @ExperimentalUnsignedTypes
