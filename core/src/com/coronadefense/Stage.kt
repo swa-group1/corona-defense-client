@@ -5,6 +5,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.math.sqrt
 
+private const val HALF_OF_STEP_SIZE:Int = 10
+private const val STEPS_IN_TILE:Int = 2 * HALF_OF_STEP_SIZE
+
 /**
  * Data class for stages.
  * Note the getPointAlongPathMethod used to transform a distance along the path to an X,Y-point.
@@ -48,9 +51,6 @@ class Stage(
     val PathPoints: List<Point>,
 ) {
     companion object {
-        private const val HALF_OF_STEP_SIZE:Int = 10
-        private const val STEPS_IN_TILE:Int = 2* HALF_OF_STEP_SIZE
-
         /**
          * create a new Stage object.
          * @param jsonContent The string with JSON content.
@@ -61,7 +61,7 @@ class Stage(
         }
     }
 
-    private val cumulativePathLengths: MutableList<Double>  = mutableListOf()
+    private val cumulativePathLengths: MutableList<Double> = mutableListOf()
     private val lineSegmentsX: MutableList<AffineLine> = mutableListOf()
     private val lineSegmentsY: MutableList<AffineLine> = mutableListOf()
 
@@ -146,8 +146,8 @@ class Stage(
             }
         }
 
-        private val a:Double
-        private val b:Double
+        private val a: Double
+        private val b: Double
 
         constructor(pathLength0: Double, value0: Double, pathLength1: Double, value1: Double) {
             this.a = (value1 - value0) / (pathLength1 - pathLength0)
