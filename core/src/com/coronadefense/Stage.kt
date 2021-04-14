@@ -186,5 +186,5 @@ class Stage(
      * @param Y Y coordinate.
      */
     @Serializable
-    class Tile(val X: Int, val Y: Int) {}
+    class Tile(val X: Int, val Y: Int)
 }
