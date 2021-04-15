@@ -23,13 +23,12 @@ class Game : ApplicationAdapter() {
             highScores = apiClient.getHighScoreList()
         }
     }
-
     override fun render() {
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batch?.begin()
         if (highScores != null) {
-            for (i in 0 until highScores!!.size) {
+            for (i in highScores!!.indices) {
                 font!!.draw(
                   batch, "${highScores!![i].name}: ${highScores!![i].value}", 10f, 30f * (i + 1)
                 )

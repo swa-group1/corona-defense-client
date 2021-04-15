@@ -8,16 +8,6 @@ import kotlinx.serialization.*
 
 const val baseUrl = "http://localhost:5000"
 
-@Serializable
-data class HighScore(val name: String, val value: Int)
-
-@Serializable
-data class HighScoreList(
-  val scores: List<HighScore>,
-  val details: String,
-  val success: Boolean
-)
-
 class ApiClient {
   val client = HttpClient {
     install(JsonFeature) {
@@ -25,10 +15,20 @@ class ApiClient {
     }
   }
   suspend fun getHighScoreList(): List<HighScore> {
-    val highScoreList: HighScoreList = client.get("${baseUrl}/HighScoreList")
+    val response: HighScoreListResponse = client.get("${baseUrl}/HighScoreList")
     client.close()
-    if (highScoreList.success) {
-      return highScoreList.scores
+    if (response.success) {
+      return response.scores
+    } else {
+      throw Exception("Failed to fetch high score list.")
+    }
+  }
+  suspend fun createLobby(name: String, password: String): Int {
+    val response: CreateLobbyResponse = client.post("${baseUrl}/CreateLobby") {
+      body = CreateLobbyInput(name, password)
+    }
+    if (response.success) {
+      return response.lobbyId
     } else {
       throw Exception("Failed to fetch high score list.")
     }
