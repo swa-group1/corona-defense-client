@@ -13,10 +13,11 @@ import kotlin.concurrent.thread
 private const val PORT_NUMBER: Int = 19001
 private const val SERVER_ADDRESS: String = "::1"
 
+@ExperimentalUnsignedTypes
 fun main() {
     runBlocking {
-        //val receiver: Receiver = Receiver()
-        //receiver.connectAsync()
+        val receiver: Receiver = Receiver(listOf())
+        println(receiver.connectAsync())
     }
 }
 
