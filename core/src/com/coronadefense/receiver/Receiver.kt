@@ -4,8 +4,8 @@ import com.coronadefense.receiver.messages.*
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import io.ktor.utils.io.core.*
+import kotlinx.coroutines.*
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import kotlin.concurrent.thread
@@ -19,54 +19,46 @@ fun main() {
         val receiver: Receiver = Receiver(listOf())
         println(receiver.connectAsync())
     }
+    readLine()
 }
 
+/**
+ * Object that connects to the backend and listens to broadcaster sending game information.
+ * @param observers List of observers to notify about game changes.
+ */
 class Receiver(private val observers: List<IReceiverObserver>) {
     private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
     private var socket: Socket? = null
-    private var input: ByteReadChannel? = null
 
+    /**
+     * Attempt to connect to backend broadcaster.
+     * @return The connection number of the 
+     */
     @ExperimentalUnsignedTypes
     suspend fun connectAsync(): Long {
         socket = socketBuilder.connect(InetSocketAddress(SERVER_ADDRESS, PORT_NUMBER))
-        this.input = socket!!.openReadChannel()
-        val connectionNumber: Long = input!!.readLong()
+        val input: ByteReadChannel = socket!!.openReadChannel()
+        val connectionNumber: Long = input.readLong()
 
-        thread {
-            runBlocking {
-                listen()
-            }
-        }
+        GlobalScope.launch(Dispatchers.IO, block = {
+            listen(input)
+        })
 
         return connectionNumber
     }
 
     @ExperimentalUnsignedTypes
-    private suspend fun listen() {
+    private suspend fun listen(input: ByteReadChannel) {
         while (true) {
-            input!!.read(min = 2, consumer = ::consumeBytesForward)
-        }
-    }
-
-    @ExperimentalUnsignedTypes
-    private fun consumeBytesForward(buffer: ByteBuffer) {
-        runBlocking {
-            consumeBytes(buffer)
-        }
-    }
-
-    @ExperimentalUnsignedTypes
-    private suspend fun consumeBytes(buffer: ByteBuffer) {
-        val byteCode = buffer[0]
-        val length = buffer[1]
-        fun consumeMoreBytes(buffer: ByteBuffer) {
-            val message: IMessage = getMessageType(byteCode).parse(buffer.array())
+            val byteCode: Byte = input.readByte()
+            val lengthByte: Byte = input.readByte()
+            val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
+            val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
             notifyObservers(message)
         }
-        input!!.read(min = length.toInt(), consumer=::consumeMoreBytes)
     }
 
-    private fun notifyObservers (message: IMessage){
+    private fun notifyObservers (message: IMessage) {
         for (observer:IReceiverObserver in this.observers) {
             when(message) {
                 is PingMessage -> observer.handlePingMessage(message = message)
@@ -88,7 +80,7 @@ class Receiver(private val observers: List<IReceiverObserver>) {
     }
 
     @ExperimentalUnsignedTypes
-    fun getMessageType(byteCode: Byte): MessageType {
+    private fun getMessageType(byteCode: Byte): MessageType {
         when (byteCode) {
             MessageType.PING.byteCode -> return MessageType.PING
             MessageType.FIGHT_ROUND.byteCode -> return MessageType.FIGHT_ROUND
