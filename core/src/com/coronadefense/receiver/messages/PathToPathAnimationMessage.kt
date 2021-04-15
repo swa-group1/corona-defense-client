@@ -4,7 +4,7 @@ class PathToPathAnimationMessage(
     val spriteNumber: UByte,
     val startPosition: UShort,
     val endPosition: UShort,
-    val startTime: Ushort,
-    val endTime: Ushort,
-    val resultAnimation: Ubyte
+    val startTime: UShort,
+    val endTime: UShort,
+    val resultAnimation: UByte
 ): IMessage
