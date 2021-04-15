@@ -15,11 +15,13 @@ class Game : ApplicationAdapter() {
     var img: Texture? = null
     val apiClient: ApiClient = ApiClient()
     var highScores: List<HighScore>? = null
+    var lobbyId: Long? = null
     var font: BitmapFont? = null
     override fun create() {
         batch = SpriteBatch()
         font = BitmapFont()
         GlobalScope.launch {
+            lobbyId = apiClient.createLobby("Hermanns", "test")
             highScores = apiClient.getHighScoreList()
         }
     }
@@ -27,10 +29,15 @@ class Game : ApplicationAdapter() {
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batch?.begin()
+        if (lobbyId != null) {
+            font!!.draw(
+              batch, "$lobbyId", 10f, 30f
+            )
+        }
         if (highScores != null) {
             for (i in highScores!!.indices) {
                 font!!.draw(
-                  batch, "${highScores!![i].name}: ${highScores!![i].value}", 10f, 30f * (i + 1)
+                  batch, "${highScores!![i].name}: ${highScores!![i].value}", 10f, 60f + 30f * (i)
                 )
             }
         }

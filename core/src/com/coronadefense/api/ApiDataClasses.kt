@@ -13,14 +13,27 @@ data class HighScoreListResponse(
 data class HighScore(val name: String, val value: Int)
 
 @Serializable
-data class CreateLobbyInput(
-  val name: String,
-  val password: String
+data class CreateLobbyResponse(
+  val lobbyId: Long,
+  val details: String,
+  val success: Boolean,
 )
 
 @Serializable
-data class CreateLobbyResponse(
-  val lobbyId: Int,
+data class JoinLobbyResponse(
+  val accessToken: Long,
+  val lobbyId: Long,
+  val details: String,
+  val success: Boolean,
+)
+
+data class LobbyJoined(
+  val accessToken: Long,
+  val lobbyId: Long,
+)
+
+@Serializable
+data class LeaveLobbyResponse(
   val details: String,
   val success: Boolean,
 )
