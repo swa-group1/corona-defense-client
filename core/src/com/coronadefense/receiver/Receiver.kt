@@ -43,8 +43,8 @@ class Receiver(private val observers: List<IReceiverObserver>) {
 
     @ExperimentalUnsignedTypes
     private suspend fun listen() {
-        while (true){
-            input!!.read(min = 2, consumer = ::consumeBytesForward);
+        while (true) {
+            input!!.read(min = 2, consumer = ::consumeBytesForward)
         }
     }
 
@@ -59,7 +59,7 @@ class Receiver(private val observers: List<IReceiverObserver>) {
     private suspend fun consumeBytes(buffer: ByteBuffer) {
         val byteCode = buffer[0]
         val length = buffer[1]
-        fun consumeMoreBytes(buffer: ByteBuffer){
+        fun consumeMoreBytes(buffer: ByteBuffer) {
             val message: IMessage = getMessageType(byteCode).parse(buffer.array())
             notifyObservers(message)
         }
