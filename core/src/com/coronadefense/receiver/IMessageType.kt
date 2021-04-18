@@ -8,6 +8,7 @@ interface IMessageType {
    * Example: Ping has bytecode 0x10.
    */
   val byteCode: Byte
+
   /**
    * Parse bytes into a message of this type.
    * @param bytes The bytes to parse. Does not validate that the byteArray is of the correct length.
