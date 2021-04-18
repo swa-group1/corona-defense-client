@@ -9,7 +9,7 @@ import kotlinx.serialization.*
 
 const val baseUrl = "http://localhost:5000"
 
-class ApiClient {
+object ApiClient {
   private val client = HttpClient {
     install(JsonFeature) {
       serializer = KotlinxSerializer()
@@ -59,7 +59,7 @@ class ApiClient {
       throw Exception(response.details)
     }
   }
-  suspend fun lobbyRequest(id: Long): Lobby {
+  suspend fun lobbyRequest(id: Long): LobbyData {
     val response: LobbyResponse = client.get("$baseUrl/Lobby") {
       parameter("id", id)
     }
@@ -70,7 +70,7 @@ class ApiClient {
       throw Exception(response.details)
     }
   }
-  suspend fun lobbyListRequest(): List<Lobby> {
+  suspend fun lobbyListRequest(): List<LobbyData> {
     val response: LobbyListResponse = client.get("$baseUrl/LobbyList")
     client.close()
     if (response.success) {

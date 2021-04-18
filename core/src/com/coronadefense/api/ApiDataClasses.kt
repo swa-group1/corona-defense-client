@@ -39,7 +39,7 @@ data class LobbyJoined(
 )
 
 @Serializable
-data class Lobby(
+data class LobbyData(
   val id: Long,
   val name: String,
   val playerCount: Int,
@@ -47,14 +47,14 @@ data class Lobby(
 
 @Serializable
 data class LobbyResponse(
-  val lobby: Lobby,
+  val lobby: LobbyData,
   val details: String,
   val success: Boolean,
 )
 
 @Serializable
 data class LobbyListResponse(
-  val lobbies: List<Lobby>,
+  val lobbies: List<LobbyData>,
   val details: String,
   val success: Boolean,
 )
