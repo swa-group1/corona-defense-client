@@ -1,4 +1,4 @@
-package com.coronadefense.states
+package com.coronadefense.states.lobby
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -7,37 +7,30 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStateManager
+import com.coronadefense.states.State
 
-class MenuState(stateManager: GameStateManager): State(stateManager) {
+class LobbyState(stateManager: GameStateManager): State(stateManager)  {
+
     init {
         camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     }
     private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-    
     private val stage: Stage = Stage(viewport, Game.batch)
-
-    private val background = Texture("initiate_game_state.jpg")
+    private val background: Texture = Texture("background.jpg")
 
     override fun handleInput() {
-
+        TODO("Not yet implemented")
     }
 
     override fun update(deltaTime: Float) {
-        handleInput()
+        TODO("Not yet implemented")
     }
 
     override fun render(sprites: SpriteBatch) {
-        sprites.projectionMatrix = camera.combined
-        sprites.begin()
-        sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
-        sprites.end()
-        stage.draw()
     }
 
     override fun dispose() {
-        background.dispose()
-        println("Menu State Disposed")
+        TODO("Not yet implemented")
     }
-
 
 }
