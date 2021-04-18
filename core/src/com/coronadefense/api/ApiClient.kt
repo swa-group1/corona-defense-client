@@ -15,9 +15,11 @@ object ApiClient {
       serializer = KotlinxSerializer()
     }
   }
+  fun close() {
+    client.close()
+  }
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")
-    client.close()
     if (response.success) {
       return response.scores
     } else {
@@ -29,7 +31,6 @@ object ApiClient {
       parameter("name", name)
       parameter("password", password)
     }
-    client.close()
     if (response.success) {
       return response.lobbyId
     } else {
@@ -42,7 +43,6 @@ object ApiClient {
       parameter("password", password)
       parameter("connectionNumber", connectionNumber)
     }
-    client.close()
     if (response.success) {
       return LobbyJoined(response.accessToken, response.lobbyId)
     } else {
@@ -54,7 +54,6 @@ object ApiClient {
       parameter("lobbyId", lobbyId)
       parameter("accessToken", accessToken)
     }
-    client.close()
     if (!response.success) {
       throw Exception(response.details)
     }
@@ -63,7 +62,6 @@ object ApiClient {
     val response: LobbyResponse = client.get("$baseUrl/Lobby") {
       parameter("id", id)
     }
-    client.close()
     if (response.success) {
       return response.lobby
     } else {
@@ -72,7 +70,6 @@ object ApiClient {
   }
   suspend fun lobbyListRequest(): List<LobbyData> {
     val response: LobbyListResponse = client.get("$baseUrl/LobbyList")
-    client.close()
     if (response.success) {
       return response.lobbies
     } else {
@@ -87,7 +84,6 @@ object ApiClient {
       parameter("x", x)
       parameter("y", y)
     }
-    client.close()
     if (!response.success) {
       throw Exception(response.details)
     }
@@ -98,7 +94,6 @@ object ApiClient {
       parameter("accessToken", accessToken)
       parameter("towerId", towerId)
     }
-    client.close()
     if (!response.success) {
       throw Exception(response.details)
     }
@@ -110,7 +105,6 @@ object ApiClient {
       parameter("stageNumber", stageNumber)
       parameter("difficulty", difficulty)
     }
-    client.close()
     if (!response.success) {
       throw Exception(response.details)
     }
@@ -120,7 +114,6 @@ object ApiClient {
       parameter("lobbyId", lobbyId)
       parameter("accessToken", accessToken)
     }
-    client.close()
     if (!response.success) {
       throw Exception(response.details)
     }
@@ -129,7 +122,6 @@ object ApiClient {
     val response: VerifyVersionResponse = client.get("$baseUrl/VerifyVersion") {
       parameter("version", version)
     }
-    client.close()
     if (response.success) {
       return response.validVersion
     } else {
