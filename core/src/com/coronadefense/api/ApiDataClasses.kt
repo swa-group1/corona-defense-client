@@ -3,6 +3,12 @@ package com.coronadefense.api
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class GenericResponse(
+  val details: String,
+  val success: Boolean,
+)
+
+@Serializable
 data class HighScoreListResponse(
   val scores: List<HighScore>,
   val details: String,
@@ -33,7 +39,29 @@ data class LobbyJoined(
 )
 
 @Serializable
-data class LeaveLobbyResponse(
+data class Lobby(
+  val id: Long,
+  val name: String,
+  val playerCount: Int,
+)
+
+@Serializable
+data class LobbyResponse(
+  val lobby: Lobby,
+  val details: String,
+  val success: Boolean,
+)
+
+@Serializable
+data class LobbyListResponse(
+  val lobbies: List<Lobby>,
+  val details: String,
+  val success: Boolean,
+)
+
+@Serializable
+data class VerifyVersionResponse(
+  val validVersion: Boolean,
   val details: String,
   val success: Boolean,
 )

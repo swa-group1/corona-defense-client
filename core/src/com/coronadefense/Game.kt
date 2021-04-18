@@ -28,8 +28,8 @@ class Game : ApplicationAdapter() {
         batch = SpriteBatch()
         font = BitmapFont()
         GlobalScope.launch {
-            lobbyId = apiClient.createLobby("Hermanns", "test")
-            highScores = apiClient.getHighScoreList()
+            lobbyId = apiClient.createLobbyRequest("Hermanns", "test")
+            highScores = apiClient.highScoreListRequest()
         }
     }
     override fun render() {
