@@ -33,6 +33,10 @@ allprojects {
         gdxVersion = '1.9.13'
         ktorVersion = '1.5.3'
         roboVMVersion = '2.3.12'
+        box2DLightsVersion = '1.5'
+        ashleyVersion = '1.7.3'
+        aiVersion = '1.8.2'
+        ktorVersion = '1.5.3'
     }
 
     repositories {
@@ -78,6 +82,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "io.ktor:ktor-client-android:$ktorVersion"
     }
 }
 
@@ -94,6 +99,7 @@ project(":ios") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "io.ktor:ktor-client-ios:$ktorVersion"
     }
 }
 
@@ -105,6 +111,10 @@ project(":core") {
         implementation "io.ktor:ktor-network:$ktorVersion"
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
         implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+        implementation "io.ktor:ktor:$ktorVersion"
+        implementation "io.ktor:ktor-client-core:$ktorVersion"
+        implementation "io.ktor:ktor-client-cio:$ktorVersion"
+        implementation "io.ktor:ktor-client-serialization:$ktorVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
