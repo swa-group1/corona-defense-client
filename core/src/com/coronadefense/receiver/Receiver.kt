@@ -76,6 +76,8 @@ class Receiver(private val observers: List<IReceiverObserver>) {
                 is BoardToPathAnimationMessage -> observer.handleBoardToPathAnimationMessage(message = message)
                 is PathToPathAnimationMessage -> observer.handlePathToPathAnimationMessage(message = message)
                 is TowerAnimationMessage -> observer.handleTowerAnimationMessage(message = message)
+                is HealthAnimationMessage -> observer.handleHealthAnimationMessage(message = message)
+                is MoneyAnimationMessage -> observer.handleMoneyAnimationMessage(message = message)
             }
         }
     }
