@@ -5,22 +5,22 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.net.InetSocketAddress
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import kotlin.concurrent.thread
 
 private const val PORT_NUMBER: Int = 19001
 private const val SERVER_ADDRESS: String = "::1"
 
 @ExperimentalUnsignedTypes
 fun main() {
-    runBlocking {
-        val receiver: Receiver = Receiver(listOf(ReceiverPrinter()))
-        println(receiver.connectAsync())
-    }
-    readLine()
+  runBlocking {
+    val receiver: Receiver = Receiver(listOf(ReceiverPrinter()))
+    println(receiver.connectAsync())
+  }
+  readLine()
 }
 
 /**
@@ -28,67 +28,67 @@ fun main() {
  * @param observers List of observers to notify about game changes.
  */
 class Receiver(private val observers: List<IReceiverObserver>) {
-    private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
-    private var socket: Socket? = null
+  private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
+  private var socket: Socket? = null
 
-    /**
-     * Attempt to connect to backend broadcaster.
-     * @return The connection number of the 
-     */
-    @ExperimentalUnsignedTypes
-    suspend fun connectAsync(): Long {
-        socket = socketBuilder.connect(InetSocketAddress(SERVER_ADDRESS, PORT_NUMBER))
-        val input: ByteReadChannel = socket!!.openReadChannel()
-        val connectionNumber: Long = input.readLong()
+  /**
+   * Attempt to connect to backend broadcaster.
+   * @return The connection number of the
+   */
+  @ExperimentalUnsignedTypes
+  suspend fun connectAsync(): Long {
+    socket = socketBuilder.connect(InetSocketAddress(SERVER_ADDRESS, PORT_NUMBER))
+    val input: ByteReadChannel = socket!!.openReadChannel()
+    val connectionNumber: Long = input.readLong()
 
-        GlobalScope.launch(Dispatchers.IO, block = {
-            listen(input)
-        })
+    GlobalScope.launch(Dispatchers.IO, block = {
+        listen(input)
+    })
 
-        return connectionNumber
+    return connectionNumber
+  }
+
+  @ExperimentalUnsignedTypes
+  private suspend fun listen(input: ByteReadChannel) {
+    while (true) {
+      val byteCode: Byte = input.readByte()
+      val lengthByte: Byte = input.readByte()
+      val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
+      val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
+      notifyObservers(message)
     }
+  }
 
-    @ExperimentalUnsignedTypes
-    private suspend fun listen(input: ByteReadChannel) {
-        while (true) {
-            val byteCode: Byte = input.readByte()
-            val lengthByte: Byte = input.readByte()
-            val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
-            val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
-            notifyObservers(message)
-        }
+  private fun notifyObservers(message: IMessage) {
+    for (observer: IReceiverObserver in this.observers) {
+      when (message) {
+          is PingMessage -> observer.handlePingMessage(message = message)
+          is FightRoundMessage -> observer.handleFightRoundMessage(message = message)
+          is GameModeMessage -> observer.handleGameModeMessage(message = message)
+          is InputRoundMessage -> observer.handleInputRoundMessage(message = message)
+          is LobbyModeMessage -> observer.handleLobbyModeMessage(message = message)
+          is HealthUpdateMessage -> observer.handleHealthUpdateMessage(message = message)
+          is MoneyUpdateMessage -> observer.handleMoneyUpdateMessage(message = message)
+          is PlayerCountUpdateMessage -> observer.handlePlayerCountUpdateMessage(message = message)
+          is TowerPositionMessage -> observer.handleTowerPositionMessage(message = message)
+          is TowerRemovedMessage -> observer.handleTowerRemovedMessage(message = message)
+          is AnimationConfirmationMessage -> observer.handleAnimationConfirmationMessage(message = message)
+          is BoardToPathAnimationMessage -> observer.handleBoardToPathAnimationMessage(message = message)
+          is PathToPathAnimationMessage -> observer.handlePathToPathAnimationMessage(message = message)
+          is TowerAnimationMessage -> observer.handleTowerAnimationMessage(message = message)
+          is HealthAnimationMessage -> observer.handleHealthAnimationMessage(message = message)
+          is MoneyAnimationMessage -> observer.handleMoneyAnimationMessage(message = message)
+      }
     }
+  }
 
-    private fun notifyObservers (message: IMessage) {
-        for (observer:IReceiverObserver in this.observers) {
-            when(message) {
-                is PingMessage -> observer.handlePingMessage(message = message)
-                is FightRoundMessage -> observer.handleFightRoundMessage(message = message)
-                is GameModeMessage -> observer.handleGameModeMessage(message = message)
-                is InputRoundMessage -> observer.handleInputRoundMessage(message = message)
-                is LobbyModeMessage -> observer.handleLobbyModeMessage(message = message)
-                is HealthUpdateMessage -> observer.handleHealthUpdateMessage(message = message)
-                is MoneyUpdateMessage -> observer.handleMoneyUpdateMessage(message = message)
-                is PlayerCountUpdateMessage -> observer.handlePlayerCountUpdateMessage(message = message)
-                is TowerPositionMessage -> observer.handleTowerPositionMessage(message = message)
-                is TowerRemovedMessage -> observer.handleTowerRemovedMessage(message = message)
-                is AnimationConfirmationMessage -> observer.handleAnimationConfirmationMessage(message = message)
-                is BoardToPathAnimationMessage -> observer.handleBoardToPathAnimationMessage(message = message)
-                is PathToPathAnimationMessage -> observer.handlePathToPathAnimationMessage(message = message)
-                is TowerAnimationMessage -> observer.handleTowerAnimationMessage(message = message)
-                is HealthAnimationMessage -> observer.handleHealthAnimationMessage(message = message)
-                is MoneyAnimationMessage -> observer.handleMoneyAnimationMessage(message = message)
-            }
-        }
+  @ExperimentalUnsignedTypes
+  private fun getMessageType(byteCode: Byte): MessageType {
+    for (messageType: MessageType in MessageType.values()) {
+      if (messageType.byteCode == byteCode) {
+        return messageType
+      }
     }
-
-    @ExperimentalUnsignedTypes
-    private fun getMessageType(byteCode: Byte): MessageType {
-        for (messageType: MessageType in MessageType.values()) {
-            if (messageType.byteCode == byteCode) {
-                return messageType
-            }
-        }
-        throw IllegalArgumentException("Byte code $byteCode not valid")
-    }
+    throw IllegalArgumentException("Byte code $byteCode not valid")
+  }
 }
