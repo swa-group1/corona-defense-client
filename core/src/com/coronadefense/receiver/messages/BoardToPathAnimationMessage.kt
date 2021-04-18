@@ -4,8 +4,8 @@ data class BoardToPathAnimationMessage(
     val spriteNumber: UByte,
     val startX: UByte,
     val startY: UByte,
-    val endPosition: UShort,
-    val startTime: UShort,
-    val endTime: UShort,
-    val resultAnimation: UByte
+    val endPosition: Float,
+    val startTime: Float,
+    val endTime: Float,
+    val resultAnimation: UByte,
 ): IMessage

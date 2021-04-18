@@ -20,4 +20,6 @@ interface IReceiverObserver {
   fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage)
   fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage)
   fun handleTowerAnimationMessage(message: TowerAnimationMessage)
+  fun handleHealthAnimationMessage(message: HealthAnimationMessage)
+  fun handleMoneyAnimationMessage(message: MoneyAnimationMessage)
 }
