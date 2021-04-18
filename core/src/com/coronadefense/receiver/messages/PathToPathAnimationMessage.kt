@@ -1,6 +1,6 @@
 package com.coronadefense.receiver.messages
 
-class PathToPathAnimationMessage(
+data class PathToPathAnimationMessage(
     val spriteNumber: UByte,
     val startPosition: UShort,
     val endPosition: UShort,

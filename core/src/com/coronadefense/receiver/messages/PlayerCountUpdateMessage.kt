@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class PlayerCountUpdateMessage(
+data class PlayerCountUpdateMessage(
     val playerCount: UByte, 
 ): IMessage

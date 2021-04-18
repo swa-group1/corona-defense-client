@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class GameModeMessage(
+data class GameModeMessage(
     val stageNumber: UByte
 ): IMessage

@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class MoneyUpdateMessage(
+data class MoneyUpdateMessage(
     val newValue: UInt, 
 ): IMessage

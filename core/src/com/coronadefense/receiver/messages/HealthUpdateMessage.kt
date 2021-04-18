@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class HealthUpdateMessage(
+data class HealthUpdateMessage(
     val newValue: UShort
 ): IMessage

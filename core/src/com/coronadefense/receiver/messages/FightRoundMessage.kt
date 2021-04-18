@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class FightRoundMessage(
+data class FightRoundMessage(
     val roundNumber: UShort
 ): IMessage

@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class InputRoundMessage(
+data class InputRoundMessage(
   val roundNumber: UShort
 ): IMessage

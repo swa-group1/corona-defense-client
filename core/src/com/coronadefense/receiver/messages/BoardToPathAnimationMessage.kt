@@ -1,6 +1,6 @@
 package com.coronadefense.receiver.messages
 
-class BoardToPathAnimationMessage(
+data class BoardToPathAnimationMessage(
     val spriteNumber: UByte,
     val startX: UByte,
     val startY: UByte,

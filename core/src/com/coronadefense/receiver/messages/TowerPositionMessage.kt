@@ -1,6 +1,6 @@
 package com.coronadefense.receiver.messages
 
-class TowerPositionMessage(
+data class TowerPositionMessage(
     val towerId: UShort,
     val typeNumber: UByte,
     val xPosition: UByte,

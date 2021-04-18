@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
-class AnimationConfirmationMessage(
+data class AnimationConfirmationMessage(
     val time: UShort,
 ): IMessage

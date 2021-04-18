@@ -11,9 +11,11 @@ private fun parseUShort(big: Byte, small: Byte): UShort {
     bb.order(ByteOrder.BIG_ENDIAN)
     bb.put(big)
     bb.put(small)
+    bb.rewind()
     return bb.short.toUShort()
 }
 
+@ExperimentalUnsignedTypes
 private fun parseUInt(biggest: Byte, big: Byte, small: Byte, smallest: Byte): UInt {
     val bb = ByteBuffer.allocate(4)
     bb.order(ByteOrder.BIG_ENDIAN)
@@ -21,6 +23,7 @@ private fun parseUInt(biggest: Byte, big: Byte, small: Byte, smallest: Byte): UI
     bb.put(big)
     bb.put(small)
     bb.put(smallest)
+    bb.rewind()
     return bb.int.toUInt()
 }
 

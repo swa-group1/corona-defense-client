@@ -8,6 +8,7 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.concurrent.thread
 
 private const val PORT_NUMBER: Int = 19001
@@ -16,7 +17,7 @@ private const val SERVER_ADDRESS: String = "::1"
 @ExperimentalUnsignedTypes
 fun main() {
     runBlocking {
-        val receiver: Receiver = Receiver(listOf())
+        val receiver: Receiver = Receiver(listOf(ReceiverPrinter()))
         println(receiver.connectAsync())
     }
     readLine()
