@@ -26,6 +26,10 @@ class ReceiverPrinter: IReceiverObserver {
   override fun handleLobbyModeMessage(message: LobbyModeMessage) {
     println(message)
   }
+
+  override fun handleEndGameMessage(message: EndGameMessage) {
+    println(message)
+  }
   
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage) {
     println(message)

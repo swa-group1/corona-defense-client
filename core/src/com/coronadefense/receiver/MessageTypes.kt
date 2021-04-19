@@ -1,7 +1,6 @@
 package com.coronadefense.receiver
 
 import com.coronadefense.receiver.messages.*
-import io.ktor.utils.io.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -79,6 +78,17 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): LobbyModeMessage {
       return LobbyModeMessage()
+    }
+  },
+  END_GAME {
+    override val byteCode: Byte = 0x24.toByte()
+
+    override fun parse(bytes: ByteArray):EndGameMessage {
+      return EndGameMessage(
+        victory = bytes[0],
+        onHighScoreList = bytes[1],
+        score = parseUInt(bytes[2], bytes[3], bytes[4], bytes[5],)
+      )
     }
   },
   HEALTH_UPDATE {
@@ -198,5 +208,5 @@ enum class MessageType : IMessageType {
         time = parseFloat(bytes[4], bytes[5], bytes[6], bytes[7]),
       )
     }
-  }
+  },
 }

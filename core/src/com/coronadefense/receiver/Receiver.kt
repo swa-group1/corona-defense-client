@@ -67,6 +67,7 @@ class Receiver(private val observers: List<IReceiverObserver>) {
           is GameModeMessage -> observer.handleGameModeMessage(message = message)
           is InputRoundMessage -> observer.handleInputRoundMessage(message = message)
           is LobbyModeMessage -> observer.handleLobbyModeMessage(message = message)
+          is EndGameMessage -> observer.handleEndGameMessage(message = message)
           is HealthUpdateMessage -> observer.handleHealthUpdateMessage(message = message)
           is MoneyUpdateMessage -> observer.handleMoneyUpdateMessage(message = message)
           is PlayerCountUpdateMessage -> observer.handlePlayerCountUpdateMessage(message = message)

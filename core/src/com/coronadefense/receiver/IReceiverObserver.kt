@@ -11,6 +11,7 @@ interface IReceiverObserver {
   fun handleGameModeMessage(message: GameModeMessage)
   fun handleInputRoundMessage(message: InputRoundMessage)
   fun handleLobbyModeMessage(message: LobbyModeMessage)
+  fun handleEndGameMessage(message: EndGameMessage)
   fun handleHealthUpdateMessage(message: HealthUpdateMessage)
   fun handleMoneyUpdateMessage(message: MoneyUpdateMessage)
   fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage)
