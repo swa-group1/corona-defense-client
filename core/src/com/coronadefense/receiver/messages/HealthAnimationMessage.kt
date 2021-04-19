@@ -1,6 +1,6 @@
 package com.coronadefense.receiver.messages
 
 data class HealthAnimationMessage(
-    val newValue: UShort,
+    val newValue: Int,
     val time: Float,
 ): IMessage

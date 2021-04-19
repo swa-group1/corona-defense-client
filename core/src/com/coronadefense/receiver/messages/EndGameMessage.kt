@@ -1,7 +1,7 @@
 package com.coronadefense.receiver.messages
 
 data class EndGameMessage(
-    val victory: Byte,
-    val onHighScoreList: Byte,
-    val score: UInt,
+    val victory: Boolean,
+    val onHighScoreList: Int,
+    val score: Int,
 ): IMessage

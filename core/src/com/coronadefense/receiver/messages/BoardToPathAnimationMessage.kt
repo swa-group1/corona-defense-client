@@ -1,11 +1,11 @@
 package com.coronadefense.receiver.messages
 
 data class BoardToPathAnimationMessage(
-    val spriteNumber: UByte,
-    val startX: UByte,
-    val startY: UByte,
+    val spriteNumber: Int,
+    val startX: Int,
+    val startY: Int,
     val endPosition: Float,
     val startTime: Float,
     val endTime: Float,
-    val resultAnimation: UByte,
+    val resultAnimation: Int,
 ): IMessage

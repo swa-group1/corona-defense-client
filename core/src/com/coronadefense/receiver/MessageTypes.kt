@@ -34,6 +34,10 @@ private fun parseUInt(biggest: Byte, big: Byte, small: Byte, smallest: Byte): UI
   return bb.getInt(0).toUInt()
 }
 
+private fun parseBool(byte: Byte): Boolean {
+  return byte == 0x01.toByte();
+}
+
 @ExperimentalUnsignedTypes
 enum class MessageType : IMessageType {
   PING {
@@ -41,8 +45,8 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): PingMessage {
       return PingMessage(
-        majorVersion = bytes[0].toUByte(),
-        minorVersion = bytes[1].toUByte(),
+        majorVersion = bytes[0].toUByte().toInt(),
+        minorVersion = bytes[1].toUByte().toInt(),
       )
     }
   },
@@ -51,7 +55,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): FightRoundMessage {
       return FightRoundMessage(
-        roundNumber = parseUShort(bytes[0], bytes[1]),
+        roundNumber = parseUShort(bytes[0], bytes[1]).toInt(),
       )
     }
   },
@@ -60,7 +64,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): GameModeMessage {
       return GameModeMessage(
-        stageNumber = bytes[0].toUByte(),
+        stageNumber = bytes[0].toUByte().toInt(),
       )
     }
   },
@@ -69,7 +73,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): InputRoundMessage {
       return InputRoundMessage(
-        roundNumber = parseUShort(bytes[0], bytes[1]),
+        roundNumber = parseUShort(bytes[0], bytes[1]).toInt(),
       )
     }
   },
@@ -85,9 +89,9 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray):EndGameMessage {
       return EndGameMessage(
-        victory = bytes[0],
-        onHighScoreList = bytes[1],
-        score = parseUInt(bytes[2], bytes[3], bytes[4], bytes[5],)
+        victory = parseBool(bytes[0]),
+        onHighScoreList = bytes[1].toInt(),
+        score = parseUInt(bytes[2], bytes[3], bytes[4], bytes[5],).toInt()
       )
     }
   },
@@ -96,7 +100,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): HealthUpdateMessage {
       return HealthUpdateMessage(
-        newValue = parseUShort(bytes[0], bytes[1]),
+        newValue = parseUShort(bytes[0], bytes[1]).toInt(),
       )
     }
   },
@@ -105,7 +109,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): MoneyUpdateMessage {
       return MoneyUpdateMessage(
-        newValue = parseUInt(bytes[0], bytes[1], bytes[2], bytes[3]),
+        newValue = parseUInt(bytes[0], bytes[1], bytes[2], bytes[3]).toInt(),
       )
     }
   },
@@ -114,7 +118,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): PlayerCountUpdateMessage {
       return PlayerCountUpdateMessage(
-        playerCount = bytes[0].toUByte(),
+        playerCount = bytes[0].toUByte().toInt(),
       )
     }
   },
@@ -123,10 +127,10 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): TowerPositionMessage {
       return TowerPositionMessage(
-        towerId = parseUShort(bytes[0], bytes[1]),
-        typeNumber = bytes[2].toUByte(),
-        xPosition = bytes[3].toUByte(),
-        yPosition = bytes[4].toUByte(),
+        towerId = parseUShort(bytes[0], bytes[1]).toInt(),
+        typeNumber = bytes[2].toUByte().toInt(),
+        xPosition = bytes[3].toUByte().toInt(),
+        yPosition = bytes[4].toUByte().toInt(),
       )
     }
   },
@@ -135,7 +139,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): TowerRemovedMessage {
       return TowerRemovedMessage(
-        towerId = parseUShort(bytes[0], bytes[1]),
+        towerId = parseUShort(bytes[0], bytes[1]).toInt(),
       )
     }
   },
@@ -153,13 +157,13 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): BoardToPathAnimationMessage {
       return BoardToPathAnimationMessage(
-        spriteNumber = bytes[0].toUByte(),
-        startX = bytes[1].toUByte(),
-        startY = bytes[2].toUByte(),
+        spriteNumber = bytes[0].toUByte().toInt(),
+        startX = bytes[1].toUByte().toInt(),
+        startY = bytes[2].toUByte().toInt(),
         endPosition = parseFloat(bytes[3], bytes[4], bytes[5], bytes[6]),
         startTime = parseFloat(bytes[7], bytes[8], bytes[9], bytes[10]),
         endTime = parseFloat(bytes[11], bytes[12], bytes[13], bytes[14]),
-        resultAnimation = bytes[15].toUByte(),
+        resultAnimation = bytes[15].toUByte().toInt(),
       )
     }
   },
@@ -168,12 +172,12 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): PathToPathAnimationMessage {
       return PathToPathAnimationMessage(
-        spriteNumber = bytes[0].toUByte(),
+        spriteNumber = bytes[0].toUByte().toInt(),
         startPosition = parseFloat(bytes[1], bytes[2], bytes[3], bytes[4]),
         endPosition = parseFloat(bytes[5], bytes[6], bytes[7], bytes[8]),
         startTime = parseFloat(bytes[9], bytes[10], bytes[11], bytes[12]),
         endTime = parseFloat(bytes[13], bytes[14], bytes[15], bytes[16]),
-        resultAnimation = bytes[17].toUByte(),
+        resultAnimation = bytes[17].toUByte().toInt(),
       )
     }
   },
@@ -182,9 +186,9 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): TowerAnimationMessage {
       return TowerAnimationMessage(
-        towerId = parseUShort(bytes[0], bytes[1]),
-        animationNumber = bytes[2].toUByte(),
-        rotation = bytes[3],
+        towerId = parseUShort(bytes[0], bytes[1]).toInt(),
+        animationNumber = bytes[2].toUByte().toInt(),
+        rotation = bytes[3].toInt(),
         time = parseFloat(bytes[4], bytes[5], bytes[6], bytes[7]),
       )
     }
@@ -194,7 +198,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): HealthAnimationMessage {
       return HealthAnimationMessage(
-        newValue = parseUShort(bytes[0], bytes[1]),
+        newValue = parseUShort(bytes[0], bytes[1]).toInt(),
         time = parseFloat(bytes[2], bytes[3], bytes[4], bytes[5]),
       )
     }
@@ -204,7 +208,7 @@ enum class MessageType : IMessageType {
 
     override fun parse(bytes: ByteArray): MoneyAnimationMessage {
       return MoneyAnimationMessage(
-        newValue = parseUInt(bytes[0], bytes[1], bytes[2], bytes[3]),
+        newValue = parseUInt(bytes[0], bytes[1], bytes[2], bytes[3]).toInt(),
         time = parseFloat(bytes[4], bytes[5], bytes[6], bytes[7]),
       )
     }
