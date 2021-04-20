@@ -58,7 +58,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     highScore.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     highScore.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        stateManager.set(HighscoreState(stateManager))
+        stateManager.set(HighscoreListState(stateManager))
       }
     })
     stage.addActor(highScore)
