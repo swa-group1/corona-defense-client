@@ -9,9 +9,9 @@ import com.coronadefense.Game
 import com.coronadefense.GameStateManager
 import com.coronadefense.api.Lobby
 import com.coronadefense.states.State
+import com.coronadefense.receiver.IReceiverObserver
 
-class LobbyState(stateManager: GameStateManager, lobby: Lobby): State(stateManager)  {
-
+class LobbyState(stateManager: GameStateManager, lobby: Lobby): State(stateManager), IReceiverObserver  {
     init {
         camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     }

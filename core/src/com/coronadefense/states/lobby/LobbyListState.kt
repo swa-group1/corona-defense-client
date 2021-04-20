@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.coronadefense.api.Lobby
+import com.coronadefense.receiver.Receiver
 import com.coronadefense.utils.BackButton
 import com.coronadefense.states.MenuState
 import com.coronadefense.utils.Font
@@ -55,6 +56,24 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       }
     })
     stage.addActor(createLobbyButton)
+    lobbyList?.let {
+      val xPosition: Float = Game.WIDTH / 2 - 150f
+      for (lobbyIndex in lobbyList!!.indices) {
+        val yPosition: Float = (Game.HEIGHT / 2) + 50f - (30f * lobbyIndex)
+        val joinLobbyButton = Image(Texture("greenBorder.png"))
+        joinLobbyButton.setSize(100f, 40f)
+        joinLobbyButton.setPosition(xPosition, yPosition)
+        joinLobbyButton.addListener(object : ClickListener() {
+          override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            val lobbyState: LobbyState = LobbyState(stateManager)
+            val receiver: Receiver = Receiver(listOf(lobbyState))
+            val connectionNumber = receiver.connectAsync()
+            stateManager.set(CreateLobbyState(stateManager))
+          }
+        })
+        stage.addActor(joinLobbyButton)
+      }
+    }
   }
 
   fun createLobby() {
