@@ -1,8 +1,10 @@
 package com.coronadefense.states.lobby
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -12,11 +14,14 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.api.LobbyData
 import com.coronadefense.states.State
 import kotlinx.coroutines.*
+import com.badlogic.gdx.graphics.g2d.DistanceFieldFont
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.coronadefense.utils.Font
 
 class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   var lobbyList: List<LobbyData>? = null
-  val font: BitmapFont = BitmapFont()
   private val background = Texture("initiate_game_state.jpg")
+  val font: BitmapFont = Font.generateFont(24)
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     GlobalScope.launch {
@@ -36,9 +41,9 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     lobbyList?.let {
       val xPosition: Float = Game.WIDTH / 2 - 150f
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Game.HEIGHT / 2) + 20f - (30f * lobbyIndex)
+        val yPosition: Float = (Game.HEIGHT / 2) + 50f - (30f * lobbyIndex)
         font.draw(sprites, lobbyList!![lobbyIndex].name, xPosition, yPosition)
-        font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 100f, yPosition)
+        font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 200f, yPosition)
       }
     }
     sprites.end()
