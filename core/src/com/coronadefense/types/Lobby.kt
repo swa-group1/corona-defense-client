@@ -1,13 +1,14 @@
 
-package com.coronadefense.api
+package com.coronadefense.types
 
+import com.coronadefense.api.ApiClient
 import kotlinx.coroutines.*
 
 class Lobby(
         val id: Long,
         val name: String,
         val accessToken: Long,
-        val playerCount: Int,
+        var playerCount: Int,
 ) {
   fun leaveLobby() {
     GlobalScope.launch {

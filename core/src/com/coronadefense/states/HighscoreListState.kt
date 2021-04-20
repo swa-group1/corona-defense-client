@@ -5,18 +5,13 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.HighScore
-import com.coronadefense.api.LobbyData
-import com.coronadefense.states.lobby.CreateLobbyState
 import com.coronadefense.utils.BackButton
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.GlobalScope
@@ -62,6 +57,14 @@ class HighscoreListState (stateManager: GameStateManager): State(stateManager){
     stage.draw()
   }
   override fun dispose() {
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    if (inputMultiplexer.processors.contains(stage)) {
+      inputMultiplexer.removeProcessor(stage)
+    }
+    stage.clear()
+    stage.dispose()
+    background.dispose()
+    font.dispose()
   }
 
 }

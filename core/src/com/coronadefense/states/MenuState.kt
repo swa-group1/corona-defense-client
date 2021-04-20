@@ -25,26 +25,25 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
   private val stage: Stage = Stage(viewport, Game.batch)
 
   private val background = Texture("initiate_game_state.jpg")
-  private val singlePlayer = Image(Texture("greenBorder.png"))
-  private val multiPlayer= Image(Texture("greenBorder.png"))
-  private val highScore= Image(Texture("greenBorder.png"))
   private val font = Font.generateFont(20)
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
-      inputMultiplexer.addProcessor(stage);
+      inputMultiplexer.addProcessor(stage)
     }
+
+    val singlePlayer = Image(Texture("greenBorder.png"))
     singlePlayer.setSize(180f, 60f)
     singlePlayer.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-30)
     singlePlayer.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-
         stateManager.set(MenuState(stateManager))
       }
     })
     stage.addActor(singlePlayer)
 
+    val multiPlayer= Image(Texture("greenBorder.png"))
     multiPlayer.setSize(180f, 60f)
     multiPlayer.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
     multiPlayer.addListener(object : ClickListener() {
@@ -54,6 +53,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     })
     stage.addActor(multiPlayer)
 
+    val highScore= Image(Texture("greenBorder.png"))
     highScore.setSize(180f, 60f)
     highScore.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     highScore.addListener(object : ClickListener() {
@@ -65,13 +65,9 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
   }
 
 
-  override fun handleInput() {
+  override fun handleInput() {}
 
-  }
-
-  override fun update(deltaTime: Float) {
-    handleInput()
-  }
+  override fun update(deltaTime: Float) {}
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
@@ -86,6 +82,12 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
   override fun dispose() {
     background.dispose()
+    font.dispose()
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    if (inputMultiplexer.processors.contains(stage)) {
+      inputMultiplexer.removeProcessor(stage)
+    }
+    stage.clear()
     stage.dispose()
     println("Menu State Disposed")
   }

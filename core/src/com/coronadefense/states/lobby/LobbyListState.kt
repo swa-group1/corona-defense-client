@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.coronadefense.api.Lobby
+import com.coronadefense.types.Lobby
 import com.coronadefense.receiver.Receiver
 import com.coronadefense.utils.BackButton
 import com.coronadefense.states.MenuState
@@ -92,7 +92,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
 
   fun joinLobby() {
     val receiver = Receiver(mutableListOf())
-    var accessToken: Long? = null
+    var accessToken: Long?
     runBlocking {
       val connectionNumber = receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
@@ -147,9 +147,16 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     stage.draw()
   }
   override fun dispose() {
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    if (inputMultiplexer.processors.contains(stage)) {
+      inputMultiplexer.removeProcessor(stage)
+    }
+    stage.clear()
     stage.dispose()
     nameListener.dispose()
     passwordListener.dispose()
+    background.dispose()
+    font.dispose()
     println("lobbyList state disposed")
   }
 
