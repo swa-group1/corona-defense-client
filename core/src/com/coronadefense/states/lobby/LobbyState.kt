@@ -15,10 +15,11 @@ import com.coronadefense.receiver.messages.*
 class LobbyState(stateManager: GameStateManager, lobby: Lobby): State(stateManager), IReceiverObserver  {
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    println("velkommen!!!")
   }
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
   private val stage: Stage = Stage(viewport, Game.batch)
-  private val background: Texture = Texture("background.jpg")
+  private val background: Texture = Texture("initiate_game_state.jpg")
 
   override fun handleGameModeMessage(message: GameModeMessage) {
 

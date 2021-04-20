@@ -93,17 +93,22 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   fun joinLobby() {
     val receiver = Receiver(mutableListOf())
     var accessToken: Long? = null
-    GlobalScope.launch {
+    runBlocking {
       val connectionNumber = receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
+      println(response)
       accessToken = response.accessToken
     }
     accessToken?.let {
-      val lobby = Lobby(lobbyID!!, nameListener.value, accessToken!!, lobbyPlayerCount!!)
+      if (lobbyPlayerCount == 0) {
+        lobbyPlayerCount = 1
+      }
+      val lobby = Lobby(lobbyID!!, nameListener.value, accessToken!!, lobbyPlayerCount ?: 1)
       val lobbyState = LobbyState(stateManager, lobby)
       receiver.addObserver(lobbyState)
       stateManager.set(lobbyState)
     }
+    resetLobbyInfo()
   }
 
   fun resetLobbyInfo(){
@@ -118,12 +123,11 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   override fun handleInput() {
   }
   override fun update(deltaTime: Float) {
-    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == 0L){
+    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == null){
       createLobby()
     }
-    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 1 && lobbyID != 0L){
+    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 1 && lobbyID != null){
       joinLobby()
-      resetLobbyInfo()
     }
   }
   override fun render(sprites: SpriteBatch) {
