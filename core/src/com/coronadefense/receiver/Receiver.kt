@@ -17,7 +17,7 @@ private const val SERVER_ADDRESS: String = "::1"
 @ExperimentalUnsignedTypes
 fun main() {
     runBlocking {
-        val receiver: Receiver = Receiver(listOf(ReceiverPrinter()))
+        val receiver: Receiver = Receiver(mutableListOf(ReceiverPrinter()))
         println(receiver.connectAsync())
     }
     readLine()
@@ -27,9 +27,17 @@ fun main() {
  * Object that connects to the backend and listens to broadcaster sending game information.
  * @param observers List of observers to notify about game changes.
  */
-class Receiver(private val observers: List<IReceiverObserver>) {
+class Receiver(private val observers: MutableList<IReceiverObserver>) {
     private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
     private var socket: Socket? = null
+
+    fun addObserver(observer: IReceiverObserver) {
+      observers += observer
+    }
+
+    fun removeObserver(observer: IReceiverObserver) {
+      observers -= observer
+    }
 
     /**
      * Attempt to connect to backend broadcaster.

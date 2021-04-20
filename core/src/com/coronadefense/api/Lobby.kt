@@ -9,7 +9,7 @@ class Lobby(
         val accessToken: Long,
 ) {
   var playerCount: Int = 1
-    set(value) { if (value > 0) field = value }
+    set(value) { if (value >= 0) field = value }
   constructor(
           id: Long, name: String, accessToken: Long, playerCount: Int
   ) : this(id, name, accessToken) {

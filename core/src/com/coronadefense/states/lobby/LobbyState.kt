@@ -10,28 +10,39 @@ import com.coronadefense.GameStateManager
 import com.coronadefense.api.Lobby
 import com.coronadefense.states.State
 import com.coronadefense.receiver.IReceiverObserver
+import com.coronadefense.receiver.messages.*
 
 class LobbyState(stateManager: GameStateManager, lobby: Lobby): State(stateManager), IReceiverObserver  {
-    init {
-        camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
-    }
-    private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-    private val stage: Stage = Stage(viewport, Game.batch)
-    private val background: Texture = Texture("background.jpg")
+  init {
+    camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+  }
+  private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
+  private val stage: Stage = Stage(viewport, Game.batch)
+  private val background: Texture = Texture("background.jpg")
 
-    override fun handleInput() {
-        TODO("Not yet implemented")
-    }
+  override fun handleGameModeMessage(message: GameModeMessage) {
 
-    override fun update(deltaTime: Float) {
-        TODO("Not yet implemented")
-    }
+  }
 
-    override fun render(sprites: SpriteBatch) {
-    }
+  override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {
 
-    override fun dispose() {
-        TODO("Not yet implemented")
-    }
+  }
 
+  override fun handleInput() {}
+  override fun update(deltaTime: Float) {}
+  override fun render(sprites: SpriteBatch) {}
+  override fun dispose() {}
+
+  override fun handlePingMessage(message: PingMessage){}
+  override fun handleFightRoundMessage(message: FightRoundMessage){}
+  override fun handleInputRoundMessage(message: InputRoundMessage){}
+  override fun handleLobbyModeMessage(message: LobbyModeMessage){}
+  override fun handleHealthUpdateMessage(message: HealthUpdateMessage){}
+  override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage){}
+  override fun handleTowerPositionMessage(message: TowerPositionMessage){}
+  override fun handleTowerRemovedMessage(message: TowerRemovedMessage){}
+  override fun handleAnimationConfirmationMessage(message: AnimationConfirmationMessage){}
+  override fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage){}
+  override fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage){}
+  override fun handleTowerAnimationMessage(message: TowerAnimationMessage){}
 }

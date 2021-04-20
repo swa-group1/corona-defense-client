@@ -40,7 +40,8 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   val nameListener = TextInputListener()
   val passwordListener = TextInputListener()
   var mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
-  var lobbyID: Long = 0L
+  var lobbyID: Long? = null
+  var lobbyPlayerCount: Int? = null
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
@@ -51,8 +52,9 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     createLobbyButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     createLobbyButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        createLobby()
-        //stateManager.set(CreateLobbyState(stateManager))
+        mode = 2
+        Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
+        Gdx.input.getTextInput(nameListener, "Lobby name", "", "lobby name")
       }
     })
     stage.addActor(createLobbyButton)
@@ -65,10 +67,10 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
         joinLobbyButton.setPosition(xPosition, yPosition)
         joinLobbyButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            val lobbyState: LobbyState = LobbyState(stateManager)
-            val receiver: Receiver = Receiver(listOf(lobbyState))
-            val connectionNumber = receiver.connectAsync()
-            stateManager.set(CreateLobbyState(stateManager))
+            Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
+            nameListener.input(lobbyList!![lobbyIndex].name)
+            lobbyID = lobbyList!![lobbyIndex].id
+            lobbyPlayerCount = lobbyList!![lobbyIndex].playerCount
           }
         })
         stage.addActor(joinLobbyButton)
@@ -77,16 +79,38 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   }
 
   fun createLobby() {
-    mode = 2
-    Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
-    Gdx.input.getTextInput(nameListener, "Lobby name", "", "lobby name")
+    println("create lobby:")
+    println(passwordListener.value)
+    println(nameListener.value)
+    GlobalScope.launch {
+      lobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
+    }
+    println("lobby ID:")
+    println(lobbyID)
+    mode = 1
+  }
+
+  fun joinLobby() {
+    val receiver = Receiver(mutableListOf())
+    var accessToken: Long? = null
+    GlobalScope.launch {
+      val connectionNumber = receiver.connectAsync()
+      val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
+      accessToken = response.accessToken
+    }
+    accessToken?.let {
+      val lobby = Lobby(lobbyID!!, nameListener.value, accessToken!!, lobbyPlayerCount!!)
+      val lobbyState = LobbyState(stateManager, lobby)
+      receiver.addObserver(lobbyState)
+      stateManager.set(lobbyState)
+    }
   }
 
   fun resetLobbyInfo(){
     nameListener.input("")
     passwordListener.input("")
     mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
-    lobbyID= 0L
+    lobbyID = null
     println("reset lobby info")
   }
 
@@ -95,25 +119,11 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   }
   override fun update(deltaTime: Float) {
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == 0L){
-      //CREATE LOBBY
-      println("create lobby:")
-      println(passwordListener.value)
-      println(nameListener.value)
-      GlobalScope.launch {
-        lobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value)).toLong()
-      }
-      println("lobby ID:")
-      println(lobbyID)
-      mode = 1
-
+      createLobby()
     }
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 1 && lobbyID != 0L){
-      //CREATE LOBBY
-      println("join lobby:")
-      println(passwordListener.value)
-      println(nameListener.value)
+      joinLobby()
       resetLobbyInfo()
-      //TODO: create reciever, get connectionNumber
     }
   }
   override fun render(sprites: SpriteBatch) {

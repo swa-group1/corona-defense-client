@@ -7,8 +7,8 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import kotlinx.serialization.*
 
-const val baseUrl = "http://10.0.2.2:5000"
-//const val baseUrl = "http://localhost:5000"
+//const val baseUrl = "http://10.0.2.2:5000"
+const val baseUrl = "http://localhost:5000"
 
 object ApiClient {
   private val client = HttpClient {
