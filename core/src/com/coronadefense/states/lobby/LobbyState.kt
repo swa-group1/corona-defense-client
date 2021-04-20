@@ -7,9 +7,10 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStateManager
+import com.coronadefense.api.Lobby
 import com.coronadefense.states.State
 
-class LobbyState(stateManager: GameStateManager): State(stateManager)  {
+class LobbyState(stateManager: GameStateManager, lobby: Lobby): State(stateManager)  {
 
     init {
         camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)

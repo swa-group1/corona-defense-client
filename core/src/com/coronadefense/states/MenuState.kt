@@ -86,6 +86,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
   override fun dispose() {
     background.dispose()
+    stage.dispose()
     println("Menu State Disposed")
   }
 }
