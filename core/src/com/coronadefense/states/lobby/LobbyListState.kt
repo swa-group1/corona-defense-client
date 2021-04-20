@@ -1,10 +1,10 @@
 package com.coronadefense.states.lobby
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -14,14 +14,15 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.api.LobbyData
 import com.coronadefense.states.State
 import kotlinx.coroutines.*
-import com.badlogic.gdx.graphics.g2d.DistanceFieldFont
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.coronadefense.utils.BackButton
+import com.coronadefense.states.MenuState
 import com.coronadefense.utils.Font
 
 class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   var lobbyList: List<LobbyData>? = null
-  private val background = Texture("initiate_game_state.jpg")
-  val font: BitmapFont = Font.generateFont(24)
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     GlobalScope.launch {
@@ -30,6 +31,24 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   }
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
   private val stage: Stage = Stage(viewport, Game.batch)
+  private val background = Texture("initiate_game_state.jpg")
+  private val createLobbyButton = Image(Texture("greenBorder.png"))
+  val font: BitmapFont = Font.generateFont(20)
+  init {
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    if (!inputMultiplexer.processors.contains(stage)) {
+      inputMultiplexer.addProcessor(stage)
+    }
+    BackButton.addBackButton(stateManager, MenuState(stateManager), stage)
+    createLobbyButton.setSize(180f, 60f)
+    createLobbyButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
+    createLobbyButton.addListener(object : ClickListener() {
+      override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        stateManager.set(CreateLobbyState(stateManager))
+      }
+    })
+    stage.addActor(createLobbyButton)
+  }
   override fun handleInput() {
   }
   override fun update(deltaTime: Float) {
@@ -46,6 +65,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
         font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 200f, yPosition)
       }
     }
+    font.draw(sprites, "CREATE LOBBY", Game.WIDTH/2-70, Game.HEIGHT/2-175)
     sprites.end()
     stage.draw()
   }
