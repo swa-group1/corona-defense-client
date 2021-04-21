@@ -84,7 +84,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     }
   }
 
-  val backButton = BackButton(stateManager, MenuState(stateManager), stage)
+  val backButton = BackButton("MainMenu", stateManager, stage)
 
   fun createLobby() {
     println("create lobby:")
@@ -130,6 +130,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   override fun handleInput() {
   }
   override fun update(deltaTime: Float) {
+    backButton.update()
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == null){
       createLobby()
     }
@@ -176,7 +177,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       button.clearListeners()
     }
 
-    println("lobbyList state disposed")
+    println("LobbyListState disposed")
   }
 
 }

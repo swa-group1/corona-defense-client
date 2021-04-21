@@ -49,7 +49,7 @@ class LobbyState(
     }
 
     startGameButton.setSize(180f, 60f)
-    startGameButton.setPosition(Game.WIDTH/2-300, Game.HEIGHT/2-210)
+    startGameButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
@@ -60,10 +60,9 @@ class LobbyState(
     stage.addActor(startGameButton)
   }
 
-  val backButton = BackButton(stateManager, LobbyListState(stateManager), stage)
+  val backButton = BackButton("LeaveLobby", stateManager, stage, lobby)
 
   override fun handleGameModeMessage(message: GameModeMessage) {
-    println("GameModeMessage received!")
     gameStartData = message.stageNumber
   }
 
@@ -106,8 +105,9 @@ class LobbyState(
 
   override fun handleInput() {}
   override fun update(deltaTime: Float) {
+    backButton.update()
     gameStartData?.let {
-      val playState: PlayStatePlacement = PlayStatePlacement(stateManager, lobby, gameStartData!!)
+      val playState = PlayStatePlacement(stateManager, lobby, gameStartData!!)
       Game.receiver.addObserver(playState)
       Game.receiver.removeObserver(this)
       stateManager.set(playState)

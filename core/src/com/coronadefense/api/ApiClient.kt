@@ -22,12 +22,20 @@ object ApiClient {
   fun close() {
     client.close()
   }
-  suspend fun gameStageRequest(stageNumber: Int): GameStage {
-    return client.get("${firebaseUrl}stage_00$stageNumber.json?alt=media")
+  suspend fun gameStageRequest(stageNumber: Int): GameStage? {
+    var gameStage: GameStage? = null
+    try {
+      gameStage = client.get("${firebaseUrl}stage_00$stageNumber.json?alt=media")
+      println("gameStageRequest succeeded")
+    } catch (exception: ClientRequestException) {
+      println("gameStageRequest failed")
+    }
+    return gameStage
   }
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")
     if (response.success) {
+      println("highScoreListRequest succeeded")
       return response.scores
     } else {
       throw Exception(response.details)
@@ -39,6 +47,7 @@ object ApiClient {
       parameter("password", password)
     }
     if (response.success) {
+      println("createLobbyRequest succeeded")
       return response.lobbyId
     } else {
       throw Exception(response.details)
@@ -51,6 +60,7 @@ object ApiClient {
       parameter("connectionNumber", connectionNumber)
     }
     if (response.success) {
+      println("joinLobbyRequest succeeded")
       return LobbyJoined(response.accessToken, response.lobbyId)
     } else {
       throw Exception(response.details)
@@ -61,7 +71,9 @@ object ApiClient {
       parameter("lobbyId", lobbyId)
       parameter("accessToken", accessToken)
     }
-    if (!response.success) {
+    if (response.success) {
+      println("leaveLobbyRequest succeeded")
+    } else {
       throw Exception(response.details)
     }
   }
@@ -70,6 +82,7 @@ object ApiClient {
       parameter("id", id)
     }
     if (response.success) {
+      println("lobbyRequest succeeded")
       return response.lobby
     } else {
       throw Exception(response.details)
@@ -78,6 +91,7 @@ object ApiClient {
   suspend fun lobbyListRequest(): List<LobbyData> {
     val response: LobbyListResponse = client.get("$baseUrl/LobbyList")
     if (response.success) {
+      println("lobbyListRequest succeeded")
       return response.lobbies
     } else {
       throw Exception(response.details)
@@ -91,7 +105,9 @@ object ApiClient {
       parameter("x", x)
       parameter("y", y)
     }
-    if (!response.success) {
+    if (response.success) {
+      println("placeTowerRequest succeeded")
+    } else {
       throw Exception(response.details)
     }
   }
@@ -101,7 +117,9 @@ object ApiClient {
       parameter("accessToken", accessToken)
       parameter("towerId", towerId)
     }
-    if (!response.success) {
+    if (response.success) {
+      println("sellTowerRequest succeeded")
+    } else {
       throw Exception(response.details)
     }
   }
@@ -112,17 +130,20 @@ object ApiClient {
       parameter("stageNumber", stageNumber)
       parameter("difficulty", difficulty)
     }
-    if (!response.success) {
+    if (response.success) {
+      println("startGameRequest succeeded")
+    } else {
       throw Exception(response.details)
     }
-    println("Game started!")
   }
   suspend fun startRoundRequest(lobbyId: Long, accessToken: Long) {
     val response: GenericResponse = client.patch("$baseUrl/StartRound") {
       parameter("lobbyId", lobbyId)
       parameter("accessToken", accessToken)
     }
-    if (!response.success) {
+    if (response.success) {
+      println("startRoundRequest succeeded")
+    } else {
       throw Exception(response.details)
     }
   }
@@ -131,6 +152,7 @@ object ApiClient {
       parameter("version", version)
     }
     if (response.success) {
+      println("verifyVersionRequest succeeded")
       return response.validVersion
     } else {
       throw Exception(response.details)

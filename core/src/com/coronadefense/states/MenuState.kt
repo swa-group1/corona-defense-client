@@ -27,7 +27,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
   private val background = Texture("initiate_game_state.jpg")
   private val font = Font.generateFont(20)
 
-  private var nextState: State? = null
+  private var nextState: String? = null
 
   val singlePlayerTexture = Texture("greenBorder.png")
   val singlePlayerButton = Image(singlePlayerTexture)
@@ -57,7 +57,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     multiPlayerButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
     multiPlayerButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        nextState = LobbyListState(stateManager)
+        nextState = "lobbyList"
       }
     })
     stage.addActor(multiPlayerButton)
@@ -66,7 +66,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     highScoresButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     highScoresButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        nextState = HighscoreListState(stateManager)
+        nextState = "highScoreList"
       }
     })
     stage.addActor(highScoresButton)
@@ -75,7 +75,14 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
   override fun handleInput() {}
 
-  override fun update(deltaTime: Float) {}
+  override fun update(deltaTime: Float) {
+    nextState?.let {
+      when (nextState) {
+        "lobbyList" -> stateManager.set(LobbyListState(stateManager))
+        "highScoreList" -> stateManager.set(HighscoreListState(stateManager))
+      }
+    }
+  }
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
@@ -86,9 +93,6 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     font.draw(sprites, "HIGHSCORES", Game.WIDTH/2-60, Game.HEIGHT/2-175)
     sprites.end()
     stage.draw()
-    nextState?.let {
-      stateManager.set(nextState!!)
-    }
   }
 
   override fun dispose() {

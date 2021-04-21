@@ -35,10 +35,11 @@ class HighscoreListState (stateManager: GameStateManager): State(stateManager){
       inputMultiplexer.addProcessor(stage)
     }
   }
-  val backButton = BackButton(stateManager, MenuState(stateManager), stage)
+  val backButton = BackButton("MainMenu", stateManager, stage)
   override fun handleInput() {
   }
   override fun update(deltaTime: Float) {
+    backButton.update()
   }
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined

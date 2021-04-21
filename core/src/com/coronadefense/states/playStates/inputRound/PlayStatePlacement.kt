@@ -39,7 +39,6 @@ class PlayStatePlacement(
 
   private var gameStage: GameStage? = null
   init {
-    println("PlayState!!!")
     runBlocking {
       gameStage = ApiClient.gameStageRequest(stageNumber)
     }
