@@ -19,7 +19,7 @@ private const val STEPS_IN_TILE: Int = 2 * HALF_OF_STEP_SIZE
  * @param PathPoints Points that the path passes through.
  */
 @Serializable
-class Stage(
+class GameStage(
     /**
      * Gets a unique number of this stage.
      */
@@ -52,11 +52,11 @@ class Stage(
 ) {
     companion object {
         /**
-         * create a new Stage object.
+         * create a new GameStage object.
          * @param jsonContent The string with JSON content.
-         * @return new Stage object.
+         * @return new GameStage object.
          */
-        fun parse(jsonContent: String): Stage {
+        fun parse(jsonContent: String): GameStage {
             return Json.decodeFromString(jsonContent)
         }
     }

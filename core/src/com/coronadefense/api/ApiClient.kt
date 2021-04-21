@@ -1,5 +1,6 @@
 package com.coronadefense.api
 
+import com.coronadefense.GameStage
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
@@ -9,6 +10,7 @@ import kotlinx.serialization.*
 
 //const val baseUrl = "http://10.0.2.2:5000"
 const val baseUrl = "http://localhost:5000"
+const val firebaseUrl = "https://firebasestorage.googleapis.com/v0/b/coronadefense-1.appspot.com/o/"
 
 object ApiClient {
   private val client = HttpClient {
@@ -18,6 +20,9 @@ object ApiClient {
   }
   fun close() {
     client.close()
+  }
+  suspend fun gameStageRequest(stageNumber: UByte): GameStage {
+    return client.get("$firebaseUrl/00$stageNumber.json?alt=media")
   }
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")

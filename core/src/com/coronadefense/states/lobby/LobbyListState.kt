@@ -28,7 +28,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   var lobbyList: List<LobbyData>? = null
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
-    GlobalScope.launch {
+    runBlocking {
       lobbyList = ApiClient.lobbyListRequest()
     }
   }
@@ -59,11 +59,11 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     })
     stage.addActor(createLobbyButton)
     lobbyList?.let {
-      val xPosition: Float = Game.WIDTH / 2 - 150f
+      val xPosition: Float = Game.WIDTH / 2 - 160f
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Game.HEIGHT / 2) + 50f - (30f * lobbyIndex)
+        val yPosition: Float = (Game.HEIGHT / 2) + 17f - (30f * lobbyIndex)
         val joinLobbyButton = Image(Texture("greenBorder.png"))
-        joinLobbyButton.setSize(100f, 40f)
+        joinLobbyButton.setSize(310f, 30f)
         joinLobbyButton.setPosition(xPosition, yPosition)
         joinLobbyButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -135,11 +135,13 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     sprites.begin()
     sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
     lobbyList?.let {
-      val xPosition: Float = Game.WIDTH / 2 - 150f
+      val xPosition: Float = Game.WIDTH / 2 - 140f
+      font.draw(sprites, "LOBBIES", xPosition, Game.HEIGHT/2+70)
+      font.draw(sprites, "# players", xPosition + 210f, Game.HEIGHT/2+70)
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Game.HEIGHT / 2) + 50f - (30f * lobbyIndex)
+        val yPosition: Float = (Game.HEIGHT / 2) + 40f - (30f * lobbyIndex)
         font.draw(sprites, lobbyList!![lobbyIndex].name, xPosition, yPosition)
-        font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 200f, yPosition)
+        font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 270f, yPosition)
       }
     }
     font.draw(sprites, "CREATE LOBBY", Game.WIDTH/2-70, Game.HEIGHT/2-175)
