@@ -21,6 +21,7 @@ object ApiClient {
   }
   fun close() {
     client.close()
+    println("ApiClient: client closed")
   }
   suspend fun gameStageRequest(stageNumber: Int): GameStage? {
     var gameStage: GameStage? = null

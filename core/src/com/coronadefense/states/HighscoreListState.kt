@@ -23,6 +23,7 @@ class HighscoreListState (stateManager: GameStateManager): State(stateManager){
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     GlobalScope.launch {
       lobbyList = ApiClient.highScoreListRequest()
+      ApiClient.close()
     }
   }
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)

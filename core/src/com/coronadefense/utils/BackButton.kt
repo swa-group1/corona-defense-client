@@ -38,9 +38,7 @@ class BackButton(
       "MainMenu" -> stateManager.set(MenuState(stateManager))
       "LeaveLobby" -> {
         lobby?.let {
-          GlobalScope.launch {
-            ApiClient.leaveLobbyRequest(lobby.id, lobby.accessToken)
-          }
+          lobby.leaveLobby()
         }
         stateManager.set(LobbyListState(stateManager))
       }

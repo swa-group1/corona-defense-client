@@ -54,6 +54,7 @@ class LobbyState(
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
           ApiClient.startGameRequest(lobby.id, lobby.accessToken, 0, 0)
+          ApiClient.close()
         }
       }
     })
