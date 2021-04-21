@@ -29,41 +29,47 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
   private var nextState: State? = null
 
+  val singlePlayerTexture = Texture("greenBorder.png")
+  val singlePlayerButton = Image(singlePlayerTexture)
+
+  val multiPlayerTexture = Texture("greenBorder.png")
+  val multiPlayerButton = Image(multiPlayerTexture)
+
+  val highScoresTexture = Texture("greenBorder.png")
+  val highScoresButton = Image(highScoresTexture)
+
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
 
-    val singlePlayer = Image(Texture("greenBorder.png"))
-    singlePlayer.setSize(180f, 60f)
-    singlePlayer.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-30)
-    singlePlayer.addListener(object : ClickListener() {
+    singlePlayerButton.setSize(180f, 60f)
+    singlePlayerButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-30)
+    singlePlayerButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         stateManager.set(MenuState(stateManager))
       }
     })
-    stage.addActor(singlePlayer)
+    stage.addActor(singlePlayerButton)
 
-    val multiPlayer= Image(Texture("greenBorder.png"))
-    multiPlayer.setSize(180f, 60f)
-    multiPlayer.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
-    multiPlayer.addListener(object : ClickListener() {
+    multiPlayerButton.setSize(180f, 60f)
+    multiPlayerButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
+    multiPlayerButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         nextState = LobbyListState(stateManager)
       }
     })
-    stage.addActor(multiPlayer)
+    stage.addActor(multiPlayerButton)
 
-    val highScore= Image(Texture("greenBorder.png"))
-    highScore.setSize(180f, 60f)
-    highScore.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
-    highScore.addListener(object : ClickListener() {
+    highScoresButton.setSize(180f, 60f)
+    highScoresButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
+    highScoresButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         nextState = HighscoreListState(stateManager)
       }
     })
-    stage.addActor(highScore)
+    stage.addActor(highScoresButton)
   }
 
 
@@ -94,6 +100,16 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     }
     stage.clear()
     stage.dispose()
+
+    singlePlayerTexture.dispose()
+    singlePlayerButton.clearListeners()
+
+    multiPlayerTexture.dispose()
+    multiPlayerButton.clearListeners()
+
+    highScoresTexture.dispose()
+    highScoresButton.clearListeners()
+
     println("Menu State Disposed")
   }
 }

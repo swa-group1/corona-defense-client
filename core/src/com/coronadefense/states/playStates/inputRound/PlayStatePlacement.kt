@@ -17,6 +17,7 @@ import com.coronadefense.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.messages.*
+import com.coronadefense.states.ObserverState
 import com.coronadefense.states.State
 import com.coronadefense.states.playStates.Textures
 import com.coronadefense.types.Lobby
@@ -27,7 +28,7 @@ class PlayStatePlacement(
   stateManager: GameStateManager,
   val lobby: Lobby,
   stageNumber: Int
-) : State(stateManager), IReceiverObserver {
+) : ObserverState(stateManager) {
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
   }
@@ -47,6 +48,9 @@ class PlayStatePlacement(
 
   private var towerTypeToPlace: Int? = null
 
+  private val textures: MutableList<Texture> = mutableListOf()
+  private val buttons: MutableList<Image> = mutableListOf()
+
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
@@ -55,7 +59,10 @@ class PlayStatePlacement(
     val towerShopX: Float = Game.WIDTH / 2 - 160
     for ((index, key) in Textures.towers.keys.withIndex()) {
       val towerShopY: Float = (Game.HEIGHT / 2) + 17f - (30f * index)
-      val towerButton = Image(Texture(Textures.towers[key]))
+      val towerTexture = Texture(Textures.towers[key])
+      textures += towerTexture
+      val towerButton = Image(towerTexture)
+      buttons += towerButton
       towerButton.setSize(310f, 30f)
       towerButton.setPosition(towerShopX, towerShopY)
       towerButton.addListener(object : ClickListener() {
@@ -67,11 +74,18 @@ class PlayStatePlacement(
     }
   }
 
+  override fun render(sprites: SpriteBatch) {
+    sprites.projectionMatrix = camera.combined
+    sprites.begin()
+    sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
+    font.draw(sprites, "SHOP", Game.WIDTH / 2 + 100, Game.HEIGHT / 2 + 100)
+    sprites.end()
+    stage.draw()
+  }
+
   override fun handleInput() {}
 
   override fun update(deltaTime: Float) {}
-
-  override fun render(sprites: SpriteBatch) {}
 
   override fun dispose() {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
@@ -82,23 +96,14 @@ class PlayStatePlacement(
     stage.dispose()
     font.dispose()
     background.dispose()
-  }
 
-  override fun handlePingMessage(message: PingMessage){}
-  override fun handleFightRoundMessage(message: FightRoundMessage){}
-  override fun handleGameModeMessage(message: GameModeMessage) {}
-  override fun handleInputRoundMessage(message: InputRoundMessage){}
-  override fun handleEndGameMessage(message: EndGameMessage){}
-  override fun handleLobbyModeMessage(message: LobbyModeMessage){}
-  override fun handleHealthAnimationMessage(message: HealthAnimationMessage){}
-  override fun handleHealthUpdateMessage(message: HealthUpdateMessage){}
-  override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage){}
-  override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {}
-  override fun handleTowerPositionMessage(message: TowerPositionMessage){}
-  override fun handleTowerRemovedMessage(message: TowerRemovedMessage){}
-  override fun handleAnimationConfirmationMessage(message: AnimationConfirmationMessage){}
-  override fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage){}
-  override fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage){}
-  override fun handleTowerAnimationMessage(message: TowerAnimationMessage){}
-  override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage){}
+    for (texture in textures) {
+      texture.dispose()
+    }
+    for (button in buttons) {
+      button.clearListeners()
+    }
+
+    println("PlayStatePlacement disposed")
+  }
 }

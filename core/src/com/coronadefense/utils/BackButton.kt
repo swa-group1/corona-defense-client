@@ -9,16 +9,25 @@ import com.coronadefense.Game
 import com.coronadefense.GameStateManager
 import com.coronadefense.states.State
 
-object BackButton {
-  private val goBackButton = Image(Texture("backbutton.png"))
-  fun addBackButton(stateManager: GameStateManager, state: State, stage: Stage) {
-    goBackButton.setSize(100f, 100f)
-    goBackButton.setPosition(Game.WIDTH/2-350, Game.HEIGHT/2+130)
-    goBackButton.addListener(object : ClickListener() {
+class BackButton(
+  stateManager: GameStateManager,
+  state: State,
+  stage: Stage,
+) {
+  val texture = Texture("backbutton.png")
+  val button = Image(texture)
+  init {
+    button.setSize(100f, 100f)
+    button.setPosition(Game.WIDTH/2-350, Game.HEIGHT/2+130)
+    button.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         stateManager.set(state)
       }
     })
-    stage.addActor(goBackButton)
+    stage.addActor(button)
+  }
+  fun dispose() {
+    texture.dispose()
+    button.clearListeners()
   }
 }

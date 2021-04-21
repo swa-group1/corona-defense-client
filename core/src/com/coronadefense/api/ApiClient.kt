@@ -10,6 +10,7 @@ import kotlinx.serialization.*
 
 //const val baseUrl = "http://10.0.2.2:5000"
 const val baseUrl = "http://35.228.171.73:5000"
+//const val baseUrl = "http://localhost:5000"
 const val firebaseUrl = "https://firebasestorage.googleapis.com/v0/b/coronadefense-1.appspot.com/o/"
 
 object ApiClient {
@@ -22,7 +23,7 @@ object ApiClient {
     client.close()
   }
   suspend fun gameStageRequest(stageNumber: Int): GameStage {
-    return client.get("$firebaseUrl/00$stageNumber.json?alt=media")
+    return client.get("${firebaseUrl}stage_00$stageNumber.json?alt=media")
   }
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")

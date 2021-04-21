@@ -42,12 +42,15 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   var mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
   var lobbyID: Long? = null
   var lobbyPlayerCount: Int? = null
+
+  val joinLobbyTextures: MutableList<Texture> = mutableListOf()
+  val joinLobbyButtons: MutableList<Image> = mutableListOf()
+
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
-    BackButton.addBackButton(stateManager, MenuState(stateManager), stage)
     createLobbyButton.setSize(180f, 60f)
     createLobbyButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     createLobbyButton.addListener(object : ClickListener() {
@@ -62,7 +65,10 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       val xPosition: Float = Game.WIDTH / 2 - 160f
       for (lobbyIndex in lobbyList!!.indices) {
         val yPosition: Float = (Game.HEIGHT / 2) + 17f - (30f * lobbyIndex)
-        val joinLobbyButton = Image(Texture("greenBorder.png"))
+        val joinLobbyTexture = Texture("greenBorder.png")
+        joinLobbyTextures += joinLobbyTexture
+        val joinLobbyButton = Image(joinLobbyTexture)
+        joinLobbyButtons += joinLobbyButton
         joinLobbyButton.setSize(310f, 30f)
         joinLobbyButton.setPosition(xPosition, yPosition)
         joinLobbyButton.addListener(object : ClickListener() {
@@ -77,6 +83,8 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       }
     }
   }
+
+  val backButton = BackButton(stateManager, MenuState(stateManager), stage)
 
   fun createLobby() {
     println("create lobby:")
@@ -158,6 +166,16 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     passwordListener.dispose()
     background.dispose()
     font.dispose()
+
+    backButton.dispose()
+
+    for (texture in joinLobbyTextures) {
+      texture.dispose()
+    }
+    for (button in joinLobbyButtons) {
+      button.clearListeners()
+    }
+
     println("lobbyList state disposed")
   }
 

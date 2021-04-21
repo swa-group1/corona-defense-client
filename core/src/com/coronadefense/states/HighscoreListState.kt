@@ -34,8 +34,8 @@ class HighscoreListState (stateManager: GameStateManager): State(stateManager){
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
-    BackButton.addBackButton(stateManager, MenuState(stateManager), stage)
   }
+  val backButton = BackButton(stateManager, MenuState(stateManager), stage)
   override fun handleInput() {
   }
   override fun update(deltaTime: Float) {
@@ -65,6 +65,10 @@ class HighscoreListState (stateManager: GameStateManager): State(stateManager){
     stage.dispose()
     background.dispose()
     font.dispose()
+
+    backButton.dispose()
+
+    println("HighscoreListState disposed")
   }
 
 }
