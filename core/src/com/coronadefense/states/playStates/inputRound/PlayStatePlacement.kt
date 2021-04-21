@@ -22,7 +22,8 @@ import com.coronadefense.states.State
 import com.coronadefense.states.playStates.Textures
 import com.coronadefense.types.Lobby
 import com.coronadefense.utils.Font
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlin.math.floor
 
 class PlayStatePlacement(
   stateManager: GameStateManager,
@@ -34,7 +35,10 @@ class PlayStatePlacement(
   }
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
   private val stage: Stage = Stage(viewport, Game.batch)
-  private val background: Texture = Texture(Textures.stages[stageNumber])
+
+  private val stageMapTexture: Texture = Texture(Textures.stages[stageNumber])
+  private val stageMap = Image(stageMapTexture)
+
   private val font: BitmapFont = Font.generateFont(20)
 
   private var gameStage: GameStage? = null
@@ -45,40 +49,78 @@ class PlayStatePlacement(
     println(gameStage)
   }
 
-  private var towerTypeToPlace: Int? = null
+  private val shopWidth: Float = 150f
 
-  private val textures: MutableList<Texture> = mutableListOf()
-  private val buttons: MutableList<Image> = mutableListOf()
+  private var towerTypeToPlace: Int? = null
+  private var changeMode: Boolean = false
+
+  private val towerTextures: MutableList<Texture> = mutableListOf()
+  private val towerButtons: MutableList<Image> = mutableListOf()
+
+  private val placementButtons: MutableList<Image> = mutableListOf()
 
   init {
-    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
+
+    stageMap.setSize(Game.WIDTH - shopWidth, Game.HEIGHT)
+    stageMap.setPosition(0f, 0f)
+    stage.addActor(stageMap)
+
     val towerShopX: Float = Game.WIDTH / 2 - 160
     var towerIndex = 0
     for ((towerType, texturePath) in Textures.towers) {
       val towerShopY: Float = (Game.HEIGHT / 2) + 17f - (30f * towerIndex)
       towerIndex++
       val towerTexture = Texture(texturePath)
-      textures += towerTexture
+      towerTextures += towerTexture
       val towerButton = Image(towerTexture)
-      buttons += towerButton
+      towerButtons += towerButton
       towerButton.setSize(310f, 30f)
       towerButton.setPosition(towerShopX, towerShopY)
       towerButton.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
           towerTypeToPlace = towerType.toInt()
+          changeMode = true
         }
       })
       stage.addActor(towerButton)
     }
   }
 
+  fun normalMode() {
+    stageMap.clearListeners()
+  }
+
+  fun placeTowerMode() {
+    gameStage?.let {
+      stageMap.addListener(object: ClickListener() {
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+          val cellWidth = (Game.WIDTH - shopWidth) / gameStage!!.XSize
+          val cellHeight = Game.HEIGHT / gameStage!!.YSize
+          val cellX = floor(x / cellWidth).toInt()
+          val cellY = floor(y / cellHeight).toInt()
+          GlobalScope.launch {
+            ApiClient.placeTowerRequest(lobby.id, lobby.accessToken, towerTypeToPlace!!, cellX, cellY)
+            towerTypeToPlace = null
+            changeMode = true
+          }
+        }
+      })
+
+      for (xPosition in 0 until gameStage!!.XSize) {
+        for (yPosition in 0 until gameStage!!.YSize) {
+
+        }
+      }
+    }
+  }
+
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
-    sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
     font.draw(sprites, "SHOP", Game.WIDTH / 2 + 100, Game.HEIGHT / 2 + 100)
     sprites.end()
     stage.draw()
@@ -86,7 +128,17 @@ class PlayStatePlacement(
 
   override fun handleInput() {}
 
-  override fun update(deltaTime: Float) {}
+  override fun update(deltaTime: Float) {
+    if (changeMode) {
+      if (towerTypeToPlace == null) {
+        normalMode()
+        changeMode = false
+      } else {
+        placeTowerMode()
+        changeMode = false
+      }
+    }
+  }
 
   override fun dispose() {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
@@ -96,12 +148,14 @@ class PlayStatePlacement(
     stage.clear()
     stage.dispose()
     font.dispose()
-    background.dispose()
 
-    for (texture in textures) {
+    stageMapTexture.dispose()
+    stageMap.clearListeners()
+
+    for (texture in towerTextures) {
       texture.dispose()
     }
-    for (button in buttons) {
+    for (button in towerButtons) {
       button.clearListeners()
     }
 
