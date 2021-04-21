@@ -56,9 +56,11 @@ class PlayStatePlacement(
       inputMultiplexer.addProcessor(stage)
     }
     val towerShopX: Float = Game.WIDTH / 2 - 160
-    for ((index, key) in Textures.towers.keys.withIndex()) {
-      val towerShopY: Float = (Game.HEIGHT / 2) + 17f - (30f * index)
-      val towerTexture = Texture(Textures.towers[key])
+    var towerIndex = 0
+    for ((towerType, texturePath) in Textures.towers) {
+      val towerShopY: Float = (Game.HEIGHT / 2) + 17f - (30f * towerIndex)
+      towerIndex++
+      val towerTexture = Texture(texturePath)
       textures += towerTexture
       val towerButton = Image(towerTexture)
       buttons += towerButton
@@ -66,7 +68,7 @@ class PlayStatePlacement(
       towerButton.setPosition(towerShopX, towerShopY)
       towerButton.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-          towerTypeToPlace = key.toInt()
+          towerTypeToPlace = towerType.toInt()
         }
       })
       stage.addActor(towerButton)
