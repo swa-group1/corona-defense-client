@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import java.net.InetSocketAddress
 
 private const val PORT_NUMBER: Int = 19001
-private const val SERVER_ADDRESS: String = "::1"
+private const val SERVER_ADDRESS: String = "35.228.171.73"
 
 @ExperimentalUnsignedTypes
 fun main() {
