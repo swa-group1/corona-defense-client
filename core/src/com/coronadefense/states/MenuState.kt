@@ -27,6 +27,8 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
   private val background = Texture("initiate_game_state.jpg")
   private val font = Font.generateFont(20)
 
+  private var nextState: State? = null
+
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (!inputMultiplexer.processors.contains(stage)) {
@@ -48,7 +50,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     multiPlayer.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
     multiPlayer.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        stateManager.set(LobbyListState(stateManager))
+        nextState = LobbyListState(stateManager)
       }
     })
     stage.addActor(multiPlayer)
@@ -58,7 +60,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     highScore.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
     highScore.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        stateManager.set(HighscoreListState(stateManager))
+        nextState = HighscoreListState(stateManager)
       }
     })
     stage.addActor(highScore)
@@ -78,6 +80,9 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     font.draw(sprites, "HIGHSCORES", Game.WIDTH/2-60, Game.HEIGHT/2-175)
     sprites.end()
     stage.draw()
+    nextState?.let {
+      stateManager.set(nextState!!)
+    }
   }
 
   override fun dispose() {

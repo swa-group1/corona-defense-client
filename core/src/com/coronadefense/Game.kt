@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.coronadefense.receiver.Receiver
 import com.coronadefense.states.MenuState
 
 class Game : ApplicationAdapter() {
@@ -13,6 +14,7 @@ class Game : ApplicationAdapter() {
     const val HEIGHT = 480F
     const val TITLE = "Corona Defence"
     var batch: SpriteBatch? = null
+    val receiver = Receiver(mutableListOf())
   }
   private var stateManager: GameStateManager? = null
   override fun create() {

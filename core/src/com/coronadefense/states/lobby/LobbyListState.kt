@@ -91,10 +91,9 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   }
 
   fun joinLobby() {
-    val receiver = Receiver(mutableListOf())
     var accessToken: Long?
     runBlocking {
-      val connectionNumber = receiver.connectAsync()
+      val connectionNumber = Game.receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
       println(response)
       accessToken = response.accessToken
@@ -105,7 +104,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       }
       val lobby = Lobby(lobbyID!!, nameListener.value, accessToken!!, lobbyPlayerCount ?: 1)
       val lobbyState = LobbyState(stateManager, lobby)
-      receiver.addObserver(lobbyState)
+      Game.receiver.addObserver(lobbyState)
       stateManager.set(lobbyState)
     }
     resetLobbyInfo()

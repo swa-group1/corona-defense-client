@@ -26,7 +26,7 @@ import kotlinx.coroutines.runBlocking
 class PlayStatePlacement(
   stateManager: GameStateManager,
   val lobby: Lobby,
-  stageNumber: UByte
+  stageNumber: Int
 ) : State(stateManager), IReceiverObserver {
   init {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
@@ -38,6 +38,7 @@ class PlayStatePlacement(
 
   private var gameStage: GameStage? = null
   init {
+    println("PlayState!!!")
     runBlocking {
       gameStage = ApiClient.gameStageRequest(stageNumber)
     }
@@ -87,7 +88,9 @@ class PlayStatePlacement(
   override fun handleFightRoundMessage(message: FightRoundMessage){}
   override fun handleGameModeMessage(message: GameModeMessage) {}
   override fun handleInputRoundMessage(message: InputRoundMessage){}
+  override fun handleEndGameMessage(message: EndGameMessage){}
   override fun handleLobbyModeMessage(message: LobbyModeMessage){}
+  override fun handleHealthAnimationMessage(message: HealthAnimationMessage){}
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage){}
   override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage){}
   override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {}
@@ -97,4 +100,5 @@ class PlayStatePlacement(
   override fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage){}
   override fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage){}
   override fun handleTowerAnimationMessage(message: TowerAnimationMessage){}
+  override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage){}
 }

@@ -6,7 +6,7 @@ object Textures {
     1.toUByte() to "towers/hospital.png",
     2.toUByte() to "towers/government.png"
   )
-  val stages: Map<UByte, String> = hashMapOf(
-    0.toUByte() to "stages/samfundetStage.png"
+  val stages: Map<Int, String> = hashMapOf(
+    0 to "stages/samfundetStage.png"
   )
 }

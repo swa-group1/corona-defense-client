@@ -57,6 +57,7 @@ class LobbyState(
   }
 
   override fun handleGameModeMessage(message: GameModeMessage) {
+    println("Game started!")
     stateManager.set(PlayStatePlacement(stateManager, lobby, message.stageNumber))
   }
 
@@ -96,7 +97,9 @@ class LobbyState(
   override fun handlePingMessage(message: PingMessage){}
   override fun handleFightRoundMessage(message: FightRoundMessage){}
   override fun handleInputRoundMessage(message: InputRoundMessage){}
+  override fun handleEndGameMessage(message: EndGameMessage){}
   override fun handleLobbyModeMessage(message: LobbyModeMessage){}
+  override fun handleHealthAnimationMessage(message: HealthAnimationMessage){}
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage){}
   override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage){}
   override fun handleTowerPositionMessage(message: TowerPositionMessage){}
@@ -105,4 +108,5 @@ class LobbyState(
   override fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage){}
   override fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage){}
   override fun handleTowerAnimationMessage(message: TowerAnimationMessage){}
+  override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage){}
 }

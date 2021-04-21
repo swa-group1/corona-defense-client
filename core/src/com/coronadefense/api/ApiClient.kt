@@ -21,7 +21,7 @@ object ApiClient {
   fun close() {
     client.close()
   }
-  suspend fun gameStageRequest(stageNumber: UByte): GameStage {
+  suspend fun gameStageRequest(stageNumber: Int): GameStage {
     return client.get("$firebaseUrl/00$stageNumber.json?alt=media")
   }
   suspend fun highScoreListRequest(): List<HighScore> {
@@ -114,6 +114,7 @@ object ApiClient {
     if (!response.success) {
       throw Exception(response.details)
     }
+    println("Game started!")
   }
   suspend fun startRoundRequest(lobbyId: Long, accessToken: Long) {
     val response: GenericResponse = client.patch("$baseUrl/StartRound") {
