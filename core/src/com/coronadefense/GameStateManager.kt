@@ -11,7 +11,7 @@ class GameStateManager {
         states.push(state)
     }
     fun set(state: State) {
-        states.pop().dispose();
+        states.pop().dispose()
         states.push(state)
     }
     fun update(deltaTime: Float) {

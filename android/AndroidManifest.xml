@@ -7,6 +7,7 @@
         android:icon="@drawable/ic_launcher"
         android:isGame="true"
         android:appCategory="game"
+        android:usesCleartextTraffic="true"
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
@@ -14,6 +15,7 @@
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
