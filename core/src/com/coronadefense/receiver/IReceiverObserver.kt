@@ -11,6 +11,7 @@ interface IReceiverObserver {
   fun handleGameModeMessage(message: GameModeMessage)
   fun handleInputRoundMessage(message: InputRoundMessage)
   fun handleLobbyModeMessage(message: LobbyModeMessage)
+  fun handleEndGameMessage(message: EndGameMessage)
   fun handleHealthUpdateMessage(message: HealthUpdateMessage)
   fun handleMoneyUpdateMessage(message: MoneyUpdateMessage)
   fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage)
@@ -20,4 +21,6 @@ interface IReceiverObserver {
   fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage)
   fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage)
   fun handleTowerAnimationMessage(message: TowerAnimationMessage)
+  fun handleHealthAnimationMessage(message: HealthAnimationMessage)
+  fun handleMoneyAnimationMessage(message: MoneyAnimationMessage)
 }

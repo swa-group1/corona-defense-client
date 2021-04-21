@@ -1,5 +1,5 @@
 package com.coronadefense.receiver.messages
 
 data class TowerRemovedMessage(
-    val towerId: UShort,
+    val towerId: Int,
 ): IMessage

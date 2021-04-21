@@ -26,6 +26,10 @@ class ReceiverPrinter: IReceiverObserver {
   override fun handleLobbyModeMessage(message: LobbyModeMessage) {
     println(message)
   }
+
+  override fun handleEndGameMessage(message: EndGameMessage) {
+    println(message)
+  }
   
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage) {
     println(message)
@@ -60,6 +64,14 @@ class ReceiverPrinter: IReceiverObserver {
   }
 
   override fun handleTowerAnimationMessage(message: TowerAnimationMessage) {
+    println(message)
+  }
+
+  override fun handleHealthAnimationMessage(message: HealthAnimationMessage) {
+    println(message)
+  }
+
+  override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage) {
     println(message)
   }
 }
