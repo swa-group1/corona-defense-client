@@ -54,7 +54,6 @@ class LobbyState(
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
           ApiClient.startGameRequest(lobby.id, lobby.accessToken, 0, 0)
-          ApiClient.close()
         }
       }
     })
@@ -64,10 +63,12 @@ class LobbyState(
   val backButton = BackButton("LeaveLobby", stateManager, stage, lobby)
 
   override fun handleGameModeMessage(message: GameModeMessage) {
+    super.handleGameModeMessage(message)
     gameStartData = message.stageNumber
   }
 
   override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {
+    super.handlePlayerCountUpdateMessage(message)
     lobby.playerCount++
   }
 

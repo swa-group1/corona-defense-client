@@ -13,7 +13,6 @@ class Lobby(
   fun leaveLobby() {
     GlobalScope.launch {
       ApiClient.leaveLobbyRequest(id, accessToken)
-      ApiClient.close()
     }
   }
 }

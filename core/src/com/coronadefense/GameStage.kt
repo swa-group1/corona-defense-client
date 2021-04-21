@@ -86,7 +86,7 @@ class GameStage(
 
         var cumulativePathLength = 0.0
 
-        for (i:Int in 1..this.PathPoints.size) {
+        for (i:Int in 1 until this.PathPoints.size) {
             val first: Point = this.PathPoints[i - 1]
             val second: Point = this.PathPoints[i]
             val deltaX: Double = second.X - first.X

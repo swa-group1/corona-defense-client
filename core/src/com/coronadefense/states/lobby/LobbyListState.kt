@@ -30,7 +30,6 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     runBlocking {
       lobbyList = ApiClient.lobbyListRequest()
-      ApiClient.close()
     }
   }
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
@@ -91,9 +90,8 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     println("create lobby:")
     println(passwordListener.value)
     println(nameListener.value)
-    GlobalScope.launch {
+    runBlocking {
       lobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
-      ApiClient.close()
     }
     println("lobby ID:")
     println(lobbyID)
@@ -105,7 +103,6 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     runBlocking {
       val connectionNumber = Game.receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
-      ApiClient.close()
       println(response)
       accessToken = response.accessToken
     }
