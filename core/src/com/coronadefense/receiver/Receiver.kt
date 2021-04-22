@@ -64,6 +64,9 @@ class Receiver(private val observers: MutableList<IReceiverObserver>) {
       val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
       val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
       notifyObservers(message)
+        if(byteCode==MessageType.END_GAME.byteCode){
+            break
+        }
     }
   }
 

@@ -9,7 +9,7 @@ object Textures {
     return "stages/stage_${stageNumber.toString().padStart(3, '0')}_img.png"
   }
 
-  fun intruderPath(spriteNumber: UByte): String {
+  fun intruderPath(spriteNumber: Int): String {
     return "intruders/${spriteNumber.toString().padStart(3, '0')}.png"
   }
 
@@ -17,7 +17,7 @@ object Textures {
     return "towers/1${(typeNumber * 2).toString().padStart(2, '0')}.png"
   }
 
-  fun projectilePath(towerTypeNumber: Int): String {
-    return "projectiles/1${((towerTypeNumber * 2) - 1).toString().padStart(2, '0')}.png"
+  fun projectilePath(spriteNumber: Int): String {
+    return "projectiles/${(spriteNumber).toString().padStart(3, '0')}.png"
   }
 }
