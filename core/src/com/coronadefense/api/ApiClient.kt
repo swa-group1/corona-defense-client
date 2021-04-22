@@ -19,10 +19,12 @@ object ApiClient {
       serializer = KotlinxSerializer()
     }
   }
+
   fun close() {
     client.close()
     println("ApiClient: client closed")
   }
+
   suspend fun gameStageRequest(stageNumber: Int): GameStage? {
     var gameStage: GameStage? = null
     try {
@@ -33,6 +35,7 @@ object ApiClient {
     }
     return gameStage
   }
+
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")
     if (response.success) {
@@ -42,6 +45,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun createLobbyRequest(name: String, password: String): Long {
     val response: CreateLobbyResponse = client.post("$baseUrl/CreateLobby") {
       parameter("name", name)
@@ -54,6 +58,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun joinLobbyRequest(lobbyId: Long, password: String, connectionNumber: Long): LobbyJoined {
     val response: JoinLobbyResponse = client.patch("$baseUrl/JoinLobby") {
       parameter("lobbyId", lobbyId)
@@ -67,6 +72,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun leaveLobbyRequest(lobbyId: Long, accessToken: Long) {
     val response: GenericResponse = client.patch("$baseUrl/LeaveLobby") {
       parameter("lobbyId", lobbyId)
@@ -78,6 +84,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun lobbyRequest(id: Long): LobbyData {
     val response: LobbyResponse = client.get("$baseUrl/Lobby") {
       parameter("id", id)
@@ -89,6 +96,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun lobbyListRequest(): List<LobbyData> {
     val response: LobbyListResponse = client.get("$baseUrl/LobbyList")
     if (response.success) {
@@ -98,6 +106,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun placeTowerRequest(lobbyId: Long, accessToken: Long, towerTypeNumber: Int, x: Int, y: Int) {
     val response: GenericResponse = client.patch("$baseUrl/PlaceTower") {
       parameter("lobbyId", lobbyId)
@@ -112,6 +121,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun sellTowerRequest(lobbyId: Long, accessToken: Long, towerId: Int) {
     val response: GenericResponse = client.patch("$baseUrl/SellTower") {
       parameter("lobbyId", lobbyId)
@@ -124,6 +134,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun startGameRequest(lobbyId: Long, accessToken: Long, stageNumber: Int, difficulty: Int) {
     val response: GenericResponse = client.patch("$baseUrl/StartGame") {
       parameter("lobbyId", lobbyId)
@@ -137,6 +148,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun startRoundRequest(lobbyId: Long, accessToken: Long) {
     val response: GenericResponse = client.patch("$baseUrl/StartRound") {
       parameter("lobbyId", lobbyId)
@@ -148,6 +160,7 @@ object ApiClient {
       throw Exception(response.details)
     }
   }
+
   suspend fun verifyVersionRequest(version: String): Boolean {
     val response: VerifyVersionResponse = client.get("$baseUrl/VerifyVersion") {
       parameter("version", version)

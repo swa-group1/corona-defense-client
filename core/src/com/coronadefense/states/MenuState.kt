@@ -41,28 +41,21 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
-
-    var menuIndex = 0
-    for (menuAction in menuActions.keys) {
+    for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
       val buttonTexture = Texture(Textures.buttonPath("standard"))
       buttonTextures += buttonTexture
-
       val button = Image(buttonTexture)
-
       button.setSize(Constants.MENU_BUTTON_WIDTH, Constants.MENU_BUTTON_HEIGHT)
       button.setPosition(
         (Constants.GAME_WIDTH - Constants.MENU_BUTTON_WIDTH) / 2,
         (Constants.GAME_HEIGHT - Constants.MENU_BUTTON_HEIGHT) / 2
         - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
       )
-      menuIndex++
-
       button.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
           menuActions[menuAction] = true
         }
       })
-
       stage.addActor(button)
     }
   }
@@ -80,31 +73,18 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
-
     sprites.begin()
-
     sprites.draw(background, 0F, 0F, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
-
-    var menuIndex = 0
-    for (menuAction in menuActions.keys) {
+    for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
       val buttonText = menuAction.toUpperCase()
-
-      // done to access width of text
-      val glyphLayout = GlyphLayout()
-      glyphLayout.setText(font, buttonText)
-
       font.draw(
         sprites,
         menuAction.toUpperCase(),
-        (Constants.GAME_WIDTH - glyphLayout.width) / 2,
+        (Constants.GAME_WIDTH - Font.textWidth(font, buttonText)) / 2,
         Constants.GAME_HEIGHT / 2 - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
       )
-
-      menuIndex++
     }
-
     sprites.end()
-
     stage.draw()
   }
 
@@ -115,17 +95,14 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     }
     stage.clear()
     stage.dispose()
-
     background.dispose()
     font.dispose()
-
     for (texture in buttonTextures) {
       texture.dispose()
     }
     for (button in buttons) {
       button.clearListeners()
     }
-
     println("MenuState disposed")
   }
 }

@@ -32,7 +32,11 @@ class PlayStatePlacement(
   init {
     camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
   }
-  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val viewport: Viewport = StretchViewport(
+    Constants.GAME_WIDTH,
+    Constants.GAME_HEIGHT,
+    camera
+  )
   private val stage: Stage = Stage(viewport, Game.sprites)
 
   private val stageMapTexture: Texture = Texture(Textures.stagePath(stageNumber))
@@ -45,11 +49,7 @@ class PlayStatePlacement(
     runBlocking {
       gameStage = ApiClient.gameStageRequest(stageNumber)
     }
-    println("Game stage: name ${gameStage?.Name} x ${gameStage?.XSize}, y ${gameStage?.YSize}")
   }
-
-  private val cellWidth = (Constants.GAME_WIDTH - Constants.SIDEBAR_WIDTH) / gameStage!!.XSize
-  private val cellHeight = Constants.GAME_HEIGHT / gameStage!!.YSize
 
   private var towerTypeToPlace: Int? = null
   private var changeMode: Boolean = false
@@ -59,15 +59,13 @@ class PlayStatePlacement(
 
   private val placedTowers: MutableList<Tower> = mutableListOf()
 
-  private val placementButtons: MutableList<Image> = mutableListOf()
-
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
 
-    stageMap.setSize(Constants.GAME_WIDTH - shopWidth, Constants.GAME_HEIGHT)
+    stageMap.setSize(Constants.GAME_WIDTH - Constants.SIDEBAR_WIDTH, Constants.GAME_HEIGHT)
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
 
@@ -104,7 +102,9 @@ class PlayStatePlacement(
     gameStage?.let {
       stageMap.addListener(object: ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-          val cellPosition = Position(floor(x / cellWidth).toInt(), floor(y / cellHeight).toInt())
+          val cellPosition = Position(
+            floor(x / gameStage!!.tileWidth).toInt(), floor(y / gameStage!!.tileHeight).toInt()
+          )
           println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
           runBlocking {
             ApiClient.placeTowerRequest(lobby.id, lobby.accessToken, towerTypeToPlace!!, cellPosition.x, cellPosition.y)
@@ -131,28 +131,6 @@ class PlayStatePlacement(
     )
   }
 
-  override fun render(sprites: SpriteBatch) {
-    sprites.projectionMatrix = camera.combined
-    stage.draw()
-    sprites.begin()
-    font.draw(sprites, "SHOP", Constants.GAME_WIDTH / 2 + 240, Constants.GAME_HEIGHT / 2 + 220)
-
-    // copies placedTowers list to avoid ConcurrentModificationException
-    val currentPlacedTowers = placedTowers.toList()
-    for (tower in currentPlacedTowers) {
-      sprites.draw(
-        Texture(Textures.towerPath(tower.type)),
-        tower.position.x * cellWidth,
-        tower.position.y * cellHeight,
-        cellWidth,
-        cellHeight
-      )
-    }
-    sprites.end()
-  }
-
-  override fun handleInput() {}
-
   override fun update(deltaTime: Float) {
     if (changeMode) {
       if (towerTypeToPlace == null) {
@@ -162,6 +140,28 @@ class PlayStatePlacement(
       }
       changeMode = false
     }
+  }
+
+  override fun render(sprites: SpriteBatch) {
+    sprites.projectionMatrix = camera.combined
+    stage.draw()
+    sprites.begin()
+    font.draw(sprites, "SHOP", Constants.GAME_WIDTH / 2 + 240, Constants.GAME_HEIGHT / 2 + 220)
+
+    // copies placedTowers list to avoid ConcurrentModificationException
+    val currentPlacedTowers = placedTowers.toList()
+    gameStage?.let {
+      for (tower in currentPlacedTowers) {
+        sprites.draw(
+          Texture(Textures.towerPath(tower.type)),
+          tower.position.x * gameStage!!.tileWidth,
+          tower.position.y * gameStage!!.tileHeight,
+          gameStage!!.tileWidth,
+          gameStage!!.tileHeight
+        )
+      }
+    }
+    sprites.end()
   }
 
   override fun dispose() {

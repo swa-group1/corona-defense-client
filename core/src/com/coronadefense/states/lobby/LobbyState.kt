@@ -22,7 +22,9 @@ import com.coronadefense.states.MenuState
 import com.coronadefense.states.ObserverState
 import com.coronadefense.states.playStates.inputRound.PlayStatePlacement
 import com.coronadefense.utils.BackButton
+import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
+import com.coronadefense.utils.Textures
 import kotlinx.coroutines.*
 
 class LobbyState(
@@ -30,17 +32,22 @@ class LobbyState(
   val lobby: Lobby
 ): ObserverState(stateManager)  {
   init {
-    camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
   }
-  private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-  private val stage: Stage = Stage(viewport, Game.batch)
+  private val viewport: Viewport = StretchViewport(
+    Constants.GAME_WIDTH,
+    Constants.GAME_HEIGHT,
+    camera
+  )
+  private val stage: Stage = Stage(viewport, Game.sprites)
+
   private val background: Texture = Texture("initiate_game_state.jpg")
   private val font: BitmapFont = Font.generateFont(20)
 
   private var gameStartData: Int? = null
 
-  val startGameTexture = Texture("greenBorder.png")
-  val startGameButton = Image(startGameTexture)
+  private val startGameTexture = Texture(Textures.buttonPath("standard"))
+  private val startGameButton = Image(startGameTexture)
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
@@ -48,8 +55,11 @@ class LobbyState(
       inputMultiplexer.addProcessor(stage)
     }
 
-    startGameButton.setSize(180f, 60f)
-    startGameButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
+    startGameButton.setSize(Constants.MENU_BUTTON_WIDTH, Constants.MENU_BUTTON_HEIGHT)
+    startGameButton.setPosition(
+      Constants.GAME_WIDTH / 2 - 90,
+      Constants.GAME_HEIGHT / 2 - 210
+    )
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
@@ -75,14 +85,14 @@ class LobbyState(
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
-    sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
-    val xPosition: Float = Game.WIDTH / 2 - 150f
-    font.draw(sprites, "LOBBY: ${lobby.name}", xPosition, Game.HEIGHT/2+70)
+    sprites.draw(background, 0F, 0F, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+    val xPosition: Float = Constants.GAME_WIDTH / 2 - 150f
+    font.draw(sprites, "LOBBY: ${lobby.name}", xPosition, Constants.GAME_HEIGHT/2+70)
     for (playerIndex in 0 until lobby.playerCount) {
-      val yPosition: Float = (Game.HEIGHT / 2) + 40f - (30f * playerIndex)
+      val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 40f - (30f * playerIndex)
       font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
     }
-    font.draw(sprites, "START GAME", Game.WIDTH/2-60, Game.HEIGHT/2-175)
+    font.draw(sprites, "START GAME", Constants.GAME_WIDTH/2-60, Constants.GAME_HEIGHT/2-175)
     sprites.end()
     stage.draw()
   }
@@ -105,7 +115,6 @@ class LobbyState(
     println("LobbyState disposed")
   }
 
-  override fun handleInput() {}
   override fun update(deltaTime: Float) {
     backButton.update()
     gameStartData?.let {
