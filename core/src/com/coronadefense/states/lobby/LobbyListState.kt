@@ -19,23 +19,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.coronadefense.types.Lobby
 import com.coronadefense.receiver.Receiver
-import com.coronadefense.utils.BackButton
 import com.coronadefense.states.MenuState
-import com.coronadefense.utils.Font
-import com.coronadefense.utils.TextInputListener
+import com.coronadefense.utils.*
 
 class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   var lobbyList: List<LobbyData>? = null
   init {
-    camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
     runBlocking {
       lobbyList = ApiClient.lobbyListRequest()
     }
   }
-  private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-  private val stage: Stage = Stage(viewport, Game.batch)
+  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val stage: Stage = Stage(viewport, Game.sprites)
   private val background = Texture("initiate_game_state.jpg")
-  private val createLobbyButton = Image(Texture("greenBorder.png"))
+  private val createLobbyButton = Image(Texture(Textures.buttonPath("standard")))
   val font: BitmapFont = Font.generateFont(20)
   val nameListener = TextInputListener()
   val passwordListener = TextInputListener()
@@ -52,7 +50,7 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
       inputMultiplexer.addProcessor(stage)
     }
     createLobbyButton.setSize(180f, 60f)
-    createLobbyButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
+    createLobbyButton.setPosition(Constants.GAME_WIDTH/2-90, Constants.GAME_HEIGHT/2-210)
     createLobbyButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         mode = 2
@@ -62,10 +60,10 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     })
     stage.addActor(createLobbyButton)
     lobbyList?.let {
-      val xPosition: Float = Game.WIDTH / 2 - 160f
+      val xPosition: Float = Constants.GAME_WIDTH / 2 - 160f
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Game.HEIGHT / 2) + 17f - (30f * lobbyIndex)
-        val joinLobbyTexture = Texture("greenBorder.png")
+        val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 17f - (30f * lobbyIndex)
+        val joinLobbyTexture = Texture(Textures.buttonPath("standard"))
         joinLobbyTextures += joinLobbyTexture
         val joinLobbyButton = Image(joinLobbyTexture)
         joinLobbyButtons += joinLobbyButton
@@ -126,9 +124,6 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     println("reset lobby info")
   }
 
-
-  override fun handleInput() {
-  }
   override fun update(deltaTime: Float) {
     backButton.update()
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == null){
@@ -141,18 +136,18 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
-    sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
+    sprites.draw(background, 0F, 0F, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
     lobbyList?.let {
-      val xPosition: Float = Game.WIDTH / 2 - 140f
-      font.draw(sprites, "LOBBIES", xPosition, Game.HEIGHT/2+70)
-      font.draw(sprites, "# players", xPosition + 210f, Game.HEIGHT/2+70)
+      val xPosition: Float = Constants.GAME_WIDTH / 2 - 140f
+      font.draw(sprites, "LOBBIES", xPosition, Constants.GAME_HEIGHT/2+70)
+      font.draw(sprites, "# players", xPosition + 210f, Constants.GAME_HEIGHT/2+70)
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Game.HEIGHT / 2) + 40f - (30f * lobbyIndex)
+        val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 40f - (30f * lobbyIndex)
         font.draw(sprites, lobbyList!![lobbyIndex].name, xPosition, yPosition)
         font.draw(sprites, lobbyList!![lobbyIndex].playerCount.toString(), xPosition + 270f, yPosition)
       }
     }
-    font.draw(sprites, "CREATE LOBBY", Game.WIDTH/2-70, Game.HEIGHT/2-175)
+    font.draw(sprites, "CREATE LOBBY", Constants.GAME_WIDTH/2-70, Constants.GAME_HEIGHT/2-175)
     sprites.end()
     stage.draw()
   }

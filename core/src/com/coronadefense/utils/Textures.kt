@@ -14,7 +14,7 @@ object Textures {
   }
 
   fun towerPath(typeNumber: Int): String {
-    return "towers/1${((typeNumber - 1) * 2).toString().padStart(2, '0')}.png"
+    return "towers/1${(typeNumber * 2).toString().padStart(2, '0')}.png"
   }
 
   fun projectilePath(towerTypeNumber: Int): String {

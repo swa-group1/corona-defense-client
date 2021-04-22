@@ -81,7 +81,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
         sprites,
         menuAction.toUpperCase(),
         (Constants.GAME_WIDTH - Font.textWidth(font, buttonText)) / 2,
-        Constants.GAME_HEIGHT / 2 - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
+        Constants.GAME_HEIGHT / 2 + 5f - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
       )
     }
     sprites.end()

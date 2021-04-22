@@ -11,4 +11,6 @@ object Constants {
 
   const val MENU_BUTTON_WIDTH = 180f
   const val MENU_BUTTON_HEIGHT = 60f
+
+  const val BACK_BUTTON_SIZE = 100f
 }
