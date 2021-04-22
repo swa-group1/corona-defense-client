@@ -18,9 +18,8 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
 import com.coronadefense.states.playStates.Textures
-import com.coronadefense.types.Position
-import com.coronadefense.types.Lobby
-import com.coronadefense.types.Tower
+import com.coronadefense.types.*
+import com.coronadefense.types.Constants.TOWER_TYPES
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
 import kotlin.math.floor
@@ -36,7 +35,7 @@ class PlayStatePlacement(
   private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
   private val stage: Stage = Stage(viewport, Game.batch)
 
-  private val stageMapTexture: Texture = Texture(Textures.stages[stageNumber])
+  private val stageMapTexture: Texture = Texture(Textures.stagePath(stageNumber))
   private val stageMap = Image(stageMapTexture)
 
   private val font: BitmapFont = Font.generateFont(20)
@@ -73,16 +72,18 @@ class PlayStatePlacement(
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
 
-    val towerShopX: Float = Game.WIDTH / 2 + 250
     val towerSize = 100f
+    val towerShopX: Float = Game.WIDTH / 2 + 250
+
     var towerIndex = 0
-    for ((towerType, texturePath) in Textures.towers) {
+    for (towerType in Constants.TOWER_TYPES) {
       val towerShopY: Float = (Game.HEIGHT / 2) + 100f - ((towerSize) * towerIndex)
       towerIndex++
-      val towerTexture = Texture(texturePath)
+
+      val towerTexture = Texture(Textures.towerPath(towerType))
       towerTextures += towerTexture
+
       val towerButton = Image(towerTexture)
-      towerButtons += towerButton
       towerButton.setSize(towerSize, towerSize)
       towerButton.setPosition(towerShopX, towerShopY)
       towerButton.addListener(object : ClickListener() {
@@ -92,6 +93,8 @@ class PlayStatePlacement(
           changeMode = true
         }
       })
+      towerButtons += towerButton
+
       stage.addActor(towerButton)
     }
   }
@@ -133,11 +136,12 @@ class PlayStatePlacement(
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
+    stage.draw()
     sprites.begin()
-    font.draw(sprites, "SHOP", Game.WIDTH / 2 + 100, Game.HEIGHT / 2 + 100)
+    font.draw(sprites, "SHOP", Game.WIDTH / 2 + 270, Game.HEIGHT / 2 + 220)
     for (tower in placedTowers) {
       sprites.draw(
-        Texture(Textures.towers[tower.type.toUByte()]),
+        Texture(Textures.towerPath(tower.type)),
         tower.position.x * cellWidth,
         tower.position.y * cellHeight,
         cellWidth,
@@ -145,7 +149,6 @@ class PlayStatePlacement(
       )
     }
     sprites.end()
-    stage.draw()
   }
 
   override fun handleInput() {}
@@ -154,11 +157,10 @@ class PlayStatePlacement(
     if (changeMode) {
       if (towerTypeToPlace == null) {
         normalMode()
-        changeMode = false
       } else {
         placeTowerMode()
-        changeMode = false
       }
+      changeMode = false
     }
   }
 

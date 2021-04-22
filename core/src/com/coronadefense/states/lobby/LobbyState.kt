@@ -53,14 +53,14 @@ class LobbyState(
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
-          ApiClient.startGameRequest(lobby.id, lobby.accessToken, 0, 0)
+          ApiClient.startGameRequest(lobby.id, lobby.accessToken, 2, 0)
         }
       }
     })
     stage.addActor(startGameButton)
   }
 
-  val backButton = BackButton("LeaveLobby", stateManager, stage, lobby)
+  private val backButton = BackButton("LeaveLobby", stateManager, stage, lobby)
 
   override fun handleGameModeMessage(message: GameModeMessage) {
     super.handleGameModeMessage(message)
