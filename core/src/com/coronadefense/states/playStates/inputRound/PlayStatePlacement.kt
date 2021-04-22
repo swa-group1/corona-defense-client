@@ -15,12 +15,12 @@ import com.coronadefense.Game
 import com.coronadefense.GameStage
 import com.coronadefense.GameStateManager
 import com.coronadefense.api.ApiClient
-import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
-import com.coronadefense.states.State
 import com.coronadefense.states.playStates.Textures
+import com.coronadefense.types.Position
 import com.coronadefense.types.Lobby
+import com.coronadefense.types.Tower
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
 import kotlin.math.floor
@@ -46,16 +46,20 @@ class PlayStatePlacement(
     runBlocking {
       gameStage = ApiClient.gameStageRequest(stageNumber)
     }
-    println(gameStage)
+    println("Game stage: name ${gameStage?.Name} x ${gameStage?.XSize}, y ${gameStage?.YSize}")
   }
 
-  private val shopWidth: Float = 150f
+  private val shopWidth: Float = Game.WIDTH / 4
+  private val cellWidth = (Game.WIDTH - shopWidth) / gameStage!!.XSize
+  private val cellHeight = Game.HEIGHT / gameStage!!.YSize
 
   private var towerTypeToPlace: Int? = null
   private var changeMode: Boolean = false
 
   private val towerTextures: MutableList<Texture> = mutableListOf()
   private val towerButtons: MutableList<Image> = mutableListOf()
+
+  private val placedTowers: MutableList<Tower> = mutableListOf()
 
   private val placementButtons: MutableList<Image> = mutableListOf()
 
@@ -69,20 +73,22 @@ class PlayStatePlacement(
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
 
-    val towerShopX: Float = Game.WIDTH / 2 - 160
+    val towerShopX: Float = Game.WIDTH / 2 + 250
+    val towerSize = 100f
     var towerIndex = 0
     for ((towerType, texturePath) in Textures.towers) {
-      val towerShopY: Float = (Game.HEIGHT / 2) + 17f - (30f * towerIndex)
+      val towerShopY: Float = (Game.HEIGHT / 2) + 100f - ((towerSize) * towerIndex)
       towerIndex++
       val towerTexture = Texture(texturePath)
       towerTextures += towerTexture
       val towerButton = Image(towerTexture)
       towerButtons += towerButton
-      towerButton.setSize(310f, 30f)
+      towerButton.setSize(towerSize, towerSize)
       towerButton.setPosition(towerShopX, towerShopY)
       towerButton.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
           towerTypeToPlace = towerType.toInt()
+          println("placing tower: $towerTypeToPlace")
           changeMode = true
         }
       })
@@ -98,12 +104,10 @@ class PlayStatePlacement(
     gameStage?.let {
       stageMap.addListener(object: ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-          val cellWidth = (Game.WIDTH - shopWidth) / gameStage!!.XSize
-          val cellHeight = Game.HEIGHT / gameStage!!.YSize
-          val cellX = floor(x / cellWidth).toInt()
-          val cellY = floor(y / cellHeight).toInt()
+          val cellPosition = Position(floor(x / cellWidth).toInt(), floor(y / cellHeight).toInt())
+          println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
           GlobalScope.launch {
-            ApiClient.placeTowerRequest(lobby.id, lobby.accessToken, towerTypeToPlace!!, cellX, cellY)
+            ApiClient.placeTowerRequest(lobby.id, lobby.accessToken, towerTypeToPlace!!, cellPosition.x, cellPosition.y)
             towerTypeToPlace = null
             changeMode = true
           }
@@ -118,10 +122,28 @@ class PlayStatePlacement(
     }
   }
 
+  override fun handleTowerPositionMessage(message: TowerPositionMessage) {
+    super.handleTowerPositionMessage(message)
+    placedTowers += Tower(
+      message.towerId,
+      message.typeNumber,
+      Position(message.xPosition, message.yPosition)
+    )
+  }
+
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
     font.draw(sprites, "SHOP", Game.WIDTH / 2 + 100, Game.HEIGHT / 2 + 100)
+    for (tower in placedTowers) {
+      sprites.draw(
+        Texture(Textures.towers[tower.type.toUByte()]),
+        tower.position.x * cellWidth,
+        tower.position.y * cellHeight,
+        cellWidth,
+        cellHeight
+      )
+    }
     sprites.end()
     stage.draw()
   }

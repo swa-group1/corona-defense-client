@@ -26,7 +26,7 @@ object ApiClient {
   suspend fun gameStageRequest(stageNumber: Int): GameStage? {
     var gameStage: GameStage? = null
     try {
-      gameStage = client.get("${firebaseUrl}stage_00$stageNumber.json?alt=media")
+      gameStage = client.get("${firebaseUrl}stage_${stageNumber.toString().padStart(3, '0')}.json?alt=media")
       println("gameStageRequest succeeded")
     } catch (exception: ClientRequestException) {
       println("gameStageRequest failed")

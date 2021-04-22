@@ -11,7 +11,7 @@ import com.coronadefense.states.MenuState
 class Game : ApplicationAdapter() {
   companion object {
     const val WIDTH = 800F
-    const val HEIGHT = 480F
+    const val HEIGHT = 450f
     const val TITLE = "Corona Defence"
     var batch: SpriteBatch? = null
     val receiver = Receiver(mutableListOf())
