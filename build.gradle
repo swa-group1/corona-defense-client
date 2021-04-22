@@ -102,7 +102,7 @@ project(":ios") {
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "io.ktor:ktor-client-ios:$ktorVersion"
+        //implementation "io.ktor:ktor-client-ios:$ktorVersion"
     }
 }
 

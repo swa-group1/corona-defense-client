@@ -3,6 +3,7 @@ package com.coronadefense.states
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -13,30 +14,27 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStateManager
 import com.coronadefense.states.lobby.LobbyListState
+import com.coronadefense.utils.Textures
+import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
 
 class MenuState(stateManager: GameStateManager): State(stateManager) {
   init {
-    camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
   }
-
-  private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-
-  private val stage: Stage = Stage(viewport, Game.batch)
+  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val stage: Stage = Stage(viewport, Game.sprites)
 
   private val background = Texture("initiate_game_state.jpg")
   private val font = Font.generateFont(20)
 
-  private var nextState: String? = null
+  private val menuActions: MutableMap<String, Boolean> = mutableMapOf(
+    "play" to false,
+    "highscores" to false
+  )
 
-  val singlePlayerTexture = Texture("greenBorder.png")
-  val singlePlayerButton = Image(singlePlayerTexture)
-
-  val multiPlayerTexture = Texture("greenBorder.png")
-  val multiPlayerButton = Image(multiPlayerTexture)
-
-  val highScoresTexture = Texture("greenBorder.png")
-  val highScoresButton = Image(highScoresTexture)
+  private val buttonTextures: MutableList<Texture> = mutableListOf()
+  private val buttons: MutableList<Image> = mutableListOf()
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
@@ -44,60 +42,73 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
       inputMultiplexer.addProcessor(stage)
     }
 
-    singlePlayerButton.setSize(180f, 60f)
-    singlePlayerButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-30)
-    singlePlayerButton.addListener(object : ClickListener() {
-      override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        stateManager.set(MenuState(stateManager))
-      }
-    })
-    stage.addActor(singlePlayerButton)
+    var menuIndex = 0
+    for (menuAction in menuActions.keys) {
+      val buttonTexture = Texture(Textures.buttonPath("standard"))
+      buttonTextures += buttonTexture
 
-    multiPlayerButton.setSize(180f, 60f)
-    multiPlayerButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-120)
-    multiPlayerButton.addListener(object : ClickListener() {
-      override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        nextState = "lobbyList"
-      }
-    })
-    stage.addActor(multiPlayerButton)
+      val button = Image(buttonTexture)
 
-    highScoresButton.setSize(180f, 60f)
-    highScoresButton.setPosition(Game.WIDTH/2-90, Game.HEIGHT/2-210)
-    highScoresButton.addListener(object : ClickListener() {
-      override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        nextState = "highScoreList"
-      }
-    })
-    stage.addActor(highScoresButton)
+      button.setSize(Constants.MENU_BUTTON_WIDTH, Constants.MENU_BUTTON_HEIGHT)
+      button.setPosition(
+        (Constants.GAME_WIDTH - Constants.MENU_BUTTON_WIDTH) / 2,
+        (Constants.GAME_HEIGHT - Constants.MENU_BUTTON_HEIGHT) / 2
+        - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
+      )
+      menuIndex++
+
+      button.addListener(object : ClickListener() {
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+          menuActions[menuAction] = true
+        }
+      })
+
+      stage.addActor(button)
+    }
   }
 
-
-  override fun handleInput() {}
-
   override fun update(deltaTime: Float) {
-    nextState?.let {
-      when (nextState) {
-        "lobbyList" -> stateManager.set(LobbyListState(stateManager))
-        "highScoreList" -> stateManager.set(HighscoreListState(stateManager))
+    for ((menuAction, execute) in menuActions) {
+      if (execute) {
+        when (menuAction) {
+          "play" -> return stateManager.set(LobbyListState(stateManager))
+          "highscores" -> return stateManager.set(HighscoreListState(stateManager))
+        }
       }
     }
   }
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
+
     sprites.begin()
+
     sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
-    font.draw(sprites, "SINGLEPLAYER", Game.WIDTH/2-70, Game.HEIGHT/2+5)
-    font.draw(sprites, "MULTIPLAYER", Game.WIDTH/2-65, Game.HEIGHT/2-85)
-    font.draw(sprites, "HIGHSCORES", Game.WIDTH/2-60, Game.HEIGHT/2-175)
+
+    var menuIndex = 0
+    for (menuAction in menuActions.keys) {
+      val buttonText = menuAction.toUpperCase()
+
+      // done to access width of text
+      val glyphLayout = GlyphLayout()
+      glyphLayout.setText(font, buttonText)
+
+      font.draw(
+        sprites,
+        menuAction.toUpperCase(),
+        (Constants.GAME_WIDTH - glyphLayout.width) / 2,
+        Constants.GAME_HEIGHT / 2 - (Constants.MENU_BUTTON_HEIGHT * 3/2) * menuIndex
+      )
+
+      menuIndex++
+    }
+
     sprites.end()
+
     stage.draw()
   }
 
   override fun dispose() {
-    background.dispose()
-    font.dispose()
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
     if (inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.removeProcessor(stage)
@@ -105,15 +116,18 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
     stage.clear()
     stage.dispose()
 
-    singlePlayerTexture.dispose()
-    singlePlayerButton.clearListeners()
+    background.dispose()
+    font.dispose()
 
-    multiPlayerTexture.dispose()
-    multiPlayerButton.clearListeners()
+    for (texture in buttonTextures) {
+      texture.dispose()
+    }
+    for (button in buttons) {
+      button.clearListeners()
+    }
 
-    highScoresTexture.dispose()
-    highScoresButton.clearListeners()
-
-    println("Menu State Disposed")
+    println("MenuState disposed")
   }
+
+  override fun handleInput() {}
 }

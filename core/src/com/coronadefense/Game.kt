@@ -10,15 +10,12 @@ import com.coronadefense.states.MenuState
 
 class Game : ApplicationAdapter() {
   companion object {
-    const val WIDTH = 800F
-    const val HEIGHT = 450f
-    const val TITLE = "Corona Defence"
-    var batch: SpriteBatch? = null
     val receiver = Receiver(mutableListOf())
+    var sprites: SpriteBatch? = null
   }
   private var stateManager: GameStateManager? = null
   override fun create() {
-    batch = SpriteBatch()
+    sprites = SpriteBatch()
     stateManager = GameStateManager()
     Gdx.input.inputProcessor = InputMultiplexer()
     Gdx.gl.glClearColor(0F, 0F, 0F, 1F)
@@ -27,9 +24,9 @@ class Game : ApplicationAdapter() {
   override fun render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     stateManager?.update(Gdx.graphics.deltaTime)
-    stateManager?.render(batch!!)
+    stateManager?.render(sprites!!)
   }
   override fun dispose() {
-    batch?.dispose()
+    sprites?.dispose()
   }
 }

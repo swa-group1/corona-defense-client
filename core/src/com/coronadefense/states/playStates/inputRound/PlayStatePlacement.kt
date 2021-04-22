@@ -17,9 +17,9 @@ import com.coronadefense.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
-import com.coronadefense.states.playStates.Textures
+import com.coronadefense.utils.Textures
 import com.coronadefense.types.*
-import com.coronadefense.types.Constants.TOWER_TYPES
+import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
 import kotlin.math.floor
@@ -30,10 +30,10 @@ class PlayStatePlacement(
   stageNumber: Int
 ) : ObserverState(stateManager) {
   init {
-    camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
   }
-  private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-  private val stage: Stage = Stage(viewport, Game.batch)
+  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val stage: Stage = Stage(viewport, Game.sprites)
 
   private val stageMapTexture: Texture = Texture(Textures.stagePath(stageNumber))
   private val stageMap = Image(stageMapTexture)
@@ -48,9 +48,9 @@ class PlayStatePlacement(
     println("Game stage: name ${gameStage?.Name} x ${gameStage?.XSize}, y ${gameStage?.YSize}")
   }
 
-  private val shopWidth: Float = Game.WIDTH / 4
-  private val cellWidth = (Game.WIDTH - shopWidth) / gameStage!!.XSize
-  private val cellHeight = Game.HEIGHT / gameStage!!.YSize
+  private val shopWidth: Float = Constants.GAME_WIDTH / 4
+  private val cellWidth = (Constants.GAME_WIDTH - shopWidth) / gameStage!!.XSize
+  private val cellHeight = Constants.GAME_HEIGHT / gameStage!!.YSize
 
   private var towerTypeToPlace: Int? = null
   private var changeMode: Boolean = false
@@ -68,17 +68,15 @@ class PlayStatePlacement(
       inputMultiplexer.addProcessor(stage)
     }
 
-    stageMap.setSize(Game.WIDTH - shopWidth, Game.HEIGHT)
+    stageMap.setSize(Constants.GAME_WIDTH - shopWidth, Constants.GAME_HEIGHT)
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
 
     val towerSize = 100f
-    val towerShopX: Float = Game.WIDTH / 2 + 250
+    val towerShopX: Float = Constants.GAME_WIDTH / 2 + 250
 
-    var towerIndex = 0
-    for (towerType in Constants.TOWER_TYPES) {
-      val towerShopY: Float = (Game.HEIGHT / 2) + 100f - ((towerSize) * towerIndex)
-      towerIndex++
+    for (towerType in 0 until Constants.NUM_OF_TOWERS) {
+      val towerShopY: Float = (Constants.GAME_HEIGHT / 2) + 100f - ((towerSize) * towerType)
 
       val towerTexture = Texture(Textures.towerPath(towerType))
       towerTextures += towerTexture
@@ -109,7 +107,7 @@ class PlayStatePlacement(
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
           val cellPosition = Position(floor(x / cellWidth).toInt(), floor(y / cellHeight).toInt())
           println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
-          GlobalScope.launch {
+          runBlocking {
             ApiClient.placeTowerRequest(lobby.id, lobby.accessToken, towerTypeToPlace!!, cellPosition.x, cellPosition.y)
             towerTypeToPlace = null
             changeMode = true
@@ -138,8 +136,11 @@ class PlayStatePlacement(
     sprites.projectionMatrix = camera.combined
     stage.draw()
     sprites.begin()
-    font.draw(sprites, "SHOP", Game.WIDTH / 2 + 270, Game.HEIGHT / 2 + 220)
-    for (tower in placedTowers) {
+    font.draw(sprites, "SHOP", Constants.GAME_WIDTH / 2 + 240, Constants.GAME_HEIGHT / 2 + 220)
+
+    // copies placedTowers list to avoid ConcurrentModificationException
+    val currentPlacedTowers = placedTowers.toList()
+    for (tower in currentPlacedTowers) {
       sprites.draw(
         Texture(Textures.towerPath(tower.type)),
         tower.position.x * cellWidth,
