@@ -24,9 +24,9 @@ object Textures {
           17.toUByte() to "intruders/017.png",
   )
   val projectiles: Map<UByte, String> = hashMapOf(
-          101.toUByte() to "projeciles/101.png",
-          103.toUByte() to "projeciles/103.png",
-          105.toUByte() to "projeciles/105.png",
-          107.toUByte() to "projeciles/107.png"
+          101.toUByte() to "projectiles/101.png",
+          103.toUByte() to "projectiles/103.png",
+          105.toUByte() to "projectiles/105.png",
+          107.toUByte() to "projectiles/107.png"
   )
 }
