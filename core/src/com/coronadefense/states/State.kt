@@ -6,9 +6,7 @@ import com.coronadefense.GameStateManager
 
 abstract class State(protected var stateManager: GameStateManager) {
     protected val camera: OrthographicCamera = OrthographicCamera()
-    abstract fun handleInput()
     abstract fun update(deltaTime: Float)
     abstract fun render(sprites: SpriteBatch)
     abstract fun dispose()
-
 }

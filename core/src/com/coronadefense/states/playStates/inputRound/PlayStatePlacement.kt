@@ -48,8 +48,7 @@ class PlayStatePlacement(
     println("Game stage: name ${gameStage?.Name} x ${gameStage?.XSize}, y ${gameStage?.YSize}")
   }
 
-  private val shopWidth: Float = Constants.GAME_WIDTH / 4
-  private val cellWidth = (Constants.GAME_WIDTH - shopWidth) / gameStage!!.XSize
+  private val cellWidth = (Constants.GAME_WIDTH - Constants.SIDEBAR_WIDTH) / gameStage!!.XSize
   private val cellHeight = Constants.GAME_HEIGHT / gameStage!!.YSize
 
   private var towerTypeToPlace: Int? = null

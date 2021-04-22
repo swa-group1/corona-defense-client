@@ -83,7 +83,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
     sprites.begin()
 
-    sprites.draw(background, 0F, 0F, Game.WIDTH, Game.HEIGHT)
+    sprites.draw(background, 0F, 0F, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
 
     var menuIndex = 0
     for (menuAction in menuActions.keys) {
@@ -128,6 +128,4 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
 
     println("MenuState disposed")
   }
-
-  override fun handleInput() {}
 }

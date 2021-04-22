@@ -8,32 +8,23 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStateManager
 import com.coronadefense.states.PlayStateWave
+import com.coronadefense.utils.Constants
 
 class PauseState (stateManager: GameStateManager): State(stateManager){
-    init {
-        camera.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
-    }
-    private val viewport: Viewport = StretchViewport(Game.WIDTH, Game.HEIGHT, camera)
-    private val stage: Stage = Stage(viewport, Game.batch)
+  init {
+    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+  }
+  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val stage: Stage = Stage(viewport, Game.sprites)
 
-    override fun handleInput() {
-        if (Gdx.input.justTouched()) {
-            stateManager.set(PlayStateWave(stateManager))
-            dispose()
-        }
-    }
+  override fun render(sprites: SpriteBatch) {
+    sprites.projectionMatrix = camera.combined
+    stage.draw()
+  }
 
-    override fun update(deltaTime: Float) {
-        handleInput()
-    }
+  override fun dispose() {
+    stage.dispose()
+  }
 
-    override fun render(sprites: SpriteBatch) {
-        sprites.projectionMatrix = camera.combined
-        stage.draw()
-    }
-
-    override fun dispose() {
-        stage.dispose()
-    }
-
+  override fun update(deltaTime: Float) {}
 }
