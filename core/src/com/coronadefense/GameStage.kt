@@ -174,7 +174,7 @@ class GameStage(
      * @param Y Y coordinate.
      */
     @Serializable
-    class Point(val X: Double, val Y: Double) {
+    class Point(var X: Double, var Y: Double) {
         override fun toString(): String {
             return "Point { X: $X, Y: $Y }"
         }
