@@ -19,6 +19,8 @@ class PlayStateWave(
   stateManager: StateManager,
   private val gameObserver: GameObserver
 ) : InputState(stateManager) {
+  private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
+
   private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
 
@@ -80,11 +82,27 @@ class PlayStateWave(
 
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
+
+    sprites.begin()
+    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
+    sprites.end()
+
     super.draw()
+
     sprites.begin()
 
     for (movingGameObject in movingGameObjects) {
       movingGameObject.draw(sprites)
+    }
+
+    for (tower in gameObserver.placedTowers) {
+      sprites.draw(
+        Texture(Textures.tower(tower.type)),
+        tower.position.x * gameObserver.gameStage!!.tileWidth,
+        tower.position.y * gameObserver.gameStage!!.tileHeight,
+        gameObserver.gameStage!!.tileWidth,
+        gameObserver.gameStage!!.tileHeight
+      )
     }
 
     sprites.end()

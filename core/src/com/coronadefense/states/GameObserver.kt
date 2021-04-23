@@ -40,6 +40,8 @@ class GameObserver(
 
   override fun handleFightRoundMessage(message: FightRoundMessage) {
     println(message)
+
+    gameState = "fight"
   }
 
   override fun handleGameModeMessage(message: GameModeMessage) {
@@ -52,6 +54,8 @@ class GameObserver(
 
   override fun handleInputRoundMessage(message: InputRoundMessage) {
     println(message)
+
+    gameState = "input"
   }
 
   override fun handleLobbyModeMessage(message: LobbyModeMessage) {

@@ -126,6 +126,7 @@ class PlayStatePlacement(
         runBlocking {
           ApiClient.startRoundRequest(gameObserver.lobbyId, gameObserver.accessToken)
         }
+        startWave = false
       }
     }
 
