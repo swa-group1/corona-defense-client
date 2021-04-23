@@ -7,6 +7,9 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.InputState
+import com.coronadefense.states.gameEndStates.EndGameState
+import com.coronadefense.states.gameEndStates.LoserState
+import com.coronadefense.states.gameEndStates.WinnerState
 import com.coronadefense.types.gameObjects.Intruder
 import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.types.gameObjects.Projectile
@@ -69,6 +72,8 @@ class PlayStateWave(
       for (movingGameObject in movingGameObjects) {
         movingGameObject.update(deltaTime)
       }
+    } else if (gameObserver.endGame && gameObserver.timeConfirmed > 0) {
+      stateManager.set(EndGameState(stateManager, gameObserver.endGameMessage!!))
     } else if (gameObserver.timeConfirmed > 0) {
       stateManager.set(PlayStatePlacement(stateManager, gameObserver))
     }
