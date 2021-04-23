@@ -25,4 +25,8 @@ object Constants {
   const val BACK_BUTTON_SIZE = 100f
   const val BACK_BUTTON_X_OFFSET = 40f
   const val BACK_BUTTON_Y_OFFSET = 15f
+
+  const val SMALL_ICON_SIZE = 20f
+  const val SMALL_ICON_SPACING = 10f
+  const val LARGE_ICON_SIZE = 50f
 }

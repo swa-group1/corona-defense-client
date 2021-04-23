@@ -24,4 +24,8 @@ object Textures {
   fun background(backgroundType: String): String {
     return "backgrounds/${backgroundType}.png"
   }
+
+  fun icon(iconType: String): String {
+    return "icons/${iconType}.png"
+  }
 }

@@ -20,6 +20,8 @@ import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.NUM_OF_TOWERS
 import com.coronadefense.utils.Constants.SIDEBAR_TEXT_SPACING
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
+import com.coronadefense.utils.Constants.SMALL_ICON_SIZE
+import com.coronadefense.utils.Constants.SMALL_ICON_SPACING
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
 import kotlin.math.floor
@@ -31,6 +33,8 @@ class PlayStatePlacement(
   private val font = Font(20)
 
   private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
+  private val heartTexture: Texture = Texture(Textures.icon("heart"))
+  private val moneyTexture: Texture = Texture(Textures.icon("money"))
 
   private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
@@ -44,6 +48,9 @@ class PlayStatePlacement(
     stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
+
+    textures += heartTexture
+    textures += moneyTexture
 
     val startWaveButtonTexture = Texture(Textures.button("standard"))
     textures += startWaveButtonTexture
@@ -163,6 +170,40 @@ class PlayStatePlacement(
       GAME_WIDTH - (SIDEBAR_WIDTH + font.width(shopTitle)) / 2,
       GAME_HEIGHT - SIDEBAR_TEXT_SPACING + font.height(shopTitle) / 2
     )
+
+    gameObserver.health?.let {
+      sprites.draw(
+        heartTexture,
+        GAME_WIDTH - (SIDEBAR_WIDTH) * 3/4 - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
+        GAME_HEIGHT - SIDEBAR_TEXT_SPACING * 2 - SMALL_ICON_SIZE / 2,
+        SMALL_ICON_SIZE,
+        SMALL_ICON_SIZE
+      )
+      val healthText = gameObserver.health!!.toString()
+      font.draw(
+        sprites,
+        healthText,
+        GAME_WIDTH - (SIDEBAR_WIDTH) * 3/4 - font.width(healthText) / 2 + SMALL_ICON_SPACING,
+        GAME_HEIGHT - SIDEBAR_TEXT_SPACING * 2 + font.height(healthText) / 2
+      )
+    }
+
+    gameObserver.money?.let {
+      sprites.draw(
+        moneyTexture,
+        GAME_WIDTH - (SIDEBAR_WIDTH) / 4 - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
+        GAME_HEIGHT - SIDEBAR_TEXT_SPACING * 2 - SMALL_ICON_SIZE / 2,
+        SMALL_ICON_SIZE,
+        SMALL_ICON_SIZE
+      )
+      val moneyText = gameObserver.money!!.toString()
+      font.draw(
+        sprites,
+        moneyText,
+        GAME_WIDTH - (SIDEBAR_WIDTH) / 4 - font.width(moneyText) / 2 + SMALL_ICON_SPACING,
+        GAME_HEIGHT - SIDEBAR_TEXT_SPACING * 2 + font.height(moneyText) / 2
+      )
+    }
 
     val startWaveButtonText1 = "RELEASE"
     val startWaveButtonText2 = "THE VIRUS"
