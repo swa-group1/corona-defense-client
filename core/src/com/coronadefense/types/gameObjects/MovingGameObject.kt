@@ -7,4 +7,5 @@ interface MovingGameObject {
   val texture: Texture
   fun draw(sprites: SpriteBatch)
   fun update(deltaTime: Float)
+  fun dispose()
 }

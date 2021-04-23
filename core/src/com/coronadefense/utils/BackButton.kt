@@ -10,8 +10,9 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.states.menuStates.MainMenuState
 import com.coronadefense.states.menuStates.LobbyListState
 import com.coronadefense.utils.Constants.BACK_BUTTON_SIZE
+import com.coronadefense.utils.Constants.BACK_BUTTON_X_OFFSET
+import com.coronadefense.utils.Constants.BACK_BUTTON_Y_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
-import com.coronadefense.utils.Constants.GAME_WIDTH
 
 class BackButton(
   private val actionToSet: String,
@@ -24,7 +25,7 @@ class BackButton(
   var action: String? = null
   init {
     button.setSize(BACK_BUTTON_SIZE, BACK_BUTTON_SIZE)
-    button.setPosition(GAME_WIDTH / 2 - 350, GAME_HEIGHT / 2 + 130)
+    button.setPosition(BACK_BUTTON_X_OFFSET, GAME_HEIGHT - BACK_BUTTON_SIZE - BACK_BUTTON_Y_OFFSET)
     button.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         action = actionToSet

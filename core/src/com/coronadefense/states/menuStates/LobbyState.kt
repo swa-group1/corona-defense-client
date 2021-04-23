@@ -13,6 +13,7 @@ import com.coronadefense.states.GameObserver
 import com.coronadefense.states.ObserverState
 import com.coronadefense.states.playStates.PlayStatePlacement
 import com.coronadefense.utils.BackButton
+import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
@@ -24,11 +25,6 @@ import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 import kotlinx.coroutines.*
 
-/**
- * State to show a lobby before starting a game.
- * @param stateManager Manager of all states.
- * @param lobby The lobby the player is currently in.
- */
 class LobbyState(
   stateManager: StateManager,
   private val gameObserver: GameObserver
@@ -37,7 +33,7 @@ class LobbyState(
   private val font = Font(20)
 
   init {
-    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
+    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
     if (!inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.addProcessor(stage)
     }
@@ -70,7 +66,7 @@ class LobbyState(
   override fun update(deltaTime: Float) {
     backButton.update()
 
-    gameObserver.stageNumber?.let {
+    gameObserver.gameStage?.let {
       stateManager.set(PlayStatePlacement(stateManager, gameObserver))
     }
   }
@@ -90,12 +86,11 @@ class LobbyState(
     )
 
     val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
-    gameObserver.playerCount?.let {
-      for (playerIndex in 0 until gameObserver.playerCount!!) {
-        val yPosition: Float = (GAME_HEIGHT / 2) + 40f - (30f * playerIndex)
+    for (playerIndex in 0 until gameObserver.playerCount) {
+      val yPosition: Float =
+        GAME_HEIGHT / 2 + MENU_TITLE_OFFSET - (Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (playerIndex + 1)
 
-        font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
-      }
+      font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
     }
 
     val startGameButtonText = "START GAME"

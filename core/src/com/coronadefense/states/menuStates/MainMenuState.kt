@@ -15,6 +15,7 @@ import com.coronadefense.utils.Constants.MENU_BUTTON_SPACING
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import com.coronadefense.utils.Font
+import java.util.*
 
 class MainMenuState(
   stateManager: StateManager
@@ -69,10 +70,10 @@ class MainMenuState(
     sprites.draw(background, 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
 
     for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
-      val buttonText = menuAction.toUpperCase()
+      val buttonText = menuAction.toUpperCase(Locale.ROOT)
       font.draw(
         sprites,
-        menuAction.toUpperCase(),
+        menuAction.toUpperCase(Locale.ROOT),
         (GAME_WIDTH - font.width(buttonText)) / 2,
         (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(buttonText)) / 2 + MENU_TITLE_OFFSET
         - (MENU_BUTTON_HEIGHT + MENU_BUTTON_SPACING) * (menuIndex + 1)

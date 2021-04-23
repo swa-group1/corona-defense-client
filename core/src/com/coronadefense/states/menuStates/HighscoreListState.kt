@@ -58,7 +58,8 @@ class HighscoreListState(
     highscoreList?.let {
       val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
       for (highscoreIndex in highscoreList!!.indices) {
-        val yPosition: Float = (GAME_HEIGHT / 2) + 40f - (LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * highscoreIndex
+        val yPosition: Float =
+          (GAME_HEIGHT / 2) + MENU_TITLE_OFFSET - (LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * (highscoreIndex + 1)
         val nameText = highscoreList!![highscoreIndex].name
         font.draw(
           sprites,

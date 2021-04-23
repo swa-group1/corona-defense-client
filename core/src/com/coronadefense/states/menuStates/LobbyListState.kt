@@ -108,6 +108,7 @@ class LobbyListState(
     println("Lobby ID: $lobbyToJoinID")
   }
 
+  @ExperimentalUnsignedTypes
   private fun joinLobby() {
     var accessToken: Long?
 
@@ -118,7 +119,6 @@ class LobbyListState(
     }
 
     accessToken?.let {
-      val lobby = Lobby(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
       val gameObserver = GameObserver(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
       Game.receiver.addObserver(gameObserver)
       stateManager.set(LobbyState(stateManager, gameObserver))
@@ -135,6 +135,7 @@ class LobbyListState(
     println("Lobby info reset")
   }
 
+  @ExperimentalUnsignedTypes
   override fun update(deltaTime: Float) {
     backButton.update()
 

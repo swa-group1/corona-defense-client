@@ -7,8 +7,8 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 
-//const val baseUrl = "http://10.0.2.2:5000"
 const val baseUrl = "http://35.228.171.73:5000"
+//const val baseUrl = "http://10.0.2.2:5000"
 //const val baseUrl = "http://localhost:5000"
 const val firebaseUrl = "https://firebasestorage.googleapis.com/v0/b/coronadefense-1.appspot.com/o/"
 

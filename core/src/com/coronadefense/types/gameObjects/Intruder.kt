@@ -3,15 +3,17 @@ package com.coronadefense.types.gameObjects
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.coronadefense.types.GameStage
+import com.coronadefense.utils.Textures
 
 class Intruder(
-  texturePath: String,
+  spriteNumber: Int,
   startPosition: Float,
   private val endPosition: Float,
   time: Float,
   private val gameStage: GameStage
 ) : MovingGameObject {
-  override val texture = Texture(texturePath)
+  override val texture = Texture(Textures.intruder(spriteNumber))
+
   var currentPathPosition = startPosition
   private val speed = (endPosition - startPosition) / time
 
@@ -29,5 +31,9 @@ class Intruder(
     if (currentPathPosition <= endPosition) {
       currentPathPosition += speed * deltaTime
     }
+  }
+
+  override fun dispose() {
+    texture.dispose()
   }
 }

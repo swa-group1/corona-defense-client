@@ -15,9 +15,17 @@ class GameObserver(
   val accessToken: Long,
   var playerCount: Int
 ): IReceiverObserver {
-  var stageNumber: Int? = null
   var gameStage: GameStage? = null
-  private val placedTowers: MutableList<Tower> = mutableListOf()
+
+  var gameState: String? = null
+
+  val placedTowers: MutableList<Tower> = mutableListOf()
+
+  var timeConfirmed: Float = 0f // time confirmed animations
+  val pathToPathAnimations = mutableListOf<PathToPathAnimationMessage>() //Intruders
+  val healthAnimations = mutableListOf<HealthAnimationMessage>()
+  val moneyAnimations = mutableListOf<MoneyAnimationMessage>()
+  val boardToPathAnimations = mutableListOf<BoardToPathAnimationMessage>()
 
   fun leaveLobby() {
     runBlocking {
@@ -37,7 +45,9 @@ class GameObserver(
   override fun handleGameModeMessage(message: GameModeMessage) {
     println(message)
 
-    stageNumber = message.stageNumber
+    runBlocking {
+      gameStage = ApiClient.gameStageRequest(message.stageNumber)
+    }
   }
 
   override fun handleInputRoundMessage(message: InputRoundMessage) {
@@ -54,6 +64,7 @@ class GameObserver(
 
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage) {
     println(message)
+
   }
 
   override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage) {
@@ -82,14 +93,20 @@ class GameObserver(
 
   override fun handleAnimationConfirmationMessage(message: AnimationConfirmationMessage) {
     println(message)
+
+    timeConfirmed = message.time
   }
 
   override fun handleBoardToPathAnimationMessage(message: BoardToPathAnimationMessage) {
     println(message)
+
+    boardToPathAnimations += message
   }
 
   override fun handlePathToPathAnimationMessage(message: PathToPathAnimationMessage) {
     println(message)
+
+    pathToPathAnimations += message
   }
 
   override fun handleTowerAnimationMessage(message: TowerAnimationMessage) {
@@ -98,9 +115,13 @@ class GameObserver(
 
   override fun handleHealthAnimationMessage(message: HealthAnimationMessage) {
     println(message)
+
+    healthAnimations += message
   }
 
   override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage) {
     println(message)
+
+    moneyAnimations += message
   }
 }

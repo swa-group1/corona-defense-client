@@ -5,16 +5,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.coronadefense.Game
-import com.coronadefense.types.GameStage
 import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.states.GameObserver
-import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
+import com.coronadefense.states.menuStates.LobbyState
 import com.coronadefense.utils.Textures
-import com.coronadefense.types.*
-import com.coronadefense.types.gameObjects.Tower
 import com.coronadefense.types.utils.Position
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
@@ -34,14 +30,8 @@ class PlayStatePlacement(
 ) : ObserverState(stateManager) {
   private val font = Font(20)
 
-  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.stageNumber!!))
+  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
-
-  init {
-    runBlocking {
-      gameObserver.gameStage = ApiClient.gameStageRequest(gameObserver.stageNumber!!)
-    }
-  }
 
   private var startWave: Boolean = false
 
@@ -116,10 +106,12 @@ class PlayStatePlacement(
 
           println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
 
-          runBlocking {
-            ApiClient.placeTowerRequest(gameObserver.lobbyId, gameObserver.accessToken, towerTypeToPlace!!, cellPosition.x, cellPosition.y)
-            towerTypeToPlace = null
-            changeMode = true
+          towerTypeToPlace?.let {
+            runBlocking {
+              ApiClient.placeTowerRequest(gameObserver.lobbyId, gameObserver.accessToken, towerTypeToPlace!!, cellPosition.x, cellPosition.y)
+              towerTypeToPlace = null
+              changeMode = true
+            }
           }
         }
       })
@@ -129,10 +121,15 @@ class PlayStatePlacement(
   override fun update(deltaTime: Float) {
     gameObserver.gameStage?.let {
       if (startWave) {
-        val playStateWave = PlayStateWave(stateManager, gameObserver)
-        stateManager.set(playStateWave)
-        Game.receiver.addObserver(playStateWave)
+        runBlocking {
+          ApiClient.startRoundRequest(gameObserver.lobbyId, gameObserver.accessToken)
+        }
       }
+    }
+
+    when (gameObserver.gameState) {
+      "fight" -> stateManager.set(PlayStateWave(stateManager, gameObserver))
+      "lobby" -> stateManager.set(LobbyState(stateManager, gameObserver))
     }
 
     if (changeMode) {
@@ -177,17 +174,15 @@ class PlayStatePlacement(
     )
 
     // copies placedTowers list to avoid ConcurrentModificationException
-    val currentPlacedTowers = placedTowers.toList()
-    gameStage?.let {
-      for (tower in currentPlacedTowers) {
-        sprites.draw(
-          Texture(Textures.tower(tower.type)),
-          tower.position.x * gameStage!!.tileWidth,
-          tower.position.y * gameStage!!.tileHeight,
-          gameStage!!.tileWidth,
-          gameStage!!.tileHeight
-        )
-      }
+    val currentPlacedTowers = gameObserver.placedTowers.toList()
+    for (tower in currentPlacedTowers) {
+      sprites.draw(
+        Texture(Textures.tower(tower.type)),
+        tower.position.x * gameObserver.gameStage!!.tileWidth,
+        tower.position.y * gameObserver.gameStage!!.tileHeight,
+        gameObserver.gameStage!!.tileWidth,
+        gameObserver.gameStage!!.tileHeight
+      )
     }
 
     sprites.end()
