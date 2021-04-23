@@ -1,4 +1,4 @@
-package com.coronadefense.states.playStates.inputRound
+package com.coronadefense.states.playStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
@@ -13,12 +13,14 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStage
-import com.coronadefense.GameStateManager
+import com.coronadefense.states.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
 import com.coronadefense.utils.Textures
 import com.coronadefense.types.*
+import com.coronadefense.types.gameObjects.Tower
+import com.coronadefense.types.utils.Position
 import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
@@ -39,7 +41,7 @@ class PlayStatePlacement(
   )
   private val stage: Stage = Stage(viewport, Game.sprites)
 
-  private val stageMapTexture: Texture = Texture(Textures.stagePath(stageNumber))
+  private val stageMapTexture: Texture = Texture(Textures.stage(stageNumber))
   private val stageMap = Image(stageMapTexture)
 
   private val font: BitmapFont = Font.generateFont(20)
@@ -75,7 +77,7 @@ class PlayStatePlacement(
     for (towerType in 0 until Constants.NUM_OF_TOWERS) {
       val towerShopY: Float = (Constants.GAME_HEIGHT / 2) + 100f - ((towerSize) * towerType)
 
-      val towerTexture = Texture(Textures.towerPath(towerType))
+      val towerTexture = Texture(Textures.tower(towerType))
       towerTextures += towerTexture
 
       val towerButton = Image(towerTexture)
@@ -153,7 +155,7 @@ class PlayStatePlacement(
     gameStage?.let {
       for (tower in currentPlacedTowers) {
         sprites.draw(
-          Texture(Textures.towerPath(tower.type)),
+          Texture(Textures.tower(tower.type)),
           tower.position.x * gameStage!!.tileWidth,
           tower.position.y * gameStage!!.tileHeight,
           gameStage!!.tileWidth,

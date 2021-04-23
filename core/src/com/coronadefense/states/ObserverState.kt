@@ -1,6 +1,5 @@
 package com.coronadefense.states
 
-import com.coronadefense.GameStateManager
 import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.messages.*
 

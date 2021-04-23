@@ -6,7 +6,8 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.coronadefense.receiver.Receiver
-import com.coronadefense.states.MenuState
+import com.coronadefense.states.GameStateManager
+import com.coronadefense.states.menuStates.MenuState
 
 class Game : ApplicationAdapter() {
   companion object {

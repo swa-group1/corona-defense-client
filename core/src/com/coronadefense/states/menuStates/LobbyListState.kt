@@ -1,4 +1,4 @@
-package com.coronadefense.states.lobby
+package com.coronadefense.states.menuStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
@@ -9,66 +9,75 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
-import com.coronadefense.GameStateManager
+import com.coronadefense.states.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.LobbyData
-import com.coronadefense.states.State
 import kotlinx.coroutines.*
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.coronadefense.states.StageState
+import com.coronadefense.states.State
 import com.coronadefense.types.Lobby
-import com.coronadefense.receiver.Receiver
-import com.coronadefense.states.MenuState
 import com.coronadefense.utils.*
 
-class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
+/**
+ * State to show the list of joinable lobbies.
+ * Extends BackgroundState to show the menu background.
+ * @param stateManager Manager of all game states.
+ */
+class LobbyListState(
+  stateManager: GameStateManager
+): StageState(stateManager)  {
   var lobbyList: List<LobbyData>? = null
   init {
-    camera.setToOrtho(false, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
     runBlocking {
       lobbyList = ApiClient.lobbyListRequest()
     }
   }
-  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
-  private val stage: Stage = Stage(viewport, Game.sprites)
-  private val background = Texture("initiate_game_state.jpg")
-  private val createLobbyButton = Image(Texture(Textures.buttonPath("standard")))
-  val font: BitmapFont = Font.generateFont(20)
-  val nameListener = TextInputListener()
-  val passwordListener = TextInputListener()
-  var mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
-  var lobbyID: Long? = null
-  var lobbyPlayerCount: Int? = null
 
-  val joinLobbyTextures: MutableList<Texture> = mutableListOf()
-  val joinLobbyButtons: MutableList<Image> = mutableListOf()
+  private val background = Texture("initiate_game_state.jpg")
+  private val font: BitmapFont = Font.generateFont(20)
+
+  private val createLobbyTexture = Texture(Textures.button("standard"))
+  private val createLobbyButton = Image(createLobbyTexture)
+  private val joinLobbyTextures: MutableList<Texture> = mutableListOf()
+  private val joinLobbyButtons: MutableList<Image> = mutableListOf()
+
+  private val nameListener = TextInputListener()
+  private val passwordListener = TextInputListener()
+
+  private var mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
+  private var lobbyID: Long? = null
+  private var lobbyPlayerCount: Int? = null
 
   init {
-    val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
-    if (!inputMultiplexer.processors.contains(stage)) {
-      inputMultiplexer.addProcessor(stage)
-    }
-    createLobbyButton.setSize(180f, 60f)
-    createLobbyButton.setPosition(Constants.GAME_WIDTH/2-90, Constants.GAME_HEIGHT/2-210)
+    createLobbyButton.setSize(Constants.MENU_BUTTON_WIDTH, Constants.MENU_BUTTON_HEIGHT)
+    createLobbyButton.setPosition(
+      (Constants.GAME_WIDTH - Constants.MENU_BUTTON_WIDTH) / 2,
+      Constants.GAME_HEIGHT / 8
+    )
     createLobbyButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        mode = 2
         Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
         Gdx.input.getTextInput(nameListener, "Lobby name", "", "lobby name")
       }
     })
     stage.addActor(createLobbyButton)
+
     lobbyList?.let {
-      val xPosition: Float = Constants.GAME_WIDTH / 2 - 160f
+      val xPosition: Float = Constants.GAME_WIDTH / 2 - Constants.LIST_BUTTON_WIDTH / 2
       for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 17f - (30f * lobbyIndex)
-        val joinLobbyTexture = Texture(Textures.buttonPath("standard"))
+        val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 17f - (Constants.LIST_BUTTON_HEIGHT * lobbyIndex)
+
+        val joinLobbyTexture = Texture(Textures.button("standard"))
         joinLobbyTextures += joinLobbyTexture
+
         val joinLobbyButton = Image(joinLobbyTexture)
         joinLobbyButtons += joinLobbyButton
-        joinLobbyButton.setSize(310f, 30f)
+        joinLobbyButton.setSize(Constants.LIST_BUTTON_WIDTH, Constants.LIST_BUTTON_HEIGHT)
         joinLobbyButton.setPosition(xPosition, yPosition)
+
         joinLobbyButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
             Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
@@ -77,31 +86,27 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
             lobbyPlayerCount = lobbyList!![lobbyIndex].playerCount
           }
         })
+
         stage.addActor(joinLobbyButton)
       }
     }
   }
 
-  val backButton = BackButton("MainMenu", stateManager, stage)
+  private val backButton = BackButton("MainMenu", stateManager, stage)
 
-  fun createLobby() {
-    println("create lobby:")
-    println(passwordListener.value)
-    println(nameListener.value)
+  private fun createLobby() {
+    println("create lobby: name ${nameListener.value}, password ${passwordListener.value}")
     runBlocking {
       lobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
     }
-    println("lobby ID:")
-    println(lobbyID)
-    mode = 1
+    println("lobby ID: $lobbyID")
   }
 
-  fun joinLobby() {
+  private fun joinLobby() {
     var accessToken: Long?
     runBlocking {
       val connectionNumber = Game.receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyID!!, passwordListener.value, connectionNumber)
-      println(response)
       accessToken = response.accessToken
     }
     accessToken?.let {
@@ -121,18 +126,20 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
     passwordListener.input("")
     mode = 1 //TODO: remove this when join lobby (api) is implemented (lobbyID-check is enough)
     lobbyID = null
-    println("reset lobby info")
+    lobbyPlayerCount = null
+    println("Lobby info reset")
   }
 
   override fun update(deltaTime: Float) {
     backButton.update()
-    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 2 && lobbyID == null){
+    if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && lobbyID == null){
       createLobby()
     }
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty() && mode == 1 && lobbyID != null){
       joinLobby()
     }
   }
+
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
@@ -174,5 +181,4 @@ class LobbyListState(stateManager: GameStateManager): State(stateManager)  {
 
     println("LobbyListState disposed")
   }
-
 }

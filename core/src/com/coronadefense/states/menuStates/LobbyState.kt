@@ -1,4 +1,4 @@
-package com.coronadefense.states.lobby
+package com.coronadefense.states.menuStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
@@ -12,15 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
-import com.coronadefense.GameStateManager
+import com.coronadefense.states.GameStateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.types.Lobby
-import com.coronadefense.states.State
-import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.messages.*
-import com.coronadefense.states.MenuState
 import com.coronadefense.states.ObserverState
-import com.coronadefense.states.playStates.inputRound.PlayStatePlacement
+import com.coronadefense.states.playStates.PlayStatePlacement
 import com.coronadefense.utils.BackButton
 import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
@@ -46,7 +43,7 @@ class LobbyState(
 
   private var gameStartData: Int? = null
 
-  private val startGameTexture = Texture(Textures.buttonPath("standard"))
+  private val startGameTexture = Texture(Textures.button("standard"))
   private val startGameButton = Image(startGameTexture)
 
   init {

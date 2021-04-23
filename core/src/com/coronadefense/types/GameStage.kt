@@ -1,4 +1,4 @@
-package com.coronadefense
+package com.coronadefense.types
 
 import com.coronadefense.utils.Constants
 import kotlinx.serialization.Serializable

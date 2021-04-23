@@ -1,4 +1,4 @@
-package com.coronadefense.states.playStates.fightRound
+package com.coronadefense.states.playStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
@@ -10,15 +10,13 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
 import com.coronadefense.GameStage
-import com.coronadefense.GameStateManager
+import com.coronadefense.states.GameStateManager
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.ObserverState
-import com.coronadefense.states.State
-import com.coronadefense.states.playStates.inputRound.PlayStatePlacement
 import com.coronadefense.types.Lobby
-import com.coronadefense.views.Intruder
-import com.coronadefense.views.MovingGameObject
-import com.coronadefense.views.Projectile
+import com.coronadefense.types.gameObjects.Intruder
+import com.coronadefense.types.gameObjects.MovingGameObject
+import com.coronadefense.types.gameObjects.Projectile
 import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Textures
 
@@ -31,7 +29,7 @@ class PlayStateWave (stateManager: GameStateManager, val lobby: Lobby, val round
 
     private val shopWidth: Float = Constants.GAME_WIDTH / 4
 
-    private val stageMapTexture: Texture = Texture(Textures.stagePath(gameStage.Number))
+    private val stageMapTexture: Texture = Texture(Textures.stage(gameStage.Number))
     private val stageMap = Image(stageMapTexture)
 
     private var time:Float = 0F //time passed
@@ -89,13 +87,13 @@ class PlayStateWave (stateManager: GameStateManager, val lobby: Lobby, val round
             time +=deltaTime
             for (message in pathToPathAnimations){
                 if(message.startTime<newTime){
-                    movingGameObjects.add(Intruder(Textures.intruderPath(message.spriteNumber), message.startPosition, message.endPosition, message.endTime-message.startTime, gameStage))
+                    movingGameObjects.add(Intruder(Textures.intruder(message.spriteNumber), message.startPosition, message.endPosition, message.endTime-message.startTime, gameStage))
                     removePathAnimations.add(message)
                 }
             }
             for (message in boardToPathAnimations){
                 if(message.startTime<newTime){
-                    movingGameObjects.add(Projectile(Textures.projectilePath(message.spriteNumber), message.startX, message.startY, message.endPosition, message.endTime-message.startTime, gameStage))
+                    movingGameObjects.add(Projectile(Textures.projectile(message.spriteNumber), message.startX, message.startY, message.endPosition, message.endTime-message.startTime, gameStage))
                     removeBoardAnimations.add(message)
                 }
             }

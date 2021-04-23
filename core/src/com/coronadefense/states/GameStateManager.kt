@@ -1,4 +1,4 @@
-package com.coronadefense
+package com.coronadefense.states
 
 import com.coronadefense.states.State
 import com.badlogic.gdx.graphics.g2d.SpriteBatch

@@ -1,9 +1,8 @@
-package com.coronadefense.states
+package com.coronadefense.states.menuStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -12,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
-import com.coronadefense.GameStateManager
-import com.coronadefense.states.lobby.LobbyListState
+import com.coronadefense.states.GameStateManager
+import com.coronadefense.states.State
 import com.coronadefense.utils.Textures
 import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
@@ -42,7 +41,7 @@ class MenuState(stateManager: GameStateManager): State(stateManager) {
       inputMultiplexer.addProcessor(stage)
     }
     for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
-      val buttonTexture = Texture(Textures.buttonPath("standard"))
+      val buttonTexture = Texture(Textures.button("standard"))
       buttonTextures += buttonTexture
       val button = Image(buttonTexture)
       button.setSize(Constants.MENU_BUTTON_WIDTH, Constants.MENU_BUTTON_HEIGHT)

@@ -1,8 +1,7 @@
-package com.coronadefense.views
+package com.coronadefense.types.gameObjects
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.coronadefense.Game
 import com.coronadefense.GameStage
 import com.coronadefense.utils.Constants
 
@@ -13,7 +12,7 @@ class Intruder(
         private val endPosition: Float,
         time: Float,
         val gameStage: GameStage
-): MovingGameObject{
+): MovingGameObject {
     private val shopWidth: Float = Constants.GAME_WIDTH/ 4
     private val cellWidth = (Constants.GAME_WIDTH - shopWidth) / gameStage!!.XSize
     private val cellHeight = Constants.GAME_HEIGHT / gameStage!!.YSize

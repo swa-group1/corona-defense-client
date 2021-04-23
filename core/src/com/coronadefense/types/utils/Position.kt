@@ -1,4 +1,4 @@
-package com.coronadefense.types
+package com.coronadefense.types.utils
 
 data class Position (
   val x: Int,

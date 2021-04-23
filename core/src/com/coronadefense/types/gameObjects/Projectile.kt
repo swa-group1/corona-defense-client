@@ -1,11 +1,10 @@
-package com.coronadefense.views
+package com.coronadefense.types.gameObjects
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
-import com.coronadefense.Game
 import com.coronadefense.GameStage
-import kotlin.math.*
+import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.utils.Constants
 
 
@@ -16,7 +15,7 @@ class Projectile(
         private val endPosition: Float,
         val time: Float,
         val gameStage: GameStage
-): MovingGameObject{
+): MovingGameObject {
     private val currentPosition = Vector2(startX.toFloat(), startY.toFloat())
     private val targetPosition = gameStage.getPointAlongPath(endPosition.toDouble())
 

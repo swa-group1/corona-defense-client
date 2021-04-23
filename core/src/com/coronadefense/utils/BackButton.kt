@@ -5,14 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.coronadefense.Game
-import com.coronadefense.GameStateManager
-import com.coronadefense.api.ApiClient
-import com.coronadefense.states.MenuState
-import com.coronadefense.states.State
-import com.coronadefense.states.lobby.LobbyListState
+import com.coronadefense.states.GameStateManager
+import com.coronadefense.states.menuStates.MenuState
+import com.coronadefense.states.menuStates.LobbyListState
 import com.coronadefense.types.Lobby
-import kotlinx.coroutines.*
 
 class BackButton(
   private val actionToSet: String,
@@ -20,7 +16,7 @@ class BackButton(
   stage: Stage,
   private val lobby: Lobby? = null,
 ) {
-  val texture = Texture(Textures.buttonPath("back"))
+  val texture = Texture(Textures.button("back"))
   private val button = Image(texture)
   var action: String? = null
   init {
