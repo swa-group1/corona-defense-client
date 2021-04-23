@@ -30,6 +30,8 @@ class PlayStatePlacement(
 ) : ObserverState(stateManager) {
   private val font = Font(20)
 
+  private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
+
   private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
 
@@ -145,7 +147,12 @@ class PlayStatePlacement(
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
 
+    sprites.begin()
+    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
+    sprites.end()
+
     super.draw()
+
     sprites.begin()
 
     val shopTitle = "SHOP"
