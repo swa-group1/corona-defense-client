@@ -2,18 +2,23 @@ package com.coronadefense.states
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.coronadefense.Game
-import com.coronadefense.utils.Constants
+import com.coronadefense.utils.Constants.GAME_HEIGHT
+import com.coronadefense.utils.Constants.GAME_WIDTH
 
-abstract class StageState(
-  stateManager: GameStateManager
+abstract class InputState(
+  stateManager: StateManager
 ) : State(stateManager) {
-  private val viewport: Viewport = StretchViewport(Constants.GAME_WIDTH, Constants.GAME_HEIGHT, camera)
+  private val viewport: Viewport = StretchViewport(GAME_WIDTH, GAME_HEIGHT, camera)
   protected val stage: Stage = Stage(viewport, Game.sprites)
+
+  protected val textures: MutableList<Texture> = mutableListOf()
+  protected val buttons: MutableList<Image> = mutableListOf()
 
   // adds the stage as an input processor
   init {
@@ -23,7 +28,7 @@ abstract class StageState(
     }
   }
 
-  override fun render(sprites: SpriteBatch) {
+  fun draw() {
     stage.draw()
   }
 
@@ -35,6 +40,14 @@ abstract class StageState(
     }
     stage.clear()
     stage.dispose()
+
+    for (texture in textures) {
+      texture.dispose()
+    }
+    for (button in buttons) {
+      button.clearListeners()
+    }
+
     println("Stage disposed")
   }
 }

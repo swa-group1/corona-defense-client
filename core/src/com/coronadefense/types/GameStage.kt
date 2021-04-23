@@ -1,6 +1,9 @@
 package com.coronadefense.types
 
 import com.coronadefense.utils.Constants
+import com.coronadefense.utils.Constants.GAME_HEIGHT
+import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -66,8 +69,8 @@ class GameStage(
   private val lineSegmentsX: MutableList<AffineLine> = mutableListOf()
   private val lineSegmentsY: MutableList<AffineLine> = mutableListOf()
 
-  val tileWidth = (Constants.GAME_WIDTH - Constants.SIDEBAR_WIDTH) / XSize
-  val tileHeight = Constants.GAME_HEIGHT / YSize
+  val tileWidth = (GAME_WIDTH - SIDEBAR_WIDTH) / XSize
+  val tileHeight = GAME_HEIGHT / YSize
 
   init {
     this.calculatePath()

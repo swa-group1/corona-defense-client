@@ -1,12 +1,11 @@
 package com.coronadefense.api
 
-import com.coronadefense.GameStage
+import com.coronadefense.types.GameStage
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import kotlinx.serialization.*
 
 //const val baseUrl = "http://10.0.2.2:5000"
 const val baseUrl = "http://35.228.171.73:5000"

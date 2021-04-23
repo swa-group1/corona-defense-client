@@ -4,8 +4,8 @@ import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.messages.*
 
 abstract class ObserverState(
-  stateManager: GameStateManager
-): State(stateManager), IReceiverObserver {
+  stateManager: StateManager
+): InputState(stateManager), IReceiverObserver {
   override fun handlePingMessage(message: PingMessage) {
     println(message)
   }

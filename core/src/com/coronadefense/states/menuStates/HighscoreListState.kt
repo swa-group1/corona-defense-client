@@ -1,79 +1,83 @@
 package com.coronadefense.states.menuStates
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.viewport.StretchViewport
-import com.badlogic.gdx.utils.viewport.Viewport
-import com.coronadefense.Game
-import com.coronadefense.states.GameStateManager
+import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.HighScore
-import com.coronadefense.states.StageState
-import com.coronadefense.states.State
+import com.coronadefense.states.InputState
 import com.coronadefense.utils.BackButton
-import com.coronadefense.utils.Constants
+import com.coronadefense.utils.Constants.GAME_HEIGHT
+import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.LIST_ITEM_HEIGHT
+import com.coronadefense.utils.Constants.LIST_ITEM_SPACING
+import com.coronadefense.utils.Constants.LIST_ITEM_WIDTH
+import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 import kotlinx.coroutines.runBlocking
 
 /**
  * State to show the list of highscores between players in Corona Defense.
- * Extends BackgroundState to show the menu background.
  * @param stateManager Manager of all game states.
  */
 class HighscoreListState(
-  stateManager: GameStateManager
-): StageState(stateManager){
+  stateManager: StateManager
+): InputState(stateManager){
   private val background: Texture = Texture(Textures.background("menu"))
 
-  // creates a font of size 20 for displaying text and title
-  private val font: BitmapFont = Font.generateFont(20)
-  val title = "HIGHSCORES"
+  private val font = Font(20)
+  private val title = "HIGHSCORES"
 
-  //declares highscores, then fetches them from the API
-  var highscoreList: List<HighScore>? = null
+  private var highscoreList: List<HighScore>? = null
   init {
     runBlocking {
       highscoreList = ApiClient.highScoreListRequest()
     }
   }
-  // adds a back button to the stage which directs back to the main menu
-  val backButton = BackButton("MainMenu", stateManager, stage)
 
-  // updates the back button
+  private val backButton = BackButton("MainMenu", stateManager, stage)
+
   override fun update(deltaTime: Float) {
     backButton.update()
   }
 
-  // renders the background, a title, and name + score for all highscores
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0f, 0f, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+    sprites.draw(background, 0f, 0f, GAME_WIDTH, GAME_HEIGHT)
 
     font.draw(
       sprites,
       title,
-      (Constants.GAME_WIDTH - Font.textWidth(font, title)) / 2,
-      Constants.GAME_HEIGHT / 2 + 70
+      (GAME_WIDTH - font.width(title)) / 2,
+      (GAME_HEIGHT - font.height(title)) / 2 + MENU_TITLE_OFFSET
     )
 
     highscoreList?.let {
-      val xPosition: Float = (Constants.GAME_WIDTH - Constants.LIST_BUTTON_WIDTH) / 2
+      val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
       for (highscoreIndex in highscoreList!!.indices) {
-        val yPosition: Float = (Constants.GAME_HEIGHT / 2) + 40f - (Constants.LIST_BUTTON_HEIGHT * highscoreIndex)
-        font.draw(sprites, highscoreList!![highscoreIndex].name, xPosition, yPosition)
-        font.draw(sprites, highscoreList!![highscoreIndex].value.toString(), xPosition + Constants.LIST_BUTTON_WIDTH, yPosition)
+        val yPosition: Float = (GAME_HEIGHT / 2) + 40f - (LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * highscoreIndex
+        val nameText = highscoreList!![highscoreIndex].name
+        font.draw(
+          sprites,
+          highscoreList!![highscoreIndex].name,
+          xPosition,
+          yPosition - font.height(nameText) / 2
+        )
+        val scoreText = highscoreList!![highscoreIndex].value.toString()
+        font.draw(
+          sprites,
+          scoreText,
+          xPosition + LIST_ITEM_WIDTH - font.width(scoreText),
+          yPosition - font.height(scoreText) / 2
+        )
       }
     }
 
     sprites.end()
-    super.render(sprites)
+    super.draw()
   }
 
   override fun dispose() {

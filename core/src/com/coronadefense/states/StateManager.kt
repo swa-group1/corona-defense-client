@@ -1,10 +1,9 @@
 package com.coronadefense.states
 
-import com.coronadefense.states.State
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import java.util.*
 
-class GameStateManager {
+class StateManager {
 
     private val states: Stack<State> = Stack()
     fun push(state: State) {

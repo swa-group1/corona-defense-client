@@ -3,43 +3,40 @@ package com.coronadefense.types.gameObjects
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
-import com.coronadefense.GameStage
-import com.coronadefense.types.gameObjects.MovingGameObject
-import com.coronadefense.utils.Constants
-
+import com.coronadefense.types.GameStage
 
 class Projectile(
-        texturePath: String,
-        val startX: Int,
-        val startY: Int,
-        private val endPosition: Float,
-        val time: Float,
-        val gameStage: GameStage
-): MovingGameObject {
-    private val currentPosition = Vector2(startX.toFloat(), startY.toFloat())
-    private val targetPosition = gameStage.getPointAlongPath(endPosition.toDouble())
+  texturePath: String,
+  private val startX: Int,
+  private val startY: Int,
+  endPosition: Float,
+  private val time: Float,
+  private val gameStage: GameStage
+) : MovingGameObject {
+  private val currentPosition = Vector2(startX.toFloat(), startY.toFloat())
+  private val targetPosition = gameStage.getPointAlongPath(endPosition.toDouble())
 
-    private var currentTime = 0f
+  private var currentTime = 0f
 
-    private val shopWidth: Float = Constants.GAME_WIDTH / 4
-    private val cellWidth = (Constants.GAME_WIDTH - shopWidth) / gameStage.XSize
-    private val cellHeight = Constants.GAME_HEIGHT / gameStage.YSize
-
-    override val texture = Texture(texturePath)
+  override val texture = Texture(texturePath)
 
 
-    override fun draw(sprites: SpriteBatch){
-        if(currentTime<= time){
-            sprites.draw(texture, currentPosition.x*cellWidth-(cellWidth/2), currentPosition.y*cellHeight-(cellHeight/2), cellWidth, cellHeight)
-        }
-
+  override fun draw(sprites: SpriteBatch) {
+    if (currentTime <= time) {
+      sprites.draw(
+        texture,
+        currentPosition.x * gameStage.tileWidth - (gameStage.tileWidth / 2),
+        currentPosition.y * gameStage.tileHeight - (gameStage.tileHeight / 2), gameStage.tileWidth, gameStage.tileHeight
+      )
     }
-    override fun update(deltaTime: Float) {
-        if (currentTime<= time){
-            currentTime+=deltaTime
-            val s= currentTime/time
-            currentPosition.x = startX+(targetPosition.X.toFloat()-startX)*s
-            currentPosition.y = startY+(targetPosition.Y.toFloat()-startY)*s
-        }
+  }
+
+  override fun update(deltaTime: Float) {
+    if (currentTime <= time) {
+      currentTime += deltaTime
+      val s = currentTime / time
+      currentPosition.x = startX + (targetPosition.X.toFloat() - startX) * s
+      currentPosition.y = startY + (targetPosition.Y.toFloat() - startY) * s
     }
+  }
 }

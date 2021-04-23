@@ -11,9 +11,15 @@ object Constants {
 
   const val MENU_BUTTON_WIDTH = 180f
   const val MENU_BUTTON_HEIGHT = 60f
+  const val MENU_BUTTON_SPACING = 30f
+  const val MENU_TITLE_OFFSET = 70f
 
-  const val LIST_BUTTON_WIDTH = 300f
-  const val LIST_BUTTON_HEIGHT = 30f
+  const val BOTTOM_BUTTON_OFFSET = -210f
+
+  const val LIST_ITEM_WIDTH = 300f
+  const val LIST_ITEM_HEIGHT = 30f
+  const val LIST_ITEM_SPACING = 0f
+  const val LIST_TEXT_INLINE_OFFSET = 25f
 
   const val BACK_BUTTON_SIZE = 100f
 }
