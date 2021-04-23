@@ -5,10 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.coronadefense.states.GameObserver
 import com.coronadefense.states.StateManager
 import com.coronadefense.states.menuStates.MainMenuState
 import com.coronadefense.states.menuStates.LobbyListState
-import com.coronadefense.types.Lobby
 import com.coronadefense.utils.Constants.BACK_BUTTON_SIZE
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
@@ -17,7 +17,7 @@ class BackButton(
   private val actionToSet: String,
   private val stateManager: StateManager,
   stage: Stage,
-  private val lobby: Lobby? = null,
+  private val gameObserver: GameObserver? = null,
 ) {
   val texture = Texture(Textures.button("back"))
   private val button = Image(texture)
@@ -36,8 +36,8 @@ class BackButton(
     when (action) {
       "MainMenu" -> stateManager.set(MainMenuState(stateManager))
       "LeaveLobby" -> {
-        lobby?.let {
-          lobby.leaveLobby()
+        gameObserver?.let {
+          gameObserver.leaveLobby()
         }
         stateManager.set(LobbyListState(stateManager))
       }

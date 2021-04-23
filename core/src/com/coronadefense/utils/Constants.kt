@@ -8,6 +8,7 @@ object Constants {
   const val GAME_HEIGHT = 450f
 
   const val SIDEBAR_WIDTH = GAME_WIDTH / 4
+  const val SIDEBAR_TEXT_SPACING = 20f
 
   const val MENU_BUTTON_WIDTH = 180f
   const val MENU_BUTTON_HEIGHT = 60f

@@ -11,8 +11,8 @@ import kotlinx.coroutines.*
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.coronadefense.states.GameObserver
 import com.coronadefense.states.InputState
-import com.coronadefense.types.Lobby
 import com.coronadefense.utils.*
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
@@ -119,9 +119,9 @@ class LobbyListState(
 
     accessToken?.let {
       val lobby = Lobby(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
-      val lobbyState = LobbyState(stateManager, lobby)
-      Game.receiver.addObserver(lobbyState)
-      stateManager.set(lobbyState)
+      val gameObserver = GameObserver(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
+      Game.receiver.addObserver(gameObserver)
+      stateManager.set(LobbyState(stateManager, gameObserver))
     }
 
     resetLobbyInfo()

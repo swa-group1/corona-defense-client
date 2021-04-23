@@ -7,11 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.coronadefense.Game
 import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
-import com.coronadefense.types.Lobby
-import com.coronadefense.receiver.messages.*
+import com.coronadefense.states.GameObserver
 import com.coronadefense.states.ObserverState
 import com.coronadefense.states.playStates.PlayStatePlacement
 import com.coronadefense.utils.BackButton
@@ -33,12 +31,10 @@ import kotlinx.coroutines.*
  */
 class LobbyState(
   stateManager: StateManager,
-  val lobby: Lobby
+  private val gameObserver: GameObserver
 ): ObserverState(stateManager)  {
   private val background: Texture = Texture(Textures.background("menu"))
   private val font = Font(20)
-
-  private var gameStartData: Int? = null
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer;
@@ -61,7 +57,7 @@ class LobbyState(
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
-          ApiClient.startGameRequest(lobby.id, lobby.accessToken, 2, 0)
+          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, 2, 0)
         }
       }
     })
@@ -69,26 +65,13 @@ class LobbyState(
     stage.addActor(startGameButton)
   }
 
-  private val backButton = BackButton("LeaveLobby", stateManager, stage, lobby)
-
-  override fun handleGameModeMessage(message: GameModeMessage) {
-    super.handleGameModeMessage(message)
-    gameStartData = message.stageNumber
-  }
-
-  override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {
-    super.handlePlayerCountUpdateMessage(message)
-    lobby.playerCount++
-  }
+  private val backButton = BackButton("LeaveLobby", stateManager, stage, gameObserver)
 
   override fun update(deltaTime: Float) {
     backButton.update()
 
-    gameStartData?.let {
-      val playState = PlayStatePlacement(stateManager, lobby, gameStartData!!)
-      Game.receiver.addObserver(playState)
-      Game.receiver.removeObserver(this)
-      stateManager.set(playState)
+    gameObserver.stageNumber?.let {
+      stateManager.set(PlayStatePlacement(stateManager, gameObserver))
     }
   }
 
@@ -98,7 +81,7 @@ class LobbyState(
 
     sprites.draw(background, 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
 
-    val lobbyTitle = "LOBBY: ${lobby.name}"
+    val lobbyTitle = "LOBBY: ${gameObserver.lobbyName}"
     font.draw(
       sprites,
       lobbyTitle,
@@ -107,10 +90,12 @@ class LobbyState(
     )
 
     val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
-    for (playerIndex in 0 until lobby.playerCount) {
-      val yPosition: Float = (GAME_HEIGHT / 2) + 40f - (30f * playerIndex)
+    gameObserver.playerCount?.let {
+      for (playerIndex in 0 until gameObserver.playerCount!!) {
+        val yPosition: Float = (GAME_HEIGHT / 2) + 40f - (30f * playerIndex)
 
-      font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
+        font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
+      }
     }
 
     val startGameButtonText = "START GAME"

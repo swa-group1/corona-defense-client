@@ -7,8 +7,8 @@ import com.coronadefense.Game
 import com.coronadefense.types.GameStage
 import com.coronadefense.states.StateManager
 import com.coronadefense.receiver.messages.*
+import com.coronadefense.states.GameObserver
 import com.coronadefense.states.ObserverState
-import com.coronadefense.types.Lobby
 import com.coronadefense.types.gameObjects.Intruder
 import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.types.gameObjects.Projectile
@@ -19,14 +19,13 @@ import com.coronadefense.utils.Textures
 
 class PlayStateWave(
   stateManager: StateManager,
-  private val lobby: Lobby,
-  val round: Int,
-  private val gameStage: GameStage
+  private val gameObserver: GameObserver
 ) : ObserverState(stateManager) {
-  private val stageMapTexture: Texture = Texture(Textures.stage(gameStage.Number))
+  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage.Number))
   private val stageMap = Image(stageMapTexture)
 
   init {
+    println("PLAYSTATEWAVE")
     stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
@@ -105,6 +104,7 @@ class PlayStateWave(
   }
 
   override fun render(sprites: SpriteBatch) {
+    sprites.projectionMatrix = camera.combined
     super.draw()
     sprites.begin()
 
