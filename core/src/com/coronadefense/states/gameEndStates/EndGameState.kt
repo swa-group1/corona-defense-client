@@ -28,7 +28,7 @@ class EndGameState (
     private val bigFont = Font(30)
 
     private val score: String = "Score: ${endGameMessage.score}"
-    private val highScore: String = if (endGameMessage.onHighScoreList>0) "You made the highscore list, your current position is ${endGameMessage.onHighScoreList}" else "You did not make it onto the highscore list."
+    private var highScore: String = ""
 
     override fun update(deltaTime: Float) {
         backButton.update()
@@ -38,6 +38,11 @@ class EndGameState (
         sprites.projectionMatrix = camera.combined
         sprites.begin()
         sprites.draw(background, 0f, 0f, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+        when(endGameMessage.onHighScoreList){
+            in 1..10 -> highScore = "You made the highscore list, your current position is ${endGameMessage.onHighScoreList}"
+            0 -> "You did not make it onto the highscore list."
+            -1 -> "Try HARD mode to get on the highscore list."
+        }
         font.draw(
                 sprites,
                 highScore,

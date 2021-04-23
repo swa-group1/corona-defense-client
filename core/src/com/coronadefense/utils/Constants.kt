@@ -25,4 +25,11 @@ object Constants {
   const val BACK_BUTTON_SIZE = 100f
   const val BACK_BUTTON_X_OFFSET = 40f
   const val BACK_BUTTON_Y_OFFSET = 15f
+
+
+}
+enum class Difficulty(val value: Int) {
+  EASY(0),
+  MEDIUM(1),
+  HARD(2)
 }
