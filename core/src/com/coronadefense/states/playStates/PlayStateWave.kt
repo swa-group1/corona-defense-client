@@ -90,21 +90,18 @@ class PlayStateWave(
     super.draw()
 
     sprites.begin()
-
+    for (tower in gameObserver.placedTowers) {
+      sprites.draw(
+              Texture(Textures.tower(tower.type)),
+              tower.position.x * gameObserver.gameStage!!.tileWidth,
+              tower.position.y * gameObserver.gameStage!!.tileHeight,
+              gameObserver.gameStage!!.tileWidth,
+              gameObserver.gameStage!!.tileHeight
+      )
+    }
     for (movingGameObject in movingGameObjects) {
       movingGameObject.draw(sprites)
     }
-
-    for (tower in gameObserver.placedTowers) {
-      sprites.draw(
-        Texture(Textures.tower(tower.type)),
-        tower.position.x * gameObserver.gameStage!!.tileWidth,
-        tower.position.y * gameObserver.gameStage!!.tileHeight,
-        gameObserver.gameStage!!.tileWidth,
-        gameObserver.gameStage!!.tileHeight
-      )
-    }
-
     sprites.end()
   }
 
