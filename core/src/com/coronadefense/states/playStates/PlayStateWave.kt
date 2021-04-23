@@ -8,8 +8,6 @@ import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.InputState
 import com.coronadefense.states.gameEndStates.EndGameState
-import com.coronadefense.states.gameEndStates.LoserState
-import com.coronadefense.states.gameEndStates.WinnerState
 import com.coronadefense.types.gameObjects.Intruder
 import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.types.gameObjects.Projectile
