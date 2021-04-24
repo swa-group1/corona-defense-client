@@ -10,11 +10,12 @@ data class GenericResponse(
 
 @Serializable
 data class TowerData(
+  val CanSpotCamo: Boolean,
   val Description: String,
   val MediumCost: Int,
-  val ProjectileSpeed: Int,
+  val ProjectileSpeed: Float,
   val ProjectileSpriteNumber: Int,
-  val Range: Int,
+  val Range: Float,
   val ReloadTime: Float,
   val TowerSpriteNumber: Int,
   val TypeNumber: Int
