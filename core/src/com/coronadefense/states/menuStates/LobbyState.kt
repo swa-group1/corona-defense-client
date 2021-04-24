@@ -12,8 +12,7 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.ObserverState
 import com.coronadefense.states.playStates.PlayStatePlacement
-import com.coronadefense.utils.BackButton
-import com.coronadefense.utils.Constants
+import com.coronadefense.utils.*
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
@@ -21,8 +20,6 @@ import com.coronadefense.utils.Constants.LIST_ITEM_WIDTH
 import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
-import com.coronadefense.utils.Font
-import com.coronadefense.utils.Textures
 import kotlinx.coroutines.*
 
 class LobbyState(
@@ -31,6 +28,8 @@ class LobbyState(
 ): ObserverState(stateManager)  {
   private val background: Texture = Texture(Textures.background("menu"))
   private val font = Font(20)
+  private var gameDifficulty = 0
+  private val xPositionDifficulty: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
@@ -53,12 +52,31 @@ class LobbyState(
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
-          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, 2, 0)
+          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, 2, gameDifficulty)
         }
       }
     })
-
     stage.addActor(startGameButton)
+    for (difficulty in Difficulty.values()) {
+      val yPosition: Float =
+              (GAME_HEIGHT / 2) + MENU_TITLE_OFFSET - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficulty.value + 2))
+      val difficultyTexture = Texture(Textures.button("gray"))
+      textures += difficultyTexture
+
+      val difficultyButton = Image(difficultyTexture)
+      buttons += difficultyButton
+      difficultyButton.setSize(LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+      difficultyButton.setPosition(xPositionDifficulty, yPosition)
+
+      difficultyButton.addListener(object : ClickListener() {
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+          gameDifficulty = difficulty.value
+          println(difficulty.name)
+        }
+      })
+
+      stage.addActor(difficultyButton)
+    }
   }
 
   private val backButton = BackButton("LeaveLobby", stateManager, stage, gameObserver)
@@ -101,6 +119,17 @@ class LobbyState(
       (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(startGameButtonText)) / 2 + BOTTOM_BUTTON_OFFSET
     )
 
+    for (difficulty in Difficulty.values()) {
+      val yPosition: Float =
+              (GAME_HEIGHT / 2) + MENU_TITLE_OFFSET - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficulty.value + 2))
+      font.draw(
+              sprites,
+              difficulty.name,
+              xPositionDifficulty + (LIST_ITEM_WIDTH/2-font.width(difficulty.name))/2,
+              yPosition +(Constants.LIST_ITEM_HEIGHT+font.height(difficulty.name))/2
+      )
+    }
+    sprites.draw(Texture(Textures.button("standard")), xPositionDifficulty, (GAME_HEIGHT / 2) + MENU_TITLE_OFFSET - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameDifficulty + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
     sprites.end()
     super.draw()
   }
