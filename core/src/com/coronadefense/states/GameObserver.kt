@@ -29,6 +29,9 @@ class GameObserver(
   val moneyAnimations = mutableListOf<MoneyAnimationMessage>()
   val boardToPathAnimations = mutableListOf<BoardToPathAnimationMessage>()
 
+  var endGame = false
+  var endGameMessage: EndGameMessage? = null
+
   fun leaveLobby() {
     runBlocking {
       ApiClient.leaveLobbyRequest(lobbyId, accessToken)
@@ -66,6 +69,8 @@ class GameObserver(
 
   override fun handleEndGameMessage(message: EndGameMessage) {
     println(message)
+    endGame = true
+    endGameMessage=message
   }
 
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage) {

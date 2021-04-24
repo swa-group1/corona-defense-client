@@ -8,15 +8,18 @@ import com.coronadefense.utils.Textures
 
 class Projectile(
   spriteNumber: Int,
-  private val startX: Int,
-  private val startY: Int,
+  startTileX: Int,
+  startTileY: Int,
   endPosition: Float,
   private val time: Float,
   private val gameStage: GameStage
 ) : MovingGameObject {
   override val texture = Texture(Textures.projectile(spriteNumber))
 
-  private val currentPosition = Vector2(startX.toFloat(), startY.toFloat())
+  val startX : Float = startTileX.toFloat() + 0.5F
+  val startY : Float = startTileY.toFloat() + 0.5F
+
+  private val currentPosition = Vector2(startX, startY)
   private val targetPosition = gameStage.getPointAlongPath(endPosition.toDouble())
 
   private var currentTime = 0f
