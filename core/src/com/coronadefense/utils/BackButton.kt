@@ -25,7 +25,7 @@ class BackButton(
   var action: String? = null
   init {
     button.setSize(BACK_BUTTON_SIZE, BACK_BUTTON_SIZE)
-    button.setPosition(BACK_BUTTON_X_OFFSET, GAME_HEIGHT - BACK_BUTTON_SIZE - BACK_BUTTON_Y_OFFSET)
+    button.setPosition(BACK_BUTTON_X_OFFSET, GAME_HEIGHT - BACK_BUTTON_SIZE / 2 - BACK_BUTTON_Y_OFFSET)
     button.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         action = actionToSet
