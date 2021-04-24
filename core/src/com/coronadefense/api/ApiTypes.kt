@@ -83,3 +83,14 @@ data class VerifyVersionResponse(
   val details: String,
   val success: Boolean,
 )
+
+@Serializable
+data class StagesData(
+        val Stages: List<SimpleStageData>
+)
+
+@Serializable
+data class SimpleStageData(
+        val Number: Int,
+        val Name: String
+)

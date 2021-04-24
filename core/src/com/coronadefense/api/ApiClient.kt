@@ -43,8 +43,23 @@ object ApiClient {
       println("towerListRequest succeeded")
     } catch (exception: ClientRequestException) {
       println("towerListRequest failed")
+      println(exception)
     }
     return towerList
+  }
+
+  suspend fun stagesListRequest(): List<SimpleStageData>?{
+    var stagesList: List<SimpleStageData>? = null
+    try {
+      println("tries")
+      val response: StagesData = client.get("${firebaseUrl}stages.json?alt=media")
+      println(response)
+      stagesList = response.Stages
+      println("stagesListRequest succeeded")
+    } catch (exception: ClientRequestException) {
+      println("stagesListRequest failed")
+    }
+    return stagesList
   }
 
   suspend fun highScoreListRequest(): List<HighScore> {
