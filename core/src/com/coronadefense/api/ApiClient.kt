@@ -35,6 +35,18 @@ object ApiClient {
     return gameStage
   }
 
+  suspend fun towerListRequest(): List<TowerData>? {
+    var towerList: List<TowerData>? = null
+    try {
+      val response: TowerListResponse = client.get("${firebaseUrl}towers.json?alt=media")
+      towerList = response.Towers
+      println("towerListRequest succeeded")
+    } catch (exception: ClientRequestException) {
+      println("towerListRequest failed")
+    }
+    return towerList
+  }
+
   suspend fun highScoreListRequest(): List<HighScore> {
     val response: HighScoreListResponse = client.get("$baseUrl/HighScoreList")
     if (response.success) {

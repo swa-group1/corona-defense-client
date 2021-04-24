@@ -20,6 +20,8 @@ class GameObserver(
   var gameState: String? = null
 
   val placedTowers: MutableList<Tower> = mutableListOf()
+  var money: Int? = null
+  var health: Int? = null
 
   var timeConfirmed: Float = 0f // time confirmed animations
   val pathToPathAnimations = mutableListOf<PathToPathAnimationMessage>() //Intruders
@@ -74,10 +76,13 @@ class GameObserver(
   override fun handleHealthUpdateMessage(message: HealthUpdateMessage) {
     println(message)
 
+    health = message.newValue
   }
 
   override fun handleMoneyUpdateMessage(message: MoneyUpdateMessage) {
     println(message)
+
+    money = message.newValue
   }
 
   override fun handlePlayerCountUpdateMessage(message: PlayerCountUpdateMessage) {

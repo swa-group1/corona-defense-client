@@ -9,6 +9,23 @@ data class GenericResponse(
 )
 
 @Serializable
+data class TowerData(
+  val Description: String,
+  val MediumCost: Int,
+  val ProjectileSpeed: Int,
+  val ProjectileSpriteNumber: Int,
+  val Range: Int,
+  val ReloadTime: Float,
+  val TowerSpriteNumber: Int,
+  val TypeNumber: Int
+)
+
+@Serializable
+data class TowerListResponse(
+  val Towers: List<TowerData>
+)
+
+@Serializable
 data class HighScoreListResponse(
   val scores: List<HighScore>,
   val details: String,

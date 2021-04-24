@@ -53,7 +53,7 @@ class LobbyState(
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
-          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, 2, 0)
+          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, 1, 0)
         }
       }
     })
