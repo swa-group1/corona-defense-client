@@ -44,9 +44,6 @@ class PlayStatePlacement(
     runBlocking {
       towerList = ApiClient.towerListRequest()
     }
-    val newTowerList = towerList!!.toMutableList()
-    newTowerList += towerList!![0]
-    towerList = newTowerList
   }
   private val towerShopTextures: MutableList<Texture> = mutableListOf()
   private val towerShopCoords: MutableList<Coords> = mutableListOf()
