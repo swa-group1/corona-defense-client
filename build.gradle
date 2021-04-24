@@ -32,6 +32,7 @@ allprojects {
         box2DLightsVersion = '1.5'
         gdxVersion = '1.9.13'
         ktorVersion = '1.5.3'
+        ktxVersion = '1.10.0-b1'
         roboVMVersion = '2.3.12'
     }
 
@@ -111,6 +112,7 @@ project(":core") {
     apply plugin: 'kotlinx-serialization'
 
     dependencies {
+        implementation "io.github.libktx:ktx-math:$ktxVersion"
         implementation "io.ktor:ktor-network:$ktorVersion"
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
         implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'

@@ -1,5 +1,6 @@
 package com.coronadefense.types
 
+import com.badlogic.gdx.math.Vector2
 import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
@@ -184,6 +185,10 @@ class GameStage(
   class Point(var X: Double, var Y: Double) {
     override fun toString(): String {
       return "Point { X: $X, Y: $Y }"
+    }
+
+    fun toVector2(): Vector2 {
+      return Vector2(X.toFloat(), Y.toFloat())
     }
   }
 
