@@ -3,6 +3,7 @@ package com.coronadefense.states
 import com.coronadefense.Game
 import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.IReceiverObserver
+import com.coronadefense.receiver.Receiver
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.types.GameStage
 import com.coronadefense.types.gameObjects.Tower
@@ -36,7 +37,7 @@ class GameObserver(
     runBlocking {
       ApiClient.leaveLobbyRequest(lobbyId, accessToken)
     }
-    Game.receiver.removeObserver(this)
+    Receiver.observer = null
   }
 
   override fun handlePingMessage(message: PingMessage) {
