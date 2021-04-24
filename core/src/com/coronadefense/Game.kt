@@ -5,29 +5,29 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.coronadefense.states.MenuState
+import com.coronadefense.receiver.Receiver
+import com.coronadefense.states.StateManager
+import com.coronadefense.states.menuStates.MainMenuState
 
 class Game : ApplicationAdapter() {
   companion object {
-    const val WIDTH = 800F
-    const val HEIGHT = 480F
-    const val TITLE = "Corona Defence"
-    var batch: SpriteBatch? = null
+    val receiver = Receiver(mutableListOf())
+    var sprites: SpriteBatch? = null
   }
-  private var stateManager: GameStateManager? = null
+  private var stateManager: StateManager? = null
   override fun create() {
-    batch = SpriteBatch()
-    stateManager = GameStateManager()
+    sprites = SpriteBatch()
+    stateManager = StateManager()
     Gdx.input.inputProcessor = InputMultiplexer()
     Gdx.gl.glClearColor(0F, 0F, 0F, 1F)
-    stateManager?.push(MenuState(stateManager!!))
+    stateManager?.push(MainMenuState(stateManager!!))
   }
   override fun render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     stateManager?.update(Gdx.graphics.deltaTime)
-    stateManager?.render(batch!!)
+    stateManager?.render(sprites!!)
   }
   override fun dispose() {
-    batch?.dispose()
+    sprites?.dispose()
   }
 }
