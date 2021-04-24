@@ -14,12 +14,9 @@ import com.coronadefense.states.menuStates.LobbyState
 import com.coronadefense.types.utils.Coords
 import com.coronadefense.utils.Textures
 import com.coronadefense.types.utils.Position
-import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.SIDEBAR_SPACING
-import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
-import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.SHOP_TOWER_PADDING
 import com.coronadefense.utils.Constants.SHOP_TOWER_SIZE
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
@@ -27,7 +24,6 @@ import com.coronadefense.utils.Constants.SMALL_ICON_SIZE
 import com.coronadefense.utils.Constants.SMALL_ICON_SPACING
 import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
-import kotlin.math.ceil
 import kotlin.math.floor
 
 class PlayStatePlacement(

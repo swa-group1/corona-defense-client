@@ -28,5 +28,5 @@ object Constants {
 
   const val SMALL_ICON_SIZE = 20f
   const val SMALL_ICON_SPACING = 10f
-  const val LARGE_ICON_SIZE = 50f
+  const val LARGE_ICON_SIZE = 100f
 }

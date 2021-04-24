@@ -12,7 +12,9 @@ import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.types.gameObjects.Projectile
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.LARGE_ICON_SIZE
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
+import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 
 class PlayStateWave(
@@ -20,6 +22,9 @@ class PlayStateWave(
   private val gameObserver: GameObserver
 ) : InputState(stateManager) {
   private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
+  private val heartTexture: Texture = Texture(Textures.icon("heart"))
+  private val moneyTexture: Texture = Texture(Textures.icon("money"))
+  val font = Font(32)
 
   private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
@@ -66,6 +71,16 @@ class PlayStateWave(
           removeBoardAnimations += message
         }
       }
+      for (message in gameObserver.moneyAnimations) {
+        if (message.time < newTime) {
+          gameObserver.money = message.newValue
+        }
+      }
+      for (message in gameObserver.healthAnimations) {
+        if (message.time < newTime) {
+          gameObserver.health = message.newValue
+        }
+      }
       for (movingGameObject in movingGameObjects) {
         movingGameObject.update(deltaTime)
       }
@@ -90,6 +105,36 @@ class PlayStateWave(
     super.draw()
 
     sprites.begin()
+
+    sprites.draw(
+      heartTexture,
+      GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
+      GAME_HEIGHT * 9/12 - LARGE_ICON_SIZE / 2,
+      LARGE_ICON_SIZE,
+      LARGE_ICON_SIZE
+    )
+    val healthText = gameObserver.health.toString()
+    font.draw(
+      sprites,
+      healthText,
+      GAME_WIDTH - (SIDEBAR_WIDTH + font.width(healthText)) / 2,
+      GAME_HEIGHT * 7/12 + font.height(healthText) / 2
+    )
+
+    sprites.draw(
+      moneyTexture,
+      GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
+      GAME_HEIGHT * 4/12 - LARGE_ICON_SIZE / 2,
+      LARGE_ICON_SIZE,
+      LARGE_ICON_SIZE
+    )
+    val moneyText = gameObserver.money.toString()
+    font.draw(
+      sprites,
+      moneyText,
+      GAME_WIDTH - (SIDEBAR_WIDTH + font.width(moneyText)) / 2,
+      GAME_HEIGHT * 2/12 + font.height(moneyText) / 2
+    )
 
     for (movingGameObject in movingGameObjects) {
       movingGameObject.draw(sprites)
