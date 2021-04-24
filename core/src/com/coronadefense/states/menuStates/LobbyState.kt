@@ -31,11 +31,11 @@ class LobbyState(
   private val background: Texture = Texture(Textures.background("menu"))
   private val font = Font(20)
   private var difficultyNumber = 0
-  private var stageNumber = 0
+  private var gameStageNumber = 0
   private val xPositionDifficulty: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 - Constants.SIDEBAR_WIDTH/2
-  private val xPositionStage: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 + Constants.SIDEBAR_WIDTH/2
-  private var stages:List<SimpleStageData>? = null
-  private var stageSelectButtonsDisplayed = false
+  private val xPositionGameStage: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 + Constants.SIDEBAR_WIDTH/2
+  private var gameStages:List<SimpleStageData>? = null
+  private var gameStageSelectButtonsDisplayed = false
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
@@ -43,7 +43,7 @@ class LobbyState(
       inputMultiplexer.addProcessor(stage)
     }
     GlobalScope.launch {
-      stages = ApiClient.stagesListRequest()
+      gameStages = ApiClient.stagesListRequest()
     }
 
     val startGameTexture = Texture(Textures.button("standard"))
@@ -61,7 +61,7 @@ class LobbyState(
     startGameButton.addListener(object: ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         GlobalScope.launch {
-          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, stageNumber, difficultyNumber)
+          ApiClient.startGameRequest(gameObserver.lobbyId, gameObserver.accessToken, gameStageNumber, difficultyNumber)
         }
       }
     })
@@ -87,7 +87,7 @@ class LobbyState(
     }
   }
   private fun addStageSelectButtons(){
-    for (gameStage in stages!!) {
+    for (gameStage in gameStages!!) {
       val yPosition: Float =
               (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStage.Number + 2))
       val stageSelectTexture = Texture(Textures.button("gray"))
@@ -96,27 +96,27 @@ class LobbyState(
       val stageSelectButton = Image(stageSelectTexture)
       buttons += stageSelectButton
       stageSelectButton.setSize(LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
-      stageSelectButton.setPosition(xPositionStage, yPosition)
+      stageSelectButton.setPosition(xPositionGameStage, yPosition)
 
       stageSelectButton.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-          stageNumber = gameStage.Number
+          gameStageNumber = gameStage.Number
           println(gameStage.Name)
         }
       })
       stage.addActor(stageSelectButton)
     }
-    stageSelectButtonsDisplayed = true
+    gameStageSelectButtonsDisplayed = true
   }
 
   private fun displayStageSelectText(sprites: SpriteBatch){
-    for (gameStage in stages!!) {
+    for (gameStage in gameStages!!) {
       val yPosition: Float =
               (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStage.Number + 2))
       font.draw(
               sprites,
               gameStage.Name,
-              xPositionStage + (LIST_ITEM_WIDTH/2-font.width(gameStage.Name))/2,
+              xPositionGameStage + (LIST_ITEM_WIDTH/2-font.width(gameStage.Name))/2,
               yPosition +(Constants.LIST_ITEM_HEIGHT+font.height(gameStage.Name))/2
       )
     }
@@ -173,13 +173,13 @@ class LobbyState(
       )
     }
     sprites.draw(Texture(Textures.button("standard")), xPositionDifficulty, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficultyNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
-    if(stages != null){
+    if(gameStages != null){
       displayStageSelectText(sprites)
-      if(!stageSelectButtonsDisplayed){
+      if(!gameStageSelectButtonsDisplayed){
         addStageSelectButtons()
       }
     }
-    sprites.draw(Texture(Textures.button("standard")), xPositionStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (stageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+    sprites.draw(Texture(Textures.button("standard")), xPositionGameStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
 
     sprites.end()
     super.draw()
