@@ -88,6 +88,8 @@ class PlayStateWave(
     } else if (gameObserver.endGame && gameObserver.timeConfirmed > 0) {
       stateManager.set(EndGameState(stateManager, gameObserver.endGameMessage!!))
     } else if (gameObserver.timeConfirmed > 0) {
+      gameObserver.healthAnimations.clear()
+      gameObserver.moneyAnimations.clear()
       stateManager.set(PlayStatePlacement(stateManager, gameObserver))
     }
     for (message in removePathAnimations) {
