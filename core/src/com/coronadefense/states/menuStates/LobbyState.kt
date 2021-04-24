@@ -35,7 +35,7 @@ class LobbyState(
   private val xPositionDifficulty: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 - Constants.SIDEBAR_WIDTH/2
   private val xPositionGameStage: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 + Constants.SIDEBAR_WIDTH/2
   private var gameStages:List<SimpleStageData>? = null
-  private var gameStageSelectButtonsDisplayed = false
+  private var gameStageSelectDisplayed = false
 
   init {
     val inputMultiplexer: InputMultiplexer = Gdx.input.inputProcessor as InputMultiplexer
@@ -66,6 +66,10 @@ class LobbyState(
       }
     })
     stage.addActor(startGameButton)
+    addDifficultySelectButtons()
+  }
+
+  private fun addDifficultySelectButtons(){
     for (difficulty in Difficulty.values()) {
       val yPosition: Float =
               (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficulty.value + 2))
@@ -86,6 +90,26 @@ class LobbyState(
       stage.addActor(difficultyButton)
     }
   }
+
+  private fun displayDifficultySelectText(sprites: SpriteBatch){
+    for (difficulty in Difficulty.values()) {
+      val yPosition: Float =
+              (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficulty.value + 2))
+      font.draw(
+              sprites,
+              difficulty.name,
+              xPositionDifficulty + (LIST_ITEM_WIDTH/2-font.width(difficulty.name))/2,
+              yPosition +(Constants.LIST_ITEM_HEIGHT+font.height(difficulty.name))/2
+      )
+    }
+    val difficultySelected = Texture(Textures.button("standard"))
+    textures += difficultySelected
+    sprites.draw(difficultySelected, xPositionDifficulty, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficultyNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+    sprites.draw(difficultySelected, xPositionDifficulty, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficultyNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+    sprites.draw(difficultySelected, xPositionDifficulty, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficultyNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+
+  }
+
   private fun addStageSelectButtons(){
     for (gameStage in gameStages!!) {
       val yPosition: Float =
@@ -106,7 +130,7 @@ class LobbyState(
       })
       stage.addActor(stageSelectButton)
     }
-    gameStageSelectButtonsDisplayed = true
+    gameStageSelectDisplayed = true
   }
 
   private fun displayStageSelectText(sprites: SpriteBatch){
@@ -120,6 +144,12 @@ class LobbyState(
               yPosition +(Constants.LIST_ITEM_HEIGHT+font.height(gameStage.Name))/2
       )
     }
+    val stageSelected = Texture(Textures.button("standard"))
+    textures += stageSelected
+    sprites.draw(stageSelected, xPositionGameStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+    sprites.draw(stageSelected, xPositionGameStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+    sprites.draw(stageSelected, xPositionGameStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
+
   }
 
   private val backButton = BackButton("LeaveLobby", stateManager, stage, gameObserver)
@@ -161,26 +191,14 @@ class LobbyState(
       (GAME_WIDTH - font.width(startGameButtonText)) / 2,
       (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(startGameButtonText)) / 2 + BOTTOM_BUTTON_OFFSET
     )
+    displayDifficultySelectText(sprites)
 
-    for (difficulty in Difficulty.values()) {
-      val yPosition: Float =
-              (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficulty.value + 2))
-      font.draw(
-              sprites,
-              difficulty.name,
-              xPositionDifficulty + (LIST_ITEM_WIDTH/2-font.width(difficulty.name))/2,
-              yPosition +(Constants.LIST_ITEM_HEIGHT+font.height(difficulty.name))/2
-      )
-    }
-    sprites.draw(Texture(Textures.button("standard")), xPositionDifficulty, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (difficultyNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
     if(gameStages != null){
       displayStageSelectText(sprites)
-      if(!gameStageSelectButtonsDisplayed){
+      if(!gameStageSelectDisplayed){
         addStageSelectButtons()
       }
     }
-    sprites.draw(Texture(Textures.button("standard")), xPositionGameStage, (GAME_HEIGHT / 2) - ((Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (gameStageNumber + 2)), LIST_ITEM_WIDTH/2, Constants.LIST_ITEM_HEIGHT)
-
     sprites.end()
     super.draw()
   }
