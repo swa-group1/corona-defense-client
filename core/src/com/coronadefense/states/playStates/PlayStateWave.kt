@@ -103,14 +103,37 @@ class PlayStateWave(
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
 
-    sprites.begin()
-    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
-    sprites.end()
-
     super.draw()
 
+    // Board
     sprites.begin()
 
+    for (movingGameObject in movingGameObjects) {
+      movingGameObject.draw(sprites)
+    }
+
+    for (tower in gameObserver.placedTowers) {
+      sprites.draw(
+              Texture(Textures.tower(tower.type)),
+              tower.position.x * gameObserver.gameStage!!.tileWidth,
+              tower.position.y * gameObserver.gameStage!!.tileHeight,
+              gameObserver.gameStage!!.tileWidth,
+              gameObserver.gameStage!!.tileHeight
+      )
+    }
+
+    for (movingGameObject in movingGameObjects) {
+      movingGameObject.draw(sprites)
+    }
+
+    sprites.end()
+
+    // Side-panel
+    sprites.begin()
+
+    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
+
+    // Health display
     sprites.draw(
       heartTexture,
       GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
@@ -126,6 +149,7 @@ class PlayStateWave(
       GAME_HEIGHT * 7/12 + font.height(healthText) / 2
     )
 
+    // Money display
     sprites.draw(
       moneyTexture,
       GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
@@ -141,22 +165,6 @@ class PlayStateWave(
       GAME_HEIGHT * 2/12 + font.height(moneyText) / 2
     )
 
-    for (movingGameObject in movingGameObjects) {
-      movingGameObject.draw(sprites)
-    }
-
-    for (tower in gameObserver.placedTowers) {
-      sprites.draw(
-              Texture(Textures.tower(tower.type)),
-              tower.position.x * gameObserver.gameStage!!.tileWidth,
-              tower.position.y * gameObserver.gameStage!!.tileHeight,
-              gameObserver.gameStage!!.tileWidth,
-              gameObserver.gameStage!!.tileHeight
-      )
-    }
-    for (movingGameObject in movingGameObjects) {
-      movingGameObject.draw(sprites)
-    }
     sprites.end()
   }
 
