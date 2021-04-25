@@ -9,7 +9,7 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.TowerData
 import com.coronadefense.states.GameObserver
-import com.coronadefense.states.ObserverState
+import com.coronadefense.states.InputState
 import com.coronadefense.states.menuStates.LobbyState
 import com.coronadefense.types.utils.Coords
 import com.coronadefense.utils.Textures
@@ -29,7 +29,7 @@ import kotlin.math.floor
 class PlayStatePlacement(
   stateManager: StateManager,
   private val gameObserver: GameObserver
-) : ObserverState(stateManager) {
+) : InputState(stateManager) {
   private val font = Font(20)
 
   private val sidebarTexture = Texture(Textures.background("sidebar"))

@@ -11,7 +11,7 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.SimpleStageData
 import com.coronadefense.states.GameObserver
-import com.coronadefense.states.ObserverState
+import com.coronadefense.states.InputState
 import com.coronadefense.states.playStates.PlayStatePlacement
 import com.coronadefense.utils.*
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
@@ -28,23 +28,21 @@ import kotlinx.coroutines.*
 class LobbyState(
   stateManager: StateManager,
   private val gameObserver: GameObserver
-) : ObserverState(stateManager) {
+) : InputState(stateManager) {
   private val background: Texture = Texture(Textures.background("menu"))
   private val font = Font(20)
 
-  val selectedTexture = Texture(Textures.button("standard"))
-  val notSelectedTexture = Texture(Textures.button("gray"))
+  private val selectedTexture = Texture(Textures.button("standard"))
+  private val notSelectedTexture = Texture(Textures.button("gray"))
 
   private var selectedDifficulty = 0
-  private val difficultyTextures: MutableList<Texture> = mutableListOf()
   private val xPositionDifficulty: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 - Constants.SIDEBAR_WIDTH / 2
 
   private var gameStages: List<SimpleStageData>? = null
   private var selectedGameStage = 0
-  private val gameStageTextures: MutableList<Texture> = mutableListOf()
   private val xPositionGameStage: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 + Constants.SIDEBAR_WIDTH / 2
 
-  fun selectButtonY(index: Int): Float {
+  private fun selectButtonY(index: Int): Float {
     return GAME_HEIGHT / 2 - (LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * (index + 2)
   }
 
