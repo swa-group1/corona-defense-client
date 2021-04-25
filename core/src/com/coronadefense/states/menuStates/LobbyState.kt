@@ -24,6 +24,7 @@ import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import kotlinx.coroutines.*
+import kotlin.math.floor
 
 class LobbyState(
   stateManager: StateManager,
@@ -36,12 +37,10 @@ class LobbyState(
   val notSelectedTexture = Texture(Textures.button("gray"))
 
   private var selectedDifficulty = 0
-  private val difficultyTextures: MutableList<Texture> = mutableListOf()
   private val xPositionDifficulty: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 - Constants.SIDEBAR_WIDTH / 2
 
   private var gameStages: List<SimpleStageData>? = null
   private var selectedGameStage = 0
-  private val gameStageTextures: MutableList<Texture> = mutableListOf()
   private val xPositionGameStage: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 4 + Constants.SIDEBAR_WIDTH / 2
 
   fun selectButtonY(index: Int): Float {
@@ -201,12 +200,14 @@ class LobbyState(
       (GAME_HEIGHT - font.height(lobbyTitle)) / 2 + MENU_TITLE_OFFSET
     )
 
-    val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
     for (playerIndex in 0 until gameObserver.playerCount) {
-      val yPosition: Float =
-        GAME_HEIGHT / 2 + MENU_TITLE_OFFSET - (Constants.LIST_ITEM_HEIGHT + Constants.LIST_ITEM_SPACING) * (playerIndex + 1)
-
-      font.draw(sprites, "Player ${playerIndex + 1}", xPosition, yPosition)
+      val playerText = "Player ${playerIndex + 1}"
+      font.draw(
+        sprites,
+        playerText,
+        (if (playerIndex % 2 == 0) xPositionDifficulty else xPositionGameStage) + (LIST_ITEM_WIDTH / 2 - font.width(playerText)) / 2,
+        selectButtonY(playerIndex / 2) + LIST_ITEM_HEIGHT * 5
+      )
     }
 
     val startGameButtonText = "START GAME"
