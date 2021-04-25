@@ -295,13 +295,14 @@ class PlayStatePlacement(
     super.dispose()
 
     font.dispose()
+    stageMapTexture.dispose()
+    stageMap.clearListeners()
+    selectedTexture.dispose()
+    notSelectedTexture.dispose()
 
     for (towerTexture in towerShopTextures) {
       towerTexture.dispose()
     }
-
-    stageMapTexture.dispose()
-    stageMap.clearListeners()
 
     println("PlayStatePlacement disposed")
   }
