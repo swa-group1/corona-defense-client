@@ -1,9 +1,7 @@
 package com.coronadefense.states.menuStates
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.coronadefense.Game
 import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.LobbyData
@@ -20,7 +18,6 @@ import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.LIST_ITEM_HEIGHT
 import com.coronadefense.utils.Constants.LIST_TEXT_INLINE_OFFSET
-import com.coronadefense.utils.Constants.LIST_ITEM_SPACING
 import com.coronadefense.utils.Constants.LIST_ITEM_WIDTH
 import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
@@ -34,32 +31,38 @@ import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 class LobbyListState(
   stateManager: StateManager
 ): InputState(stateManager)  {
-  var lobbyList: List<LobbyData>? = null
-  init {
-    runBlocking {
-      lobbyList = ApiClient.lobbyListRequest()
-    }
-  }
+  private val background = Textures.background("menu")
+  private val buttonTexture = Textures.button("standard")
 
-  private val background = Texture(Textures.background("menu"))
+  private val backButton = BackButton("MainMenu", stateManager, stage)
+
   private val font = Font(20)
+
+  private val lobbiesTitle = "LOBBIES"
+  private val playerCountTitle = "Players"
+  private val titlePositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT
+
+  private val createLobbyButtonText = "CREATE LOBBY"
+  private val createLobbyPositionX = GAME_WIDTH * 0.5f
+  private val createLobbyPositionY = GAME_HEIGHT * 0.5f + BOTTOM_BUTTON_OFFSET
 
   private val nameListener = TextInputListener()
   private val passwordListener = TextInputListener()
-  private var lobbyToJoinID: Long? = null
-  private var lobbyToJoinPlayerCount: Int? = null
+
+  var lobbyList: List<LobbyData>? = null
+  private var selectedLobbyID: Long? = null
+  private var selectedLobbyPlayerCount: Int? = null
+  private val listPositionX: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) * 0.5f
+  private val listPositionsY: MutableList<Float> = mutableListOf()
 
   init {
-    val createLobbyTexture = Texture(Textures.button("standard"))
-    textures += createLobbyTexture
-
-    val createLobbyButton = Image(createLobbyTexture)
+    val createLobbyButton = Image(buttonTexture)
     buttons += createLobbyButton
 
     createLobbyButton.setSize(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT)
     createLobbyButton.setPosition(
-      (GAME_WIDTH - MENU_BUTTON_WIDTH) / 2,
-      GAME_HEIGHT / 2 + BOTTOM_BUTTON_OFFSET
+      createLobbyPositionX - MENU_BUTTON_WIDTH * 0.5f,
+      createLobbyPositionY
     )
 
     createLobbyButton.addListener(object : ClickListener() {
@@ -71,26 +74,23 @@ class LobbyListState(
 
     stage.addActor(createLobbyButton)
 
-    lobbyList?.let {
-      val xPosition: Float = GAME_WIDTH / 2 - LIST_ITEM_WIDTH / 2
-      for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float =
-          (GAME_HEIGHT / 2) + MENU_TITLE_OFFSET - ((LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * (lobbyIndex + 2))
+    GlobalScope.launch {
+      lobbyList = ApiClient.lobbyListRequest()
+      for ((index, lobby) in lobbyList!!.withIndex()) {
+        listPositionsY += GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT * (index + 2)
 
-        val joinLobbyTexture = Texture(Textures.button("standard"))
-        textures += joinLobbyTexture
-
-        val joinLobbyButton = Image(joinLobbyTexture)
+        val joinLobbyButton = Image(buttonTexture)
         buttons += joinLobbyButton
+
         joinLobbyButton.setSize(LIST_ITEM_WIDTH, LIST_ITEM_HEIGHT)
-        joinLobbyButton.setPosition(xPosition, yPosition)
+        joinLobbyButton.setPosition(listPositionX, listPositionsY[index])
 
         joinLobbyButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
             Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
-            nameListener.input(lobbyList!![lobbyIndex].name)
-            lobbyToJoinID = lobbyList!![lobbyIndex].id
-            lobbyToJoinPlayerCount = lobbyList!![lobbyIndex].playerCount
+            nameListener.input(lobby.name)
+            selectedLobbyID = lobby.id
+            selectedLobbyPlayerCount = lobby.playerCount
           }
         })
 
@@ -99,40 +99,31 @@ class LobbyListState(
     }
   }
 
-  private val backButton = BackButton("MainMenu", stateManager, stage)
-
   private fun createLobby() {
     println("Create lobby: name ${nameListener.value}")
     runBlocking {
-      lobbyToJoinID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
+      selectedLobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
     }
-    println("Lobby ID: $lobbyToJoinID")
+    println("Lobby ID: $selectedLobbyID")
   }
 
   @ExperimentalUnsignedTypes
   private fun joinLobby() {
-    var accessToken: Long?
-
     runBlocking {
       val connectionNumber = Receiver.connectAsync()
-      val response = ApiClient.joinLobbyRequest(lobbyToJoinID!!, passwordListener.value, connectionNumber)
-      accessToken = response.accessToken
-    }
-
-    accessToken?.let {
-      val gameObserver = GameObserver(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
+      val response = ApiClient.joinLobbyRequest(selectedLobbyID!!, passwordListener.value, connectionNumber)
+      val gameObserver = GameObserver(selectedLobbyID!!, nameListener.value, response.accessToken, selectedLobbyPlayerCount ?: 1)
       Receiver.observer = gameObserver
       stateManager.set(LobbyState(stateManager, gameObserver))
+      resetLobbyInfo()
     }
-
-    resetLobbyInfo()
   }
 
   private fun resetLobbyInfo(){
     nameListener.input("")
     passwordListener.input("")
-    lobbyToJoinID = null
-    lobbyToJoinPlayerCount = null
+    selectedLobbyID = null
+    selectedLobbyPlayerCount = null
     println("Lobby info reset")
   }
 
@@ -141,10 +132,10 @@ class LobbyListState(
     backButton.update()
 
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty()) {
-      if (lobbyToJoinID == null) {
+      if (selectedLobbyID == null) {
         createLobby()
       }
-      if (lobbyToJoinID != null) {
+      if (selectedLobbyID != null) {
         joinLobby()
       }
     }
@@ -157,50 +148,40 @@ class LobbyListState(
     sprites.draw(background, 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
 
     lobbyList?.let {
-      val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
-
-      val lobbiesTitle = "LOBBIES"
       font.draw(
         sprites,
         lobbiesTitle,
-        xPosition,
-        (GAME_HEIGHT - font.height(lobbiesTitle)) / 2 + MENU_TITLE_OFFSET
+        listPositionX,
+        titlePositionY - font.height(lobbiesTitle) * 0.5f
       )
-      val playerCountTitle = "Players"
       font.draw(
         sprites,
         playerCountTitle,
-        xPosition + LIST_ITEM_WIDTH  - font.width(playerCountTitle),
-        (GAME_HEIGHT - font.height(playerCountTitle)) / 2 + MENU_TITLE_OFFSET
+        listPositionX + LIST_ITEM_WIDTH - font.width(playerCountTitle),
+        titlePositionY - font.height(playerCountTitle) * 0.5f
       )
-
-      for (lobbyIndex in lobbyList!!.indices) {
-        val yPosition: Float =
-          GAME_HEIGHT / 2 + MENU_TITLE_OFFSET - (LIST_ITEM_HEIGHT + LIST_ITEM_SPACING) * (lobbyIndex + 1)
-
-        val lobbyNameText = lobbyList!![lobbyIndex].name
+      for ((index, lobby) in lobbyList!!.withIndex()) {
         font.draw(
           sprites,
-          lobbyNameText,
-          xPosition + LIST_TEXT_INLINE_OFFSET,
-          yPosition - font.height(lobbyNameText) / 2
+          lobby.name,
+          listPositionX + LIST_TEXT_INLINE_OFFSET,
+          listPositionsY[index] - font.height(lobby.name) * 0.5f
         )
-        val playerCountText = lobbyList!![lobbyIndex].playerCount.toString()
+        val playerCountText = lobby.playerCount.toString()
         font.draw(
           sprites,
           playerCountText,
-          xPosition + LIST_ITEM_WIDTH - LIST_TEXT_INLINE_OFFSET - font.width(playerCountText) / 2,
-          yPosition - font.height(playerCountText) / 2
+          listPositionX + LIST_ITEM_WIDTH - LIST_TEXT_INLINE_OFFSET - font.width(playerCountText) * 0.5f,
+          listPositionsY[index] - font.height(playerCountText) * 0.5f
         )
       }
     }
 
-    val createLobbyButtonText = "CREATE LOBBY"
     font.draw(
       sprites,
       createLobbyButtonText,
-      (GAME_WIDTH - font.width(createLobbyButtonText)) / 2,
-      (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(createLobbyButtonText)) / 2 + BOTTOM_BUTTON_OFFSET
+      createLobbyPositionX - font.width(createLobbyButtonText) * 0.5f,
+      createLobbyPositionY + (MENU_BUTTON_HEIGHT + font.height(createLobbyButtonText)) * 0.5f
     )
 
     sprites.end()
@@ -209,13 +190,12 @@ class LobbyListState(
 
   override fun dispose() {
     super.dispose()
-
+    Textures.disposeAll()
     nameListener.dispose()
     passwordListener.dispose()
     background.dispose()
     font.dispose()
     backButton.dispose()
-
 
     println("LobbyListState disposed")
   }

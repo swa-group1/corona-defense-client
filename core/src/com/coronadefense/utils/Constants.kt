@@ -19,7 +19,6 @@ object Constants {
 
   const val LIST_ITEM_WIDTH = 300f
   const val LIST_ITEM_HEIGHT = 30f
-  const val LIST_ITEM_SPACING = 0f
   const val LIST_TEXT_INLINE_OFFSET = 25f
 
   const val BACK_BUTTON_SIZE = 60f
@@ -31,7 +30,7 @@ object Constants {
   const val LARGE_ICON_SIZE = 100f
 }
 
-enum class Difficulty(val value: Int) {
+enum class DIFFICULTY(val value: Int) {
   EASY(0),
   MEDIUM(1),
   HARD(2)
