@@ -11,7 +11,6 @@ import com.coronadefense.states.menuStates.MainMenuState
 
 class Game : ApplicationAdapter() {
   companion object {
-    val receiver = Receiver(mutableListOf())
     var sprites: SpriteBatch? = null
   }
   private var stateManager: StateManager? = null

@@ -11,6 +11,7 @@ import kotlinx.coroutines.*
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.coronadefense.receiver.Receiver
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.InputState
 import com.coronadefense.utils.*
@@ -113,14 +114,14 @@ class LobbyListState(
     var accessToken: Long?
 
     runBlocking {
-      val connectionNumber = Game.receiver.connectAsync()
+      val connectionNumber = Receiver.connectAsync()
       val response = ApiClient.joinLobbyRequest(lobbyToJoinID!!, passwordListener.value, connectionNumber)
       accessToken = response.accessToken
     }
 
     accessToken?.let {
       val gameObserver = GameObserver(lobbyToJoinID!!, nameListener.value, accessToken!!, lobbyToJoinPlayerCount ?: 1)
-      Game.receiver.addObserver(gameObserver)
+      Receiver.observer = gameObserver
       stateManager.set(LobbyState(stateManager, gameObserver))
     }
 
