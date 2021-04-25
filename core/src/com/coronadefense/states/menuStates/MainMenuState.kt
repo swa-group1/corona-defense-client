@@ -25,7 +25,8 @@ class MainMenuState(
 
   private val menuActions: MutableMap<String, Boolean> = mutableMapOf(
     "play" to false,
-    "highscores" to false
+    "highscores" to false,
+    "tutorial" to false
   )
 
   init {
@@ -58,6 +59,7 @@ class MainMenuState(
         when (menuAction) {
           "play" -> return stateManager.set(LobbyListState(stateManager))
           "highscores" -> return stateManager.set(HighscoreListState(stateManager))
+          "tutorial" -> return stateManager.set(TutorialState(stateManager))
         }
       }
     }
