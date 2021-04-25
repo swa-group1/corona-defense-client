@@ -32,9 +32,11 @@ class PlayStatePlacement(
 ) : ObserverState(stateManager) {
   private val font = Font(20)
 
-  private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
-  private val heartTexture: Texture = Texture(Textures.icon("heart"))
-  private val moneyTexture: Texture = Texture(Textures.icon("money"))
+  private val sidebarTexture = Texture(Textures.background("sidebar"))
+  private val heartTexture = Texture(Textures.icon("heart"))
+  private val moneyTexture = Texture(Textures.icon("money"))
+  private val selectedTexture = Texture(Textures.button("standard"))
+  private val notSelectedTexture = Texture(Textures.button("gray"))
 
   private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
   private val stageMap = Image(stageMapTexture)
@@ -47,10 +49,12 @@ class PlayStatePlacement(
   }
   private val towerShopTextures: MutableList<Texture> = mutableListOf()
   private val towerShopCoords: MutableList<Coords> = mutableListOf()
+  private val towerButtonSizeX = SIDEBAR_WIDTH / 2
+  private val towerButtonSizeY = SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING
 
   private var startWave: Boolean = false
 
-  private var towerTypeToPlace: Int? = null
+  private var selectedTower: Int? = null
   private var changeMode: Boolean = false
 
   init {
@@ -87,25 +91,22 @@ class PlayStatePlacement(
 
         val towerShopX: Float = GAME_WIDTH - SIDEBAR_WIDTH * (3 - 2 * (index % 2)) * 0.25f
         val towerShopY: Float =
-          GAME_HEIGHT - SIDEBAR_SPACING - (SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
+          GAME_HEIGHT - SIDEBAR_SPACING - towerButtonSizeY * (1 + index / 2)
 
         towerShopCoords += Coords(towerShopX, towerShopY)
 
-        val towerButtonTexture = Texture(Textures.button("standard"))
-        textures += towerButtonTexture
-
-        val towerButton = Image(towerButtonTexture)
+        val towerButton = Image()
         buttons += towerButton
 
-        towerButton.setSize(SIDEBAR_WIDTH / 2, SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING)
-        towerButton.setPosition(towerShopX - SIDEBAR_WIDTH / 4, towerShopY - SIDEBAR_SPACING)
+        towerButton.setSize(towerButtonSizeX, towerButtonSizeY)
+        towerButton.setPosition(towerShopX - towerButtonSizeX / 2, towerShopY - SIDEBAR_SPACING)
 
         towerButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            towerTypeToPlace = tower.TypeNumber
+            selectedTower = tower.TypeNumber
             changeMode = true
 
-            println("placing tower: $towerTypeToPlace")
+            println("placing tower: $selectedTower")
           }
         })
 
@@ -129,16 +130,16 @@ class PlayStatePlacement(
 
           println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
 
-          towerTypeToPlace?.let {
+          selectedTower?.let {
             runBlocking {
               ApiClient.placeTowerRequest(
                 gameObserver.lobbyId,
                 gameObserver.accessToken,
-                towerTypeToPlace!!,
+                selectedTower!!,
                 cellPosition.x,
                 cellPosition.y
               )
-              towerTypeToPlace = null
+              selectedTower = null
               changeMode = true
             }
           }
@@ -163,7 +164,7 @@ class PlayStatePlacement(
     }
 
     if (changeMode) {
-      if (towerTypeToPlace == null) {
+      if (selectedTower == null) {
         shopMode()
       } else {
         placementMode()
@@ -233,6 +234,13 @@ class PlayStatePlacement(
           towerShopCoords[index].y,
           SHOP_TOWER_SIZE,
           SHOP_TOWER_SIZE
+        )
+        sprites.draw(
+          if (tower.TypeNumber == selectedTower) selectedTexture else notSelectedTexture,
+          towerShopCoords[index].x - towerButtonSizeX / 2,
+          towerShopCoords[index].y - SIDEBAR_SPACING,
+          towerButtonSizeX,
+          towerButtonSizeY
         )
         sprites.draw(
           moneyTexture,
