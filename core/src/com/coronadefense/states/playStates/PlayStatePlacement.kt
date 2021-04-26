@@ -259,7 +259,7 @@ class PlayStatePlacement(
           SMALL_ICON_SIZE,
           SMALL_ICON_SIZE
         )
-        val towerPriceText = floor(tower.MediumCost * towerPriceModifier).toString()
+        val towerPriceText = (tower.MediumCost * towerPriceModifier).toInt().toString()
         font.draw(
           sprites,
           towerPriceText,
