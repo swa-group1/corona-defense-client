@@ -34,6 +34,8 @@ class GameObserver(
   var endGame = false
   var endGameMessage: EndGameMessage? = null
 
+  var socketClosed = false
+
   fun leaveLobby() {
     runBlocking {
       try {
@@ -154,5 +156,11 @@ class GameObserver(
     println(message)
 
     moneyAnimations += message
+  }
+
+  override fun handleSocketClosed() {
+    println("Socket closed")
+
+    socketClosed = true
   }
 }

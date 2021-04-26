@@ -53,7 +53,7 @@ object Receiver {
         }
       }
     } catch (e: Exception) {
-
+      observer?.handleSocketClosed()
     }
   }
 
