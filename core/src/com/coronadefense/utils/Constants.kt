@@ -33,6 +33,9 @@ object Constants {
   const val SMALL_ICON_SIZE = 20f
   const val SMALL_ICON_SPACING = 10f
   const val LARGE_ICON_SIZE = 100f
+
+  const val EASY_PRICE_MODIFIER = 0.8f
+  const val HARD_PRICE_MODIFIER = 1.2f
 }
 
 enum class DIFFICULTY(val value: Int) {

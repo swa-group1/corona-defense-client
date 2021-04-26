@@ -6,6 +6,7 @@ import com.coronadefense.receiver.Receiver
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.types.GameStage
 import com.coronadefense.types.gameObjects.Tower
+import com.coronadefense.utils.DIFFICULTY
 import kotlinx.coroutines.runBlocking
 
 class GameObserver(
@@ -27,6 +28,8 @@ class GameObserver(
   val healthAnimations = mutableListOf<HealthAnimationMessage>()
   val moneyAnimations = mutableListOf<MoneyAnimationMessage>()
   val boardToPathAnimations = mutableListOf<BoardToPathAnimationMessage>()
+
+  var difficulty: DIFFICULTY? = null
 
   var endGame = false
   var endGameMessage: EndGameMessage? = null
@@ -53,6 +56,12 @@ class GameObserver(
 
   override fun handleGameModeMessage(message: GameModeMessage) {
     println(message)
+
+    difficulty = when (message.difficulty) {
+      0 -> DIFFICULTY.EASY
+      2 -> DIFFICULTY.HARD
+      else -> DIFFICULTY.MEDIUM
+    }
 
     runBlocking {
       gameStage = ApiClient.gameStageRequest(message.stageNumber)
