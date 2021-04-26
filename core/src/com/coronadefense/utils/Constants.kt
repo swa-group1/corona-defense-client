@@ -21,6 +21,9 @@ object Constants {
   const val LIST_ITEM_HEIGHT = 30f
   const val LIST_TEXT_INLINE_OFFSET = 25f
 
+  const val COLUMN_ITEM_WIDTH = 150f
+  const val COLUMN_SPACING = 100f
+
   const val BACK_BUTTON_SIZE = 60f
   const val BACK_BUTTON_X_OFFSET = 100f
   const val BACK_BUTTON_Y_OFFSET = 65f

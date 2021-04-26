@@ -15,6 +15,8 @@ import com.coronadefense.states.InputState
 import com.coronadefense.states.playStates.PlayStatePlacement
 import com.coronadefense.utils.*
 import com.coronadefense.utils.Constants.BOTTOM_BUTTON_OFFSET
+import com.coronadefense.utils.Constants.COLUMN_ITEM_WIDTH
+import com.coronadefense.utils.Constants.COLUMN_SPACING
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.LIST_ITEM_HEIGHT
@@ -46,17 +48,23 @@ class LobbyState(
   }
 
   private val centerPositionX: Float = GAME_WIDTH * 0.5f
-  private val leftPositionX: Float = centerPositionX - LIST_ITEM_WIDTH * 0.25f - Constants.SIDEBAR_WIDTH * 0.5f
-  private val rightPositionX: Float = centerPositionX - LIST_ITEM_WIDTH * 0.25f + Constants.SIDEBAR_WIDTH * 0.5f
+  private val leftPositionX: Float = centerPositionX - COLUMN_SPACING
+  private val rightPositionX: Float = centerPositionX + COLUMN_SPACING
 
   private val title = "LOBBY: ${gameObserver.lobbyName}"
   private val titlePositionY = positionY(0)
 
-  private val difficultyPositionsY: MutableList<Float> = mutableListOf()
-  private val gameStagePositionsY: MutableList<Float> = mutableListOf()
   private val playerPositionsY: MutableList<Float> = mutableListOf()
 
-  private val startGameButtonText = "CREATE LOBBY"
+  private val difficultyTitle = "Mode"
+  private val difficultyTitlePositionY = positionY(4)
+  private val difficultyPositionsY: MutableList<Float> = mutableListOf()
+
+  private val gameStageTitle = "Map"
+  private val gameStageTitlePositionY = positionY(4)
+  private val gameStagePositionsY: MutableList<Float> = mutableListOf()
+
+  private val startGameButtonText = "START GAME"
   private val startGamePositionY = GAME_HEIGHT * 0.5f + BOTTOM_BUTTON_OFFSET
 
   init {
@@ -74,8 +82,8 @@ class LobbyState(
         val gameStagePositionY = positionY(index + 5)
         gameStagePositionsY += gameStagePositionY
 
-        stageSelectButton.setSize(LIST_ITEM_WIDTH / 2, LIST_ITEM_HEIGHT)
-        stageSelectButton.setPosition(rightPositionX, gameStagePositionY)
+        stageSelectButton.setSize(COLUMN_ITEM_WIDTH, LIST_ITEM_HEIGHT)
+        stageSelectButton.setPosition(rightPositionX - COLUMN_ITEM_WIDTH * 0.5f, gameStagePositionY)
 
         stageSelectButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -93,8 +101,8 @@ class LobbyState(
       val difficultyPositionY = positionY(index + 5)
       difficultyPositionsY += difficultyPositionY
 
-      difficultyButton.setSize(LIST_ITEM_WIDTH / 2, LIST_ITEM_HEIGHT)
-      difficultyButton.setPosition(leftPositionX, difficultyPositionY)
+      difficultyButton.setSize(COLUMN_ITEM_WIDTH, LIST_ITEM_HEIGHT)
+      difficultyButton.setPosition(leftPositionX - COLUMN_ITEM_WIDTH * 0.5f, difficultyPositionY)
 
       difficultyButton.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -144,61 +152,64 @@ class LobbyState(
       titlePositionY - font.height(title) * 0.5f
     )
 
-    val xPosition: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) / 2
     for (playerIndex in 0 until gameObserver.playerCount) {
       if (playerPositionsY.size <= playerIndex) {
         playerPositionsY += positionY(playerIndex + 2)
       }
-      font.draw(sprites, "Player ${playerIndex + 1}", xPosition, playerPositionsY[playerIndex])
+      val playerText = "Player ${playerIndex + 1}"
+      font.draw(
+        sprites,
+        playerText,
+        (if (playerIndex % 2 == 0) leftPositionX else rightPositionX) - font.width(playerText) * 0.5f,
+        playerPositionsY[playerIndex]
+      )
     }
 
     font.draw(
       sprites,
       startGameButtonText,
-      (GAME_WIDTH - font.width(startGameButtonText)) / 2,
-      (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(startGameButtonText)) / 2 + BOTTOM_BUTTON_OFFSET
+      centerPositionX - font.width(startGameButtonText) * 0.5f,
+      startGamePositionY + (MENU_BUTTON_HEIGHT + font.height(startGameButtonText)) * 0.5f
     )
 
-    val difficultyTitle = "Mode"
     font.draw(
       sprites,
       difficultyTitle,
-      leftPositionX + (LIST_ITEM_WIDTH / 2 - font.width(difficultyTitle)) / 2,
-      selectButtonY(0) + LIST_ITEM_HEIGHT * 3/2 + font.height(difficultyTitle) / 2
+      leftPositionX - font.width(difficultyTitle) * 0.5f,
+      difficultyTitlePositionY - font.height(difficultyTitle) * 0.5f
     )
 
-    for (difficulty in DIFFICULTY.values()) {
+    for ((index, difficulty) in DIFFICULTY.values().withIndex()) {
       sprites.draw(
         if (selectedDifficulty == difficulty.value) buttonTexture else inactiveButtonTexture,
-        leftPositionX,
-        selectButtonY(difficulty.value),
-        LIST_ITEM_WIDTH / 2,
+        leftPositionX - COLUMN_ITEM_WIDTH * 0.5f,
+        difficultyPositionsY[index],
+        COLUMN_ITEM_WIDTH,
         LIST_ITEM_HEIGHT
       )
 
       font.draw(
         sprites,
         difficulty.name,
-        leftPositionX + (LIST_ITEM_WIDTH / 2 - font.width(difficulty.name)) / 2,
-        selectButtonY(difficulty.value) + (LIST_ITEM_HEIGHT + font.height(difficulty.name)) / 2
+        leftPositionX - font.width(difficulty.name) * 0.5f,
+        difficultyPositionsY[index] - font.height(difficulty.name) * 0.5f
       )
     }
 
     gameStages?.let {
-      val stageTitle = "Map"
       font.draw(
         sprites,
-        stageTitle,
-        rightPositionX + (LIST_ITEM_WIDTH / 2 - font.width(stageTitle)) / 2,
-        selectButtonY(0) + LIST_ITEM_HEIGHT * 3/2 + font.height(stageTitle) / 2
+        gameStageTitle,
+        rightPositionX - font.width(gameStageTitle) * 0.5f,
+        gameStageTitlePositionY - font.height(gameStageTitle) / 2
       )
 
-      for (gameStage in gameStages!!) {
+      for ((index, gameStage) in gameStages!!.withIndex()) {
         sprites.draw(
           if (selectedGameStage == gameStage.Number) buttonTexture else inactiveButtonTexture,
-          rightPositionX,
-          selectButtonY(gameStage.Number),
-          LIST_ITEM_WIDTH / 2,
+          rightPositionX - COLUMN_ITEM_WIDTH * 0.5f,
+          gameStagePositionsY[index],
+          COLUMN_ITEM_WIDTH,
           LIST_ITEM_HEIGHT
         )
 
@@ -206,7 +217,7 @@ class LobbyState(
           sprites,
           gameStage.Name,
           rightPositionX + (LIST_ITEM_WIDTH / 2 - font.width(gameStage.Name)) / 2,
-          selectButtonY(gameStage.Number) + (LIST_ITEM_HEIGHT + font.height(gameStage.Name)) / 2
+          gameStagePositionsY[index] - font.height(gameStage.Name) * 0.5f
         )
       }
     }
@@ -217,12 +228,9 @@ class LobbyState(
 
   override fun dispose() {
     super.dispose()
-
-    background.dispose()
+    Textures.disposeAll()
     font.dispose()
     backButton.dispose()
-    buttonTexture.dispose()
-    inactiveButtonTexture.dispose()
 
     println("LobbyState disposed")
   }

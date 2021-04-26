@@ -21,20 +21,8 @@ import com.coronadefense.utils.Textures
 class PlayStateWave(
   stateManager: StateManager,
   private val gameObserver: GameObserver
-) : InputState(stateManager) {
-  private val sidebarTexture: Texture = Texture(Textures.background("sidebar"))
-  private val heartTexture: Texture = Texture(Textures.icon("heart"))
-  private val moneyTexture: Texture = Texture(Textures.icon("money"))
+) : PlayState(stateManager, gameObserver) {
   private val font = Font(32)
-
-  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
-  private val stageMap = Image(stageMapTexture)
-
-  init {
-    stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
-    stageMap.setPosition(0f, 0f)
-    stage.addActor(stageMap)
-  }
 
   private var time: Float = 0f //time passed
   private var nextRound: Int = 0 // number of next round, set when all animations are received

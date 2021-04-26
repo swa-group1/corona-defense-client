@@ -9,13 +9,14 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.TowerData
 import com.coronadefense.states.GameObserver
-import com.coronadefense.states.InputState
 import com.coronadefense.states.menuStates.LobbyState
 import com.coronadefense.types.utils.Coords
 import com.coronadefense.utils.Textures
 import com.coronadefense.types.utils.Position
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.LIST_ITEM_HEIGHT
+import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.SIDEBAR_SPACING
 import com.coronadefense.utils.Constants.SHOP_TOWER_PADDING
 import com.coronadefense.utils.Constants.SHOP_TOWER_SIZE
@@ -29,71 +30,34 @@ import kotlin.math.floor
 class PlayStatePlacement(
   stateManager: StateManager,
   private val gameObserver: GameObserver
-) : InputState(stateManager) {
+) : PlayState(stateManager, gameObserver) {
+  private val buttonTexture = Textures.button("standard")
+
   private val font = Font(20)
 
-  private val sidebarTexture = Texture(Textures.background("sidebar"))
-  private val heartTexture = Texture(Textures.icon("heart"))
-  private val moneyTexture = Texture(Textures.icon("money"))
-  private val selectedTexture = Texture(Textures.button("standard"))
-  private val notSelectedTexture = Texture(Textures.button("gray"))
+  private val leftPositionX = GAME_WIDTH - SIDEBAR_WIDTH * 0.75
+  private val rightPositionX = GAME_WIDTH - SIDEBAR_WIDTH * 0.25
 
-  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
-  private val stageMap = Image(stageMapTexture)
+  private val shopTitlePositionY = GAME_HEIGHT - SIDEBAR_SPACING * 0.5f
+  private val healthMoneyPositionY = GAME_HEIGHT - SIDEBAR_SPACING * 1.5f
+  private val towerShopPositionsY: MutableList<Float> = mutableListOf()
+  private val startWavePositionY = LIST_ITEM_HEIGHT
 
   private var towerList: List<TowerData>? = null
-  init {
-    runBlocking {
-      towerList = ApiClient.towerListRequest()
-    }
-  }
-  private val towerShopTextures: MutableList<Texture> = mutableListOf()
-  private val towerShopCoords: MutableList<Coords> = mutableListOf()
-  private val towerButtonSizeX = SIDEBAR_WIDTH / 2
+  private val towerTextures: MutableMap<Int, Texture> = mutableMapOf()
+  private val towerButtonSizeX = SIDEBAR_WIDTH * 0.5f
   private val towerButtonSizeY = SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING
 
   private var startWave: Boolean = false
-
-  private var selectedTower: Int? = null
   private var changeMode: Boolean = false
+  private var selectedTower: Int? = null
 
   init {
-    stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
-    stageMap.setPosition(0f, 0f)
-    stage.addActor(stageMap)
-
-    textures += heartTexture
-    textures += moneyTexture
-
-    val startWaveButtonTexture = Texture(Textures.button("standard"))
-    textures += startWaveButtonTexture
-
-    val startWaveButton = Image(startWaveButtonTexture)
-    buttons += startWaveButton
-
-    startWaveButton.setSize(
-      SIDEBAR_WIDTH,
-      GAME_HEIGHT - (SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * 3 - 2 * SIDEBAR_SPACING
-    )
-    startWaveButton.setPosition(GAME_WIDTH - SIDEBAR_WIDTH, 0f)
-
-    startWaveButton.addListener(object : ClickListener() {
-      override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        startWave = true
-      }
-    })
-
-    stage.addActor(startWaveButton)
-
-    towerList?.let {
+    runBlocking {
+      towerList = ApiClient.towerListRequest()
       for ((index, tower) in towerList!!.withIndex()) {
-        towerShopTextures += Texture(Textures.tower(tower.TypeNumber))
-
-        val towerShopX: Float = GAME_WIDTH - SIDEBAR_WIDTH * (3 - 2 * (index % 2)) * 0.25f
-        val towerShopY: Float =
-          GAME_HEIGHT - SIDEBAR_SPACING - towerButtonSizeY * (1 + index / 2)
-
-        towerShopCoords += Coords(towerShopX, towerShopY)
+        towerTextures[index] = Textures.tower(tower.TypeNumber)
+        val towerShopY: Float = GAME_HEIGHT - SIDEBAR_SPACING - towerButtonSizeY * (1 + index / 2)
 
         val towerButton = Image()
         buttons += towerButton
@@ -113,6 +77,22 @@ class PlayStatePlacement(
         stage.addActor(towerButton)
       }
     }
+  }
+
+  init {
+    val startWaveButton = Image(buttonTexture)
+    buttons += startWaveButton
+
+    startWaveButton.setSize(SIDEBAR_WIDTH, MENU_BUTTON_HEIGHT)
+    startWaveButton.setPosition(GAME_WIDTH - SIDEBAR_WIDTH, startWavePositionY)
+
+    startWaveButton.addListener(object : ClickListener() {
+      override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        startWave = true
+      }
+    })
+
+    stage.addActor(startWaveButton)
   }
 
   private fun shopMode() {
@@ -236,7 +216,7 @@ class PlayStatePlacement(
           SHOP_TOWER_SIZE
         )
         sprites.draw(
-          if (tower.TypeNumber == selectedTower) selectedTexture else notSelectedTexture,
+          if (tower.TypeNumber == selectedTower) buttonTexture else inactiveButtonTexture,
           towerShopCoords[index].x - towerButtonSizeX / 2,
           towerShopCoords[index].y - SIDEBAR_SPACING,
           towerButtonSizeX,
@@ -297,8 +277,8 @@ class PlayStatePlacement(
     font.dispose()
     stageMapTexture.dispose()
     stageMap.clearListeners()
-    selectedTexture.dispose()
-    notSelectedTexture.dispose()
+    buttonTexture.dispose()
+    inactiveButtonTexture.dispose()
 
     for (towerTexture in towerShopTextures) {
       towerTexture.dispose()

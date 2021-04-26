@@ -1,6 +1,5 @@
 package com.coronadefense.states.menuStates
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.coronadefense.states.StateManager
 import com.coronadefense.states.InputState
@@ -16,7 +15,7 @@ import com.coronadefense.utils.Textures
 class TutorialState(
   stateManager: StateManager
 ): InputState(stateManager){
-  private val background: Texture = Texture(Textures.background("tutorial"))
+  private val background = Textures.background("tutorial")
 
   private val backButton = BackButton("MainMenu", stateManager, stage)
 
@@ -36,8 +35,7 @@ class TutorialState(
 
   override fun dispose() {
     super.dispose()
-
-    background.dispose()
+    Textures.disposeAll()
     backButton.dispose()
 
     println("TutorialState disposed")
