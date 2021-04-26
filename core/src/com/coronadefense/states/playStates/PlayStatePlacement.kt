@@ -200,7 +200,7 @@ class PlayStatePlacement(
     font.draw(
       sprites,
       shopTitle,
-      centerPositionX + font.width(shopTitle) * 0.5f,
+      centerPositionX - font.width(shopTitle) * 0.5f,
       shopTitlePositionY + font.height(shopTitle) * 0.5f
     )
 
