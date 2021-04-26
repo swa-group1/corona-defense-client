@@ -41,15 +41,19 @@ object Receiver {
 
   @ExperimentalUnsignedTypes
   private suspend fun listen(input: ByteReadChannel) {
-    while (true) {
-      val byteCode: Byte = input.readByte()
-      val lengthByte: Byte = input.readByte()
-      val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
-      val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
-      notifyObservers(message)
-      if (byteCode == MessageType.END_GAME.byteCode) {
-        break
+    try {
+      while (true) {
+        val byteCode: Byte = input.readByte()
+        val lengthByte: Byte = input.readByte()
+        val packet: ByteReadPacket = input.readPacket(lengthByte.toUByte().toInt())
+        val message: IMessage = getMessageType(byteCode).parse(packet.readBytes())
+        notifyObservers(message)
+        if (byteCode == MessageType.END_GAME.byteCode) {
+          break
+        }
       }
+    } catch (e: Exception) {
+      observer?.handleSocketClosed()
     }
   }
 

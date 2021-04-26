@@ -2,7 +2,6 @@ package com.coronadefense.states.menuStates
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -20,12 +19,10 @@ import com.coronadefense.utils.Constants.COLUMN_SPACING
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.LIST_ITEM_HEIGHT
-import com.coronadefense.utils.Constants.LIST_ITEM_WIDTH
 import com.coronadefense.utils.Constants.MENU_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import kotlinx.coroutines.*
-import kotlin.math.floor
 
 class LobbyState(
   stateManager: StateManager,
@@ -129,6 +126,11 @@ class LobbyState(
 
   override fun update(deltaTime: Float) {
     backButton.update()
+
+    if (gameObserver.socketClosed) {
+      stateManager.set(LobbyListState(stateManager))
+      return
+    }
 
     gameObserver.gameStage?.let {
       stateManager.set(PlayStatePlacement(stateManager, gameObserver))

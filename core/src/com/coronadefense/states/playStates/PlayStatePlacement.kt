@@ -9,6 +9,7 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.api.TowerData
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.menuStates.LobbyState
+import com.coronadefense.states.menuStates.MainMenuState
 import com.coronadefense.utils.Constants.EASY_PRICE_MODIFIER
 import com.coronadefense.utils.Textures
 import com.coronadefense.utils.Constants.GAME_HEIGHT
@@ -146,6 +147,11 @@ class PlayStatePlacement(
 
   override fun update(deltaTime: Float) {
     if (super.update()) {
+      return
+    }
+
+    if (gameObserver.socketClosed) {
+      stateManager.set(MainMenuState(stateManager))
       return
     }
 
