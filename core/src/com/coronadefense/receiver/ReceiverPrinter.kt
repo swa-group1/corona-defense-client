@@ -74,4 +74,7 @@ class ReceiverPrinter: IReceiverObserver {
   override fun handleMoneyAnimationMessage(message: MoneyAnimationMessage) {
     println(message)
   }
+
+  override fun handleSocketClosed() {
+  }
 }

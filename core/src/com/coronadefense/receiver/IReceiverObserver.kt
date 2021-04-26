@@ -23,4 +23,6 @@ interface IReceiverObserver {
   fun handleTowerAnimationMessage(message: TowerAnimationMessage)
   fun handleHealthAnimationMessage(message: HealthAnimationMessage)
   fun handleMoneyAnimationMessage(message: MoneyAnimationMessage)
+
+  fun handleSocketClosed()
 }
