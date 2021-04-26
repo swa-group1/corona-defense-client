@@ -9,9 +9,11 @@ import com.coronadefense.api.ApiClient
 import com.coronadefense.api.TowerData
 import com.coronadefense.states.GameObserver
 import com.coronadefense.states.menuStates.LobbyState
+import com.coronadefense.utils.Constants.EASY_PRICE_MODIFIER
 import com.coronadefense.utils.Textures
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.HARD_PRICE_MODIFIER
 import com.coronadefense.utils.Constants.LEAVE_GAME_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.START_WAVE_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.SIDEBAR_SPACING
@@ -19,6 +21,7 @@ import com.coronadefense.utils.Constants.SHOP_TOWER_PADDING
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import com.coronadefense.utils.Constants.SMALL_ICON_SIZE
 import com.coronadefense.utils.Constants.SMALL_ICON_SPACING
+import com.coronadefense.utils.DIFFICULTY
 import kotlinx.coroutines.*
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -40,6 +43,11 @@ class PlayStatePlacement(
   private var towerList: List<TowerData>? = null
   private var selectedTower: Int? = null
   private var changeMode: Boolean = false
+  private var towerPriceModifier: Float = when (gameObserver.difficulty) {
+    DIFFICULTY.EASY -> EASY_PRICE_MODIFIER
+    DIFFICULTY.HARD -> HARD_PRICE_MODIFIER
+    else -> 1f
+  }
   private val towerShopPositionsY: MutableList<Float> = mutableListOf()
   private var shopTowerSize = SIDEBAR_WIDTH * 0.5f - SHOP_TOWER_PADDING
   private val towerButtonSizeX: Float = SIDEBAR_WIDTH * 0.5f
@@ -51,9 +59,6 @@ class PlayStatePlacement(
   init {
     runBlocking {
       towerList = ApiClient.towerListRequest()
-
-      val newTowerList: List<TowerData> = towerList!!.toMutableList() + mutableListOf(towerList!![0])
-      towerList = newTowerList
 
       val rows = ceil(towerList!!.size * 0.5f)
       val maxShopTowerSize = (
@@ -251,7 +256,7 @@ class PlayStatePlacement(
           SMALL_ICON_SIZE,
           SMALL_ICON_SIZE
         )
-        val towerPriceText = tower.MediumCost.toString()
+        val towerPriceText = (tower.MediumCost * towerPriceModifier).toInt().toString()
         font.draw(
           sprites,
           towerPriceText,

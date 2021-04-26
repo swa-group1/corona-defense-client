@@ -65,6 +65,7 @@ enum class MessageType : IMessageType {
     override fun parse(bytes: ByteArray): GameModeMessage {
       return GameModeMessage(
         stageNumber = bytes[0].toUByte().toInt(),
+        difficulty = bytes[1].toUByte().toInt(),
       )
     }
   },
