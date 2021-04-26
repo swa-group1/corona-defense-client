@@ -39,17 +39,20 @@ class LobbyListState(
   private val playerCountTitle = "Players"
   private val titlePositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET
 
+  private val centerPositionX = GAME_WIDTH * 0.5f
+
   private val createLobbyButtonText = "CREATE LOBBY"
-  private val createLobbyPositionX = GAME_WIDTH * 0.5f
   private val createLobbyPositionY = GAME_HEIGHT * 0.5f + BOTTOM_BUTTON_OFFSET
 
   private val nameListener = TextInputListener()
   private val passwordListener = TextInputListener()
 
+  private var errorMessage: String? = null
+
   private var lobbyList: List<LobbyData>? = null
   private var selectedLobbyID: Long? = null
   private var selectedLobbyPlayerCount: Int? = null
-  private val listPositionX: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) * 0.5f
+  private val listPositionX: Float = centerPositionX - LIST_ITEM_WIDTH * 0.5f
   private val listPositionsY: MutableList<Float> = mutableListOf()
 
   init {
@@ -58,7 +61,7 @@ class LobbyListState(
 
     createLobbyButton.setSize(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT)
     createLobbyButton.setPosition(
-      createLobbyPositionX - MENU_BUTTON_WIDTH * 0.5f,
+      centerPositionX - MENU_BUTTON_WIDTH * 0.5f,
       createLobbyPositionY
     )
 
@@ -109,10 +112,14 @@ class LobbyListState(
   private fun joinLobby() {
     runBlocking {
       val connectionNumber = Receiver.connectAsync()
-      val response = ApiClient.joinLobbyRequest(selectedLobbyID!!, passwordListener.value, connectionNumber)
-      val gameObserver = GameObserver(selectedLobbyID!!, nameListener.value, response.accessToken, selectedLobbyPlayerCount ?: 1)
-      Receiver.observer = gameObserver
-      stateManager.set(LobbyState(stateManager, gameObserver))
+      try {
+        val response = ApiClient.joinLobbyRequest(selectedLobbyID!!, passwordListener.value, connectionNumber)
+        val gameObserver = GameObserver(selectedLobbyID!!, nameListener.value, response.accessToken, selectedLobbyPlayerCount ?: 1)
+        Receiver.observer = gameObserver
+        stateManager.set(LobbyState(stateManager, gameObserver))
+      } catch (exception: Exception) {
+        errorMessage = "Wrong password!"
+      }
       resetLobbyInfo()
     }
   }
@@ -145,6 +152,15 @@ class LobbyListState(
 
     sprites.draw(Textures.background("menu"), 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
     backButton.render(sprites)
+
+    errorMessage?.let {
+      font.draw(
+        sprites,
+        errorMessage!!,
+        centerPositionX - font.width(errorMessage!!),
+        GAME_HEIGHT - (LIST_ITEM_HEIGHT - font.height(errorMessage!!)) * 0.5f
+      )
+    }
 
     font.draw(
       sprites,
@@ -186,7 +202,7 @@ class LobbyListState(
 
     sprites.draw(
       Textures.button("standard"),
-      createLobbyPositionX - MENU_BUTTON_WIDTH * 0.5f,
+      centerPositionX - MENU_BUTTON_WIDTH * 0.5f,
       createLobbyPositionY,
       MENU_BUTTON_WIDTH,
       MENU_BUTTON_HEIGHT
@@ -194,7 +210,7 @@ class LobbyListState(
     font.draw(
       sprites,
       createLobbyButtonText,
-      createLobbyPositionX - font.width(createLobbyButtonText) * 0.5f,
+      centerPositionX - font.width(createLobbyButtonText) * 0.5f,
       createLobbyPositionY + (MENU_BUTTON_HEIGHT + font.height(createLobbyButtonText)) * 0.5f
     )
 
