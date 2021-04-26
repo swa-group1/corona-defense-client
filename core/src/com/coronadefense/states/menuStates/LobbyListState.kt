@@ -31,16 +31,13 @@ import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 class LobbyListState(
   stateManager: StateManager
 ): InputState(stateManager)  {
-  private val background = Textures.background("menu")
-  private val buttonTexture = Textures.button("standard")
-
   private val backButton = BackButton("MainMenu", stateManager, stage)
 
   private val font = Font(20)
 
   private val lobbiesTitle = "LOBBIES"
   private val playerCountTitle = "Players"
-  private val titlePositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT
+  private val titlePositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET
 
   private val createLobbyButtonText = "CREATE LOBBY"
   private val createLobbyPositionX = GAME_WIDTH * 0.5f
@@ -49,14 +46,14 @@ class LobbyListState(
   private val nameListener = TextInputListener()
   private val passwordListener = TextInputListener()
 
-  var lobbyList: List<LobbyData>? = null
+  private var lobbyList: List<LobbyData>? = null
   private var selectedLobbyID: Long? = null
   private var selectedLobbyPlayerCount: Int? = null
   private val listPositionX: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) * 0.5f
   private val listPositionsY: MutableList<Float> = mutableListOf()
 
   init {
-    val createLobbyButton = Image(buttonTexture)
+    val createLobbyButton = Image()
     buttons += createLobbyButton
 
     createLobbyButton.setSize(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT)
@@ -77,9 +74,10 @@ class LobbyListState(
     GlobalScope.launch {
       lobbyList = ApiClient.lobbyListRequest()
       for ((index, lobby) in lobbyList!!.withIndex()) {
-        listPositionsY += GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT * (index + 2)
+        val listPositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT * (index + 1.5f)
+        listPositionsY += listPositionY
 
-        val joinLobbyButton = Image(buttonTexture)
+        val joinLobbyButton = Image()
         buttons += joinLobbyButton
 
         joinLobbyButton.setSize(LIST_ITEM_WIDTH, LIST_ITEM_HEIGHT)
@@ -145,38 +143,54 @@ class LobbyListState(
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
+    sprites.draw(Textures.background("menu"), 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
+    backButton.render(sprites)
+
+    font.draw(
+      sprites,
+      lobbiesTitle,
+      listPositionX,
+      titlePositionY + font.height(lobbiesTitle) * 0.5f
+    )
+    font.draw(
+      sprites,
+      playerCountTitle,
+      listPositionX + LIST_ITEM_WIDTH - font.width(playerCountTitle),
+      titlePositionY + font.height(playerCountTitle) * 0.5f
+    )
 
     lobbyList?.let {
-      font.draw(
-        sprites,
-        lobbiesTitle,
-        listPositionX,
-        titlePositionY - font.height(lobbiesTitle) * 0.5f
-      )
-      font.draw(
-        sprites,
-        playerCountTitle,
-        listPositionX + LIST_ITEM_WIDTH - font.width(playerCountTitle),
-        titlePositionY - font.height(playerCountTitle) * 0.5f
-      )
       for ((index, lobby) in lobbyList!!.withIndex()) {
+        sprites.draw(
+          Textures.button("standard"),
+          listPositionX,
+          listPositionsY[index],
+          LIST_ITEM_WIDTH,
+          LIST_ITEM_HEIGHT
+        )
         font.draw(
           sprites,
           lobby.name,
           listPositionX + LIST_TEXT_INLINE_OFFSET,
-          listPositionsY[index] - font.height(lobby.name) * 0.5f
+          listPositionsY[index] + (LIST_ITEM_HEIGHT + font.height(lobby.name)) * 0.5f
         )
         val playerCountText = lobby.playerCount.toString()
         font.draw(
           sprites,
           playerCountText,
           listPositionX + LIST_ITEM_WIDTH - LIST_TEXT_INLINE_OFFSET - font.width(playerCountText) * 0.5f,
-          listPositionsY[index] - font.height(playerCountText) * 0.5f
+          listPositionsY[index] + (LIST_ITEM_HEIGHT + font.height(playerCountText)) * 0.5f
         )
       }
     }
 
+    sprites.draw(
+      Textures.button("standard"),
+      createLobbyPositionX - MENU_BUTTON_WIDTH * 0.5f,
+      createLobbyPositionY,
+      MENU_BUTTON_WIDTH,
+      MENU_BUTTON_HEIGHT
+    )
     font.draw(
       sprites,
       createLobbyButtonText,
@@ -193,7 +207,6 @@ class LobbyListState(
     Textures.disposeAll()
     nameListener.dispose()
     passwordListener.dispose()
-    background.dispose()
     font.dispose()
     backButton.dispose()
 

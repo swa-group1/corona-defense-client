@@ -7,13 +7,15 @@ object Constants {
 
   const val SIDEBAR_WIDTH = GAME_WIDTH / 4
   const val SIDEBAR_SPACING = 25f
-  const val SHOP_TOWER_SIZE = 75f
   const val SHOP_TOWER_PADDING = 10f
 
   const val MENU_BUTTON_WIDTH = 180f
   const val MENU_BUTTON_HEIGHT = 60f
   const val MENU_BUTTON_SPACING = 30f
   const val MENU_TITLE_OFFSET = 120f
+
+  const val START_WAVE_BUTTON_HEIGHT = 45f
+  const val LEAVE_GAME_BUTTON_HEIGHT = 30f
 
   const val BOTTOM_BUTTON_OFFSET = -210f
 

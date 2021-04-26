@@ -1,20 +1,16 @@
 package com.coronadefense.states.playStates
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.coronadefense.states.StateManager
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.states.GameObserver
-import com.coronadefense.states.InputState
 import com.coronadefense.states.gameEndStates.EndGameState
 import com.coronadefense.types.gameObjects.Intruder
 import com.coronadefense.types.gameObjects.MovingGameObject
 import com.coronadefense.types.gameObjects.Projectile
+import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Constants.GAME_HEIGHT
-import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.LARGE_ICON_SIZE
-import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 
@@ -22,19 +18,24 @@ class PlayStateWave(
   stateManager: StateManager,
   private val gameObserver: GameObserver
 ) : PlayState(stateManager, gameObserver) {
-  private val font = Font(32)
+  private val bigFont = Font(32)
 
   private var time: Float = 0f //time passed
-  private var nextRound: Int = 0 // number of next round, set when all animations are received
 
   private var movingGameObjects = mutableListOf<MovingGameObject>()
 
   override fun update(deltaTime: Float) {
+    if (super.update()) {
+      return
+    }
+
     val removePathAnimations = mutableListOf<PathToPathAnimationMessage>()
     val removeBoardAnimations = mutableListOf<BoardToPathAnimationMessage>()
+
     if (time + deltaTime <= gameObserver.timeConfirmed) {
       val newTime = time + deltaTime
       time += deltaTime
+
       for (message in gameObserver.pathToPathAnimations) {
         if (message.startTime < newTime) {
           movingGameObjects.add(Intruder(
@@ -47,6 +48,7 @@ class PlayStateWave(
           removePathAnimations += message
         }
       }
+
       for (message in gameObserver.boardToPathAnimations) {
         if (message.startTime < newTime) {
           movingGameObjects.add(Projectile(
@@ -60,29 +62,36 @@ class PlayStateWave(
           removeBoardAnimations += message
         }
       }
+
       for (message in gameObserver.moneyAnimations) {
         if (message.time < newTime) {
           gameObserver.money = message.newValue
         }
       }
+
       for (message in gameObserver.healthAnimations) {
         if (message.time < newTime) {
           gameObserver.health = message.newValue
         }
       }
+
       for (movingGameObject in movingGameObjects) {
         movingGameObject.update(deltaTime)
       }
+
     } else if (gameObserver.endGame && gameObserver.timeConfirmed > 0) {
       stateManager.set(EndGameState(stateManager, gameObserver.endGameMessage!!))
+
     } else if (gameObserver.timeConfirmed > 0) {
       gameObserver.healthAnimations.clear()
       gameObserver.moneyAnimations.clear()
       stateManager.set(PlayStatePlacement(stateManager, gameObserver))
     }
+
     for (message in removePathAnimations) {
       gameObserver.pathToPathAnimations -= message
     }
+
     for (message in removeBoardAnimations) {
       gameObserver.boardToPathAnimations -= message
     }
@@ -91,9 +100,18 @@ class PlayStateWave(
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
 
+    sprites.begin()
+    sprites.draw(
+      Textures.stage(gameObserver.gameStage!!.Number),
+      0f,
+      0f,
+      Constants.GAME_WIDTH - Constants.SIDEBAR_WIDTH,
+      GAME_HEIGHT
+    )
+    sprites.end()
+
     super.draw()
 
-    // Board
     sprites.begin()
 
     for (movingGameObject in movingGameObjects) {
@@ -102,11 +120,11 @@ class PlayStateWave(
 
     for (tower in gameObserver.placedTowers) {
       sprites.draw(
-              Texture(Textures.tower(tower.type)),
-              tower.position.x * gameObserver.gameStage!!.tileWidth,
-              tower.position.y * gameObserver.gameStage!!.tileHeight,
-              gameObserver.gameStage!!.tileWidth,
-              gameObserver.gameStage!!.tileHeight
+        Textures.tower(tower.type),
+        tower.positionX * gameObserver.gameStage!!.tileWidth,
+        tower.positionY * gameObserver.gameStage!!.tileHeight,
+        gameObserver.gameStage!!.tileWidth,
+        gameObserver.gameStage!!.tileHeight
       )
     }
 
@@ -114,43 +132,38 @@ class PlayStateWave(
       movingGameObject.draw(sprites)
     }
 
-    sprites.end()
-
-    // Side-panel
-    sprites.begin()
-
-    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
+    super.renderSidebar(sprites)
 
     // Health display
     sprites.draw(
-      heartTexture,
-      GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
-      GAME_HEIGHT * 9/12 - LARGE_ICON_SIZE / 2,
+      Textures.icon("heart"),
+      centerPositionX - LARGE_ICON_SIZE * 0.5f,
+      GAME_HEIGHT * 0.75f - LARGE_ICON_SIZE * 0.5f,
       LARGE_ICON_SIZE,
       LARGE_ICON_SIZE
     )
     val healthText = gameObserver.health.toString()
-    font.draw(
+    bigFont.draw(
       sprites,
       healthText,
-      GAME_WIDTH - (SIDEBAR_WIDTH + font.width(healthText)) / 2,
-      GAME_HEIGHT * 7/12 + font.height(healthText) / 2
+      centerPositionX - bigFont.width(healthText) * 0.5f,
+      GAME_HEIGHT * 0.6f + bigFont.height(healthText) * 0.5f
     )
 
     // Money display
     sprites.draw(
-      moneyTexture,
-      GAME_WIDTH - (SIDEBAR_WIDTH + LARGE_ICON_SIZE) / 2,
-      GAME_HEIGHT * 4/12 - LARGE_ICON_SIZE / 2,
+      Textures.icon("money"),
+      centerPositionX - LARGE_ICON_SIZE * 0.5f,
+      GAME_HEIGHT * 0.35f - LARGE_ICON_SIZE * 0.5f,
       LARGE_ICON_SIZE,
       LARGE_ICON_SIZE
     )
     val moneyText = gameObserver.money.toString()
-    font.draw(
+    bigFont.draw(
       sprites,
       moneyText,
-      GAME_WIDTH - (SIDEBAR_WIDTH + font.width(moneyText)) / 2,
-      GAME_HEIGHT * 2/12 + font.height(moneyText) / 2
+      centerPositionX - bigFont.width(moneyText) * 0.5f,
+      GAME_HEIGHT * 0.2f + bigFont.height(moneyText) * 0.5f
     )
 
     sprites.end()
@@ -158,9 +171,6 @@ class PlayStateWave(
 
   override fun dispose() {
     super.dispose()
-
-    for (movingGameObject in movingGameObjects) {
-      movingGameObject.dispose()
-    }
+    bigFont.dispose()
   }
 }

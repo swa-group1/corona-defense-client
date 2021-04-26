@@ -15,8 +15,6 @@ import com.coronadefense.utils.Textures
 class TutorialState(
   stateManager: StateManager
 ): InputState(stateManager){
-  private val background = Textures.background("tutorial")
-
   private val backButton = BackButton("MainMenu", stateManager, stage)
 
   override fun update(deltaTime: Float) {
@@ -27,7 +25,8 @@ class TutorialState(
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0f, 0f, GAME_WIDTH, GAME_HEIGHT)
+    sprites.draw(Textures.background("tutorial"), 0f, 0f, GAME_WIDTH, GAME_HEIGHT)
+    backButton.render(sprites)
 
     sprites.end()
     super.draw()

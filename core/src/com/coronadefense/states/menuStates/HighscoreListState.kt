@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 class HighscoreListState(
   stateManager: StateManager
 ): InputState(stateManager){
-  private val background = Textures.background("menu")
   private val backButton = BackButton("MainMenu", stateManager, stage)
 
   private val font = Font(20)
@@ -50,7 +49,8 @@ class HighscoreListState(
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0f, 0f, GAME_WIDTH, GAME_HEIGHT)
+    sprites.draw(Textures.background("menu"), 0f, 0f, GAME_WIDTH, GAME_HEIGHT)
+    backButton.render(sprites)
 
     font.draw(
       sprites,

@@ -15,99 +15,106 @@ object Textures {
 
   private val buttons: MutableMap<String, Texture> = mutableMapOf()
   fun button(type: String): Texture {
-    if (buttons.containsKey(type)) {
+    if (!buttons.containsKey(type)) {
       buttons[type] = Texture("buttons/$type.png")
     }
     return buttons[type]!!
   }
   fun disposeButtons() {
-    for ((type, texture) in buttons) {
-      texture.dispose()
-      buttons.remove(type)
+    val iterator = buttons.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val stages: MutableMap<Int, Texture> = mutableMapOf()
   fun stage(number: Int): Texture {
-    if (stages.containsKey(number)) {
+    if (!stages.containsKey(number)) {
       stages[number] = Texture("stages/stage_${number.toString().padStart(3, '0')}_img.png")
     }
     return stages[number]!!
   }
   fun disposeStages() {
-    for ((number, texture) in stages) {
-      texture.dispose()
-      stages.remove(number)
+    val iterator = stages.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val intruders: MutableMap<Int, Texture> = mutableMapOf()
   fun intruder(number: Int): Texture {
-    if (intruders.containsKey(number)) {
+    if (!intruders.containsKey(number)) {
       intruders[number] = Texture("intruders/${number.toString().padStart(3, '0')}.png")
     }
     return intruders[number]!!
   }
   fun disposeIntruders() {
-    for ((number, texture) in intruders) {
-      texture.dispose()
-      intruders.remove(number)
+    val iterator = intruders.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val towers: MutableMap<Int, Texture> = mutableMapOf()
   fun tower(number: Int): Texture {
-    if (towers.containsKey(number)) {
+    if (!towers.containsKey(number)) {
       towers[number] = Texture("towers/1${(number * 2).toString().padStart(2, '0')}.png")
     }
     return towers[number]!!
   }
   fun disposeTowers() {
-    for ((number, texture) in towers) {
-      texture.dispose()
-      towers.remove(number)
+    val iterator = towers.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val projectiles: MutableMap<Int, Texture> = mutableMapOf()
   fun projectile(number: Int): Texture {
-    if (projectiles.containsKey(number)) {
-      projectiles[number] = Texture("projectiles/1${(number * 2).toString().padStart(2, '0')}.png")
+    if (!projectiles.containsKey(number)) {
+      projectiles[number] = Texture("projectiles/${number.toString().padStart(3, '0')}.png")
     }
     return projectiles[number]!!
   }
   fun disposeProjectiles() {
-    for ((number, texture) in projectiles) {
-      texture.dispose()
-      projectiles.remove(number)
+    val iterator = projectiles.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val backgrounds: MutableMap<String, Texture> = mutableMapOf()
   fun background(type: String): Texture {
-    if (backgrounds.containsKey(type)) {
+    if (!backgrounds.containsKey(type)) {
       backgrounds[type] = Texture("backgrounds/$type.png")
     }
     return backgrounds[type]!!
   }
   fun disposeBackgrounds() {
-    for ((type, texture) in backgrounds) {
-      texture.dispose()
-      backgrounds.remove(type)
+    val iterator = backgrounds.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 
   private val icons: MutableMap<String, Texture> = mutableMapOf()
   fun icon(type: String): Texture {
-    if (icons.containsKey(type)) {
+    if (!icons.containsKey(type)) {
       icons[type] = Texture("icons/$type.png")
     }
     return icons[type]!!
   }
   fun disposeIcons() {
-    for ((type, texture) in icons) {
-      texture.dispose()
-      icons.remove(type)
+    val iterator = icons.iterator()
+    while (iterator.hasNext()) {
+      iterator.next().value.dispose()
+      iterator.remove()
     }
   }
 }

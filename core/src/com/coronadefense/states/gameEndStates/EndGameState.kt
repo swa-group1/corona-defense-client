@@ -13,15 +13,15 @@ class EndGameState(
   stateManager: StateManager,
   endGameMessage: EndGameMessage
 ) : InputState(stateManager) {
-  private val background = if (endGameMessage.victory) Textures.background("win") else Textures.background("loss")
+  private val backgroundType = if (endGameMessage.victory) "win" else "loss"
   private val backButton = BackButton("MainMenu", stateManager, stage)
 
   private val font = Font(20)
   private val bigFont = Font(30)
   private val highscoreMessage: String = when (endGameMessage.onHighScoreList) {
-    in 1..10 -> "You made the highscore list, your current position is ${endGameMessage.onHighScoreList}"
+    in 1..10 -> "You made the highscore list, your current position is ${endGameMessage.onHighScoreList}!"
     0 -> "You did not make it onto the highscore list."
-    -1 -> "Try HARD mode to get on the highscore list."
+    -1 -> "Try HARD mode to get on the highscore list!"
     else -> ""
   }
   private val score: String = "Score: ${endGameMessage.score}"
@@ -34,7 +34,8 @@ class EndGameState(
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0f, 0f, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+    sprites.draw(Textures.background(backgroundType), 0f, 0f, Constants.GAME_WIDTH, Constants.GAME_HEIGHT)
+    backButton.render(sprites)
 
     font.draw(
       sprites,

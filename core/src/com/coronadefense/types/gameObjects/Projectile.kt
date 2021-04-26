@@ -1,6 +1,5 @@
 package com.coronadefense.types.gameObjects
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Affine2
@@ -13,15 +12,14 @@ import ktx.math.plus
 import ktx.math.times
 
 class Projectile(
-  spriteNumber: Int,
+  private val spriteNumber: Int,
   startTileX: Int,
   startTileY: Int,
   endPosition: Float,
   private val time: Float,
   private val gameStage: GameStage
 ) : MovingGameObject {
-  override val texture = Texture(Textures.projectile(spriteNumber))
-  private val textureRegion: TextureRegion = TextureRegion(texture)
+  private val textureRegion: TextureRegion = TextureRegion(Textures.projectile(spriteNumber))
 
   /** Tile size in pixels. */
   private val tileSize: Vector2 = Vector2(gameStage.tileWidth, gameStage.tileHeight)
@@ -67,7 +65,5 @@ class Projectile(
     }
   }
 
-  override fun dispose() {
-    texture.dispose()
-  }
+  override fun dispose() { /* Texture disposal handled by Textures */ }
 }
