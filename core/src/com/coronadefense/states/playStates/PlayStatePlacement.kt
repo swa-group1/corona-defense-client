@@ -60,9 +60,6 @@ class PlayStatePlacement(
     runBlocking {
       towerList = ApiClient.towerListRequest()
 
-      val newTowerList: List<TowerData> = towerList!!.toMutableList() + mutableListOf(towerList!![0])
-      towerList = newTowerList
-
       val rows = ceil(towerList!!.size * 0.5f)
       val maxShopTowerSize = (
         GAME_HEIGHT - (SIDEBAR_SPACING + SHOP_TOWER_PADDING) * rows - SIDEBAR_SPACING * 2f - START_WAVE_BUTTON_HEIGHT - LEAVE_GAME_BUTTON_HEIGHT
