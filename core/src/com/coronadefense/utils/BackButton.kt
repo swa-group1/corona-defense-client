@@ -1,6 +1,6 @@
 package com.coronadefense.utils
 
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -20,12 +20,16 @@ class BackButton(
   stage: Stage,
   private val gameObserver: GameObserver? = null,
 ) {
-  val texture = Texture(Textures.button("back"))
-  private val button = Image(texture)
+  private val button = Image()
+
+  private val backButtonPositionY = GAME_HEIGHT - BACK_BUTTON_SIZE * 0.5f - BACK_BUTTON_Y_OFFSET
+
   var action: String? = null
+
   init {
     button.setSize(BACK_BUTTON_SIZE, BACK_BUTTON_SIZE)
-    button.setPosition(BACK_BUTTON_X_OFFSET, GAME_HEIGHT - BACK_BUTTON_SIZE / 2 - BACK_BUTTON_Y_OFFSET)
+    button.setPosition(BACK_BUTTON_X_OFFSET, backButtonPositionY)
+
     button.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         action = actionToSet
@@ -33,6 +37,17 @@ class BackButton(
     })
     stage.addActor(button)
   }
+
+  fun render(sprites: SpriteBatch) {
+    sprites.draw(
+      Textures.button("back"),
+      BACK_BUTTON_X_OFFSET,
+      backButtonPositionY,
+      BACK_BUTTON_SIZE,
+      BACK_BUTTON_SIZE
+    )
+  }
+
   fun update() {
     when (action) {
       "MainMenu" -> stateManager.set(MainMenuState(stateManager))
@@ -44,8 +59,9 @@ class BackButton(
       }
     }
   }
+
   fun dispose() {
-    texture.dispose()
     button.clearListeners()
+    // Texture disposal handled by Textures
   }
 }

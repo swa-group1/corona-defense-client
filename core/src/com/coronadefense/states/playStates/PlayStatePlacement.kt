@@ -1,6 +1,5 @@
 package com.coronadefense.states.playStates
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -9,97 +8,73 @@ import com.coronadefense.states.StateManager
 import com.coronadefense.api.ApiClient
 import com.coronadefense.api.TowerData
 import com.coronadefense.states.GameObserver
-import com.coronadefense.states.ObserverState
 import com.coronadefense.states.menuStates.LobbyState
-import com.coronadefense.types.utils.Coords
 import com.coronadefense.utils.Textures
-import com.coronadefense.types.utils.Position
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
+import com.coronadefense.utils.Constants.LEAVE_GAME_BUTTON_HEIGHT
+import com.coronadefense.utils.Constants.START_WAVE_BUTTON_HEIGHT
 import com.coronadefense.utils.Constants.SIDEBAR_SPACING
 import com.coronadefense.utils.Constants.SHOP_TOWER_PADDING
-import com.coronadefense.utils.Constants.SHOP_TOWER_SIZE
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import com.coronadefense.utils.Constants.SMALL_ICON_SIZE
 import com.coronadefense.utils.Constants.SMALL_ICON_SPACING
-import com.coronadefense.utils.Font
 import kotlinx.coroutines.*
+import kotlin.math.ceil
 import kotlin.math.floor
 
 class PlayStatePlacement(
   stateManager: StateManager,
   private val gameObserver: GameObserver
-) : ObserverState(stateManager) {
-  private val font = Font(20)
+) : PlayState(stateManager, gameObserver) {
+  private val stageMap = Image()
 
-  private val sidebarTexture = Texture(Textures.background("sidebar"))
-  private val heartTexture = Texture(Textures.icon("heart"))
-  private val moneyTexture = Texture(Textures.icon("money"))
-  private val selectedTexture = Texture(Textures.button("standard"))
-  private val notSelectedTexture = Texture(Textures.button("gray"))
+  private val leftPositionX: Float = GAME_WIDTH - SIDEBAR_WIDTH * 0.75f
+  private val rightPositionX: Float = GAME_WIDTH - SIDEBAR_WIDTH * 0.25f
 
-  private val stageMapTexture: Texture = Texture(Textures.stage(gameObserver.gameStage!!.Number))
-  private val stageMap = Image(stageMapTexture)
+  private val shopTitle = "SHOP"
+  private val shopTitlePositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 0.5f
+
+  private val healthMoneyPositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 1.5f
 
   private var towerList: List<TowerData>? = null
+  private var selectedTower: Int? = null
+  private var changeMode: Boolean = false
+  private val towerShopPositionsY: MutableList<Float> = mutableListOf()
+  private var shopTowerSize = SIDEBAR_WIDTH * 0.5f - SHOP_TOWER_PADDING
+  private val towerButtonSizeX: Float = SIDEBAR_WIDTH * 0.5f
+
+  private var startWave: Boolean = false
+  private val startWaveButtonText = "READY"
+  private val startWavePositionY: Float = LEAVE_GAME_BUTTON_HEIGHT
+
   init {
     runBlocking {
       towerList = ApiClient.towerListRequest()
-    }
-  }
-  private val towerShopTextures: MutableList<Texture> = mutableListOf()
-  private val towerShopCoords: MutableList<Coords> = mutableListOf()
-  private val towerButtonSizeX = SIDEBAR_WIDTH / 2
-  private val towerButtonSizeY = SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING
 
-  private var startWave: Boolean = false
+      val newTowerList: List<TowerData> = towerList!!.toMutableList() + mutableListOf(towerList!![0])
+      towerList = newTowerList
 
-  private var selectedTower: Int? = null
-  private var changeMode: Boolean = false
-
-  init {
-    stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
-    stageMap.setPosition(0f, 0f)
-    stage.addActor(stageMap)
-
-    textures += heartTexture
-    textures += moneyTexture
-
-    val startWaveButtonTexture = Texture(Textures.button("standard"))
-    textures += startWaveButtonTexture
-
-    val startWaveButton = Image(startWaveButtonTexture)
-    buttons += startWaveButton
-
-    startWaveButton.setSize(
-      SIDEBAR_WIDTH,
-      GAME_HEIGHT - (SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * 3 - 2 * SIDEBAR_SPACING
-    )
-    startWaveButton.setPosition(GAME_WIDTH - SIDEBAR_WIDTH, 0f)
-
-    startWaveButton.addListener(object : ClickListener() {
-      override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        startWave = true
+      val rows = ceil(towerList!!.size * 0.5f)
+      val maxShopTowerSize = (
+        GAME_HEIGHT - (SIDEBAR_SPACING + SHOP_TOWER_PADDING) * rows - SIDEBAR_SPACING * 2f - START_WAVE_BUTTON_HEIGHT - LEAVE_GAME_BUTTON_HEIGHT
+      ) / rows
+      if (maxShopTowerSize < shopTowerSize && maxShopTowerSize > 0) {
+        shopTowerSize = maxShopTowerSize
       }
-    })
 
-    stage.addActor(startWaveButton)
-
-    towerList?.let {
       for ((index, tower) in towerList!!.withIndex()) {
-        towerShopTextures += Texture(Textures.tower(tower.TypeNumber))
-
-        val towerShopX: Float = GAME_WIDTH - SIDEBAR_WIDTH * (3 - 2 * (index % 2)) * 0.25f
-        val towerShopY: Float =
-          GAME_HEIGHT - SIDEBAR_SPACING - towerButtonSizeY * (1 + index / 2)
-
-        towerShopCoords += Coords(towerShopX, towerShopY)
+        val towerShopPositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 2 - (shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
+        towerShopPositionsY += towerShopPositionY
 
         val towerButton = Image()
         buttons += towerButton
 
-        towerButton.setSize(towerButtonSizeX, towerButtonSizeY)
-        towerButton.setPosition(towerShopX - towerButtonSizeX / 2, towerShopY - SIDEBAR_SPACING)
+        towerButton.setSize(towerButtonSizeX, shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING)
+        towerButton.setPosition(
+          (if (index % 2 == 0) leftPositionX else rightPositionX) - towerButtonSizeX * 0.5f,
+          towerShopPositionY
+        )
 
         towerButton.addListener(object : ClickListener() {
           override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -113,6 +88,24 @@ class PlayStatePlacement(
         stage.addActor(towerButton)
       }
     }
+
+    stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
+    stageMap.setPosition(0f, 0f)
+    stage.addActor(stageMap)
+
+    val startWaveButton = Image()
+    buttons += startWaveButton
+
+    startWaveButton.setSize(SIDEBAR_WIDTH, START_WAVE_BUTTON_HEIGHT)
+    startWaveButton.setPosition(GAME_WIDTH - SIDEBAR_WIDTH, startWavePositionY)
+
+    startWaveButton.addListener(object : ClickListener() {
+      override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        startWave = true
+      }
+    })
+
+    stage.addActor(startWaveButton)
   }
 
   private fun shopMode() {
@@ -123,12 +116,10 @@ class PlayStatePlacement(
     gameObserver.gameStage?.let {
       stageMap.addListener(object: ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-          val cellPosition = Position(
-            floor(x / gameObserver.gameStage!!.tileWidth).toInt(),
-            floor(y / gameObserver.gameStage!!.tileHeight).toInt()
-          )
+          val cellPositionX = floor(x / gameObserver.gameStage!!.tileWidth).toInt()
+          val cellPositionY = floor(y / gameObserver.gameStage!!.tileHeight).toInt()
 
-          println("clicked x: ${cellPosition.x} y: ${cellPosition.y}")
+          println("clicked ($cellPositionX, $cellPositionY)")
 
           selectedTower?.let {
             runBlocking {
@@ -136,8 +127,8 @@ class PlayStatePlacement(
                 gameObserver.lobbyId,
                 gameObserver.accessToken,
                 selectedTower!!,
-                cellPosition.x,
-                cellPosition.y
+                cellPositionX,
+                cellPositionY
               )
               selectedTower = null
               changeMode = true
@@ -149,6 +140,10 @@ class PlayStatePlacement(
   }
 
   override fun update(deltaTime: Float) {
+    if (super.update()) {
+      return
+    }
+
     gameObserver.gameStage?.let {
       if (startWave) {
         runBlocking {
@@ -177,26 +172,32 @@ class PlayStatePlacement(
     sprites.projectionMatrix = camera.combined
 
     sprites.begin()
-    sprites.draw(sidebarTexture, GAME_WIDTH - SIDEBAR_WIDTH, 0f, SIDEBAR_WIDTH, GAME_HEIGHT)
+    sprites.draw(
+      Textures.stage(gameObserver.gameStage!!.Number),
+      0f,
+      0f,
+      GAME_WIDTH - SIDEBAR_WIDTH,
+      GAME_HEIGHT
+    )
+    super.renderSidebar(sprites)
     sprites.end()
 
     super.draw()
 
     sprites.begin()
 
-    val shopTitle = "SHOP"
     font.draw(
       sprites,
       shopTitle,
-      GAME_WIDTH - (SIDEBAR_WIDTH + font.width(shopTitle)) / 2,
-      GAME_HEIGHT - SIDEBAR_SPACING / 2 + font.height(shopTitle) / 2
+      centerPositionX + font.width(shopTitle) * 0.5f,
+      shopTitlePositionY + font.height(shopTitle) * 0.5f
     )
 
     gameObserver.health?.let {
       sprites.draw(
-        heartTexture,
-        GAME_WIDTH - (SIDEBAR_WIDTH) * 3/4 - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
-        GAME_HEIGHT - SIDEBAR_SPACING * 3/2 - SMALL_ICON_SIZE / 2,
+        Textures.icon("heart"),
+        leftPositionX - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
+        healthMoneyPositionY - SMALL_ICON_SIZE * 0.5f,
         SMALL_ICON_SIZE,
         SMALL_ICON_SIZE
       )
@@ -204,16 +205,16 @@ class PlayStatePlacement(
       font.draw(
         sprites,
         healthText,
-        GAME_WIDTH - (SIDEBAR_WIDTH) * 3/4 - font.width(healthText) / 2 + SMALL_ICON_SPACING,
-        GAME_HEIGHT - SIDEBAR_SPACING * 3/2 + font.height(healthText) / 2
+        leftPositionX + SMALL_ICON_SPACING - font.width(healthText) * 0.5f,
+        healthMoneyPositionY + font.height(healthText) * 0.5f
       )
     }
 
     gameObserver.money?.let {
       sprites.draw(
-        moneyTexture,
-        GAME_WIDTH - (SIDEBAR_WIDTH) / 4 - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
-        GAME_HEIGHT - SIDEBAR_SPACING * 3/2 - SMALL_ICON_SIZE / 2,
+        Textures.icon("money"),
+        rightPositionX - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
+        healthMoneyPositionY - SMALL_ICON_SIZE * 0.5f,
         SMALL_ICON_SIZE,
         SMALL_ICON_SIZE
       )
@@ -221,31 +222,32 @@ class PlayStatePlacement(
       font.draw(
         sprites,
         moneyText,
-        GAME_WIDTH - (SIDEBAR_WIDTH) / 4 - font.width(moneyText) / 2 + SMALL_ICON_SPACING,
-        GAME_HEIGHT - SIDEBAR_SPACING * 3/2 + font.height(moneyText) / 2
+        rightPositionX + SMALL_ICON_SPACING - font.width(moneyText) * 0.5f,
+        healthMoneyPositionY + font.height(moneyText) * 0.5f
       )
     }
 
     towerList?.let {
       for ((index, tower) in towerList!!.withIndex()) {
+        val positionX = if (index % 2 == 0) leftPositionX else rightPositionX
         sprites.draw(
-          towerShopTextures[index],
-          towerShopCoords[index].x - SHOP_TOWER_SIZE / 2,
-          towerShopCoords[index].y,
-          SHOP_TOWER_SIZE,
-          SHOP_TOWER_SIZE
+          Textures.tower(tower.TypeNumber),
+          positionX - shopTowerSize * 0.5f,
+          towerShopPositionsY[index] + SIDEBAR_SPACING,
+          shopTowerSize,
+          shopTowerSize
         )
         sprites.draw(
-          if (tower.TypeNumber == selectedTower) selectedTexture else notSelectedTexture,
-          towerShopCoords[index].x - towerButtonSizeX / 2,
-          towerShopCoords[index].y - SIDEBAR_SPACING,
+          if (tower.TypeNumber == selectedTower) Textures.button("standard") else Textures.button("gray"),
+          positionX - towerButtonSizeX * 0.5f,
+          towerShopPositionsY[index],
           towerButtonSizeX,
-          towerButtonSizeY
+          shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING
         )
         sprites.draw(
-          moneyTexture,
-          towerShopCoords[index].x - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
-          towerShopCoords[index].y - SIDEBAR_SPACING / 2 - SMALL_ICON_SIZE / 2,
+          Textures.icon("money"),
+          positionX - SMALL_ICON_SIZE - SMALL_ICON_SPACING,
+          towerShopPositionsY[index] + SIDEBAR_SPACING * 0.5f - SMALL_ICON_SIZE * 0.5f,
           SMALL_ICON_SIZE,
           SMALL_ICON_SIZE
         )
@@ -253,36 +255,33 @@ class PlayStatePlacement(
         font.draw(
           sprites,
           towerPriceText,
-          towerShopCoords[index].x - font.width(towerPriceText) / 2 + SMALL_ICON_SPACING,
-          towerShopCoords[index].y - SIDEBAR_SPACING / 2 + font.height(towerPriceText) / 2
+          positionX + SMALL_ICON_SPACING - font.width(towerPriceText) * 0.5f,
+          towerShopPositionsY[index] + SIDEBAR_SPACING * 0.5f + font.height(towerPriceText) * 0.5f
         )
       }
     }
 
-    val startWaveButtonText1 = "RELEASE"
-    val startWaveButtonText2 = "THE VIRUS"
-    val startWaveButtonTextX = GAME_WIDTH - (SIDEBAR_WIDTH) / 2
-    val startWaveButtonTextY = (GAME_HEIGHT - (SHOP_TOWER_SIZE + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * 3 - 2 * SIDEBAR_SPACING) / 2
-    font.draw(
-      sprites,
-      startWaveButtonText1,
-      startWaveButtonTextX - font.width(startWaveButtonText1) / 2,
-      startWaveButtonTextY + 5f + font.height(startWaveButtonText1)
+    sprites.draw(
+      Textures.button("standard"),
+      GAME_WIDTH - SIDEBAR_WIDTH,
+      startWavePositionY,
+      SIDEBAR_WIDTH,
+      START_WAVE_BUTTON_HEIGHT
     )
     font.draw(
       sprites,
-      startWaveButtonText2,
-      startWaveButtonTextX - font.width(startWaveButtonText2) / 2,
-      startWaveButtonTextY - font.height(startWaveButtonText2) / 2,
+      startWaveButtonText,
+      centerPositionX - font.width(startWaveButtonText) / 2,
+      startWavePositionY + (START_WAVE_BUTTON_HEIGHT + font.height(startWaveButtonText)) * 0.5f
     )
 
     // copies placedTowers list to avoid ConcurrentModificationException
     val currentPlacedTowers = gameObserver.placedTowers.toList()
     for (tower in currentPlacedTowers) {
       sprites.draw(
-        Texture(Textures.tower(tower.type)),
-        tower.position.x * gameObserver.gameStage!!.tileWidth,
-        tower.position.y * gameObserver.gameStage!!.tileHeight,
+        Textures.tower(tower.type),
+        tower.positionX * gameObserver.gameStage!!.tileWidth,
+        tower.positionY * gameObserver.gameStage!!.tileHeight,
         gameObserver.gameStage!!.tileWidth,
         gameObserver.gameStage!!.tileHeight
       )
@@ -293,16 +292,7 @@ class PlayStatePlacement(
 
   override fun dispose() {
     super.dispose()
-
-    font.dispose()
-    stageMapTexture.dispose()
     stageMap.clearListeners()
-    selectedTexture.dispose()
-    notSelectedTexture.dispose()
-
-    for (towerTexture in towerShopTextures) {
-      towerTexture.dispose()
-    }
 
     println("PlayStatePlacement disposed")
   }

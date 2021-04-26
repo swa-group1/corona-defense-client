@@ -16,8 +16,6 @@ abstract class InputState(
 ) : State(stateManager) {
   private val viewport: Viewport = StretchViewport(GAME_WIDTH, GAME_HEIGHT, camera)
   protected val stage: Stage = Stage(viewport, Game.sprites)
-
-  protected val textures: MutableList<Texture> = mutableListOf()
   protected val buttons: MutableList<Image> = mutableListOf()
 
   // adds the stage as an input processor
@@ -38,12 +36,10 @@ abstract class InputState(
     if (inputMultiplexer.processors.contains(stage)) {
       inputMultiplexer.removeProcessor(stage)
     }
+
     stage.clear()
     stage.dispose()
 
-    for (texture in textures) {
-      texture.dispose()
-    }
     for (button in buttons) {
       button.clearListeners()
     }

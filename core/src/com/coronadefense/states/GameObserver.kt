@@ -1,13 +1,11 @@
 package com.coronadefense.states
 
-import com.coronadefense.Game
 import com.coronadefense.api.ApiClient
 import com.coronadefense.receiver.IReceiverObserver
 import com.coronadefense.receiver.Receiver
 import com.coronadefense.receiver.messages.*
 import com.coronadefense.types.GameStage
 import com.coronadefense.types.gameObjects.Tower
-import com.coronadefense.types.utils.Position
 import kotlinx.coroutines.runBlocking
 
 class GameObserver(
@@ -35,7 +33,9 @@ class GameObserver(
 
   fun leaveLobby() {
     runBlocking {
-      ApiClient.leaveLobbyRequest(lobbyId, accessToken)
+      try {
+        ApiClient.leaveLobbyRequest(lobbyId, accessToken)
+      } catch (exception: Exception) {}
     }
     Receiver.observer = null
   }
@@ -46,8 +46,9 @@ class GameObserver(
 
   override fun handleFightRoundMessage(message: FightRoundMessage) {
     println(message)
-
-    gameState = "fight"
+    if (gameState != "leave") {
+      gameState = "fight"
+    }
   }
 
   override fun handleGameModeMessage(message: GameModeMessage) {
@@ -61,15 +62,20 @@ class GameObserver(
   override fun handleInputRoundMessage(message: InputRoundMessage) {
     println(message)
 
-    gameState = "input"
+    if (gameState != "leave") {
+      gameState = "input"
+    }
   }
 
   override fun handleLobbyModeMessage(message: LobbyModeMessage) {
     println(message)
+
+    gameState = "lobby"
   }
 
   override fun handleEndGameMessage(message: EndGameMessage) {
     println(message)
+
     endGame = true
     endGameMessage=message
   }
@@ -98,7 +104,8 @@ class GameObserver(
     placedTowers += Tower(
       message.towerId,
       message.typeNumber,
-      Position(message.xPosition, message.yPosition)
+      message.xPosition,
+      message.yPosition
     )
   }
 

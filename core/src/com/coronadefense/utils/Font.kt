@@ -19,14 +19,14 @@ class Font(size: Int) {
   }
   private val font: BitmapFont = fontGenerator.generateFont(fontParameter)
 
+  private val glyphLayout = GlyphLayout()
+
   fun width(text: String): Float {
-    val glyphLayout = GlyphLayout()
     glyphLayout.setText(font, text)
     return glyphLayout.width
   }
 
   fun height(text: String): Float {
-    val glyphLayout = GlyphLayout()
     glyphLayout.setText(font, text)
     return glyphLayout.height
   }

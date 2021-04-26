@@ -1,6 +1,5 @@
 package com.coronadefense.states.menuStates
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -15,33 +14,31 @@ import com.coronadefense.utils.Constants.MENU_BUTTON_SPACING
 import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import com.coronadefense.utils.Font
-import java.util.*
 
 class MainMenuState(
   stateManager: StateManager
 ): InputState(stateManager) {
-  private val background = Texture(Textures.background("menu"))
   private val font = Font(20)
 
+  private val centerPositionX: Float = GAME_WIDTH * 0.5f
+  private val buttonPositionsY: MutableList<Float> = mutableListOf()
+
   private val menuActions: MutableMap<String, Boolean> = mutableMapOf(
-    "play" to false,
-    "highscores" to false,
-    "tutorial" to false
+    "PLAY" to false,
+    "HIGHSCORES" to false,
+    "TUTORIAL" to false
   )
 
   init {
-    for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
-      val buttonTexture = Texture(Textures.button("standard"))
-      textures += buttonTexture
-
-      val button = Image(buttonTexture)
+    for ((index, menuAction) in menuActions.keys.withIndex()) {
+      val button = Image()
       buttons += button
 
+      val buttonPositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - (MENU_BUTTON_HEIGHT + MENU_BUTTON_SPACING) * (index + 1)
+      buttonPositionsY += buttonPositionY
+
       button.setSize(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT)
-      button.setPosition(
-        (GAME_WIDTH - MENU_BUTTON_WIDTH) / 2,
-        (GAME_HEIGHT) / 2 + MENU_TITLE_OFFSET - (MENU_BUTTON_HEIGHT + MENU_BUTTON_SPACING) * (menuIndex + 1)
-      )
+      button.setPosition(centerPositionX - MENU_BUTTON_WIDTH * 0.5f, buttonPositionY)
 
       button.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -57,9 +54,9 @@ class MainMenuState(
     for ((menuAction, execute) in menuActions) {
       if (execute) {
         when (menuAction) {
-          "play" -> return stateManager.set(LobbyListState(stateManager))
-          "highscores" -> return stateManager.set(HighscoreListState(stateManager))
-          "tutorial" -> return stateManager.set(TutorialState(stateManager))
+          "PLAY" -> return stateManager.set(LobbyListState(stateManager))
+          "HIGHSCORES" -> return stateManager.set(HighscoreListState(stateManager))
+          "TUTORIAL" -> return stateManager.set(TutorialState(stateManager))
         }
       }
     }
@@ -69,16 +66,21 @@ class MainMenuState(
     sprites.projectionMatrix = camera.combined
     sprites.begin()
 
-    sprites.draw(background, 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
+    sprites.draw(Textures.background("menu"), 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
 
-    for ((menuIndex, menuAction) in menuActions.keys.withIndex()) {
-      val buttonText = menuAction.toUpperCase(Locale.ROOT)
+    for ((index, menuAction) in menuActions.keys.withIndex()) {
+      sprites.draw(
+        Textures.button("standard"),
+        centerPositionX - MENU_BUTTON_WIDTH * 0.5f,
+        buttonPositionsY[index],
+        MENU_BUTTON_WIDTH,
+        MENU_BUTTON_HEIGHT
+      )
       font.draw(
         sprites,
-        menuAction.toUpperCase(Locale.ROOT),
-        (GAME_WIDTH - font.width(buttonText)) / 2,
-        (GAME_HEIGHT + MENU_BUTTON_HEIGHT + font.height(buttonText)) / 2 + MENU_TITLE_OFFSET
-        - (MENU_BUTTON_HEIGHT + MENU_BUTTON_SPACING) * (menuIndex + 1)
+        menuAction,
+        centerPositionX - font.width(menuAction) * 0.5f,
+        buttonPositionsY[index] + (MENU_BUTTON_HEIGHT + font.height(menuAction)) * 0.5f
       )
     }
 
@@ -88,8 +90,7 @@ class MainMenuState(
 
   override fun dispose() {
     super.dispose()
-
-    background.dispose()
+    Textures.disposeAll()
     font.dispose()
 
     println("MenuState disposed")

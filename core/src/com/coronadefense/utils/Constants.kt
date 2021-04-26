@@ -7,7 +7,6 @@ object Constants {
 
   const val SIDEBAR_WIDTH = GAME_WIDTH / 4
   const val SIDEBAR_SPACING = 25f
-  const val SHOP_TOWER_SIZE = 75f
   const val SHOP_TOWER_PADDING = 10f
 
   const val MENU_BUTTON_WIDTH = 180f
@@ -15,12 +14,17 @@ object Constants {
   const val MENU_BUTTON_SPACING = 30f
   const val MENU_TITLE_OFFSET = 120f
 
+  const val START_WAVE_BUTTON_HEIGHT = 45f
+  const val LEAVE_GAME_BUTTON_HEIGHT = 30f
+
   const val BOTTOM_BUTTON_OFFSET = -210f
 
   const val LIST_ITEM_WIDTH = 300f
   const val LIST_ITEM_HEIGHT = 30f
-  const val LIST_ITEM_SPACING = 0f
   const val LIST_TEXT_INLINE_OFFSET = 25f
+
+  const val COLUMN_ITEM_WIDTH = 150f
+  const val COLUMN_SPACING = 100f
 
   const val BACK_BUTTON_SIZE = 60f
   const val BACK_BUTTON_X_OFFSET = 100f
@@ -31,7 +35,7 @@ object Constants {
   const val LARGE_ICON_SIZE = 100f
 }
 
-enum class Difficulty(val value: Int) {
+enum class DIFFICULTY(val value: Int) {
   EASY(0),
   MEDIUM(1),
   HARD(2)
