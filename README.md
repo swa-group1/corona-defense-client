@@ -23,10 +23,10 @@ Communicates with the beckend server
 Recieves messages from the backend broadcaster about game events
 
 ### States
-Different game states
+The different game states (menus, play states, etc.)
 
 ### Types
-Type definities for different game objects.
+Type definitions for different game objects.
 
 ### Utilities
 Utility classes.
