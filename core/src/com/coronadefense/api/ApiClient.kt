@@ -12,6 +12,10 @@ const val baseUrl = "http://35.228.171.73:5000"
 //const val baseUrl = "http://localhost:5000"
 const val firebaseUrl = "https://firebasestorage.googleapis.com/v0/b/coronadefense-1.appspot.com/o/"
 
+/**
+ * Object to send requests to the API.
+ * Used to fetch config files from Firebase, set up lobbies, and communicate user input to the game on the server.
+ */
 object ApiClient {
   private val client = HttpClient {
     install(JsonFeature) {

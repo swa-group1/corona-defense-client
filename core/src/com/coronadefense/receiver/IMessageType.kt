@@ -2,6 +2,9 @@ package com.coronadefense.receiver
 
 import com.coronadefense.receiver.messages.IMessage
 
+/**
+ * Interface for the different kinds of messages received from the broadcaster.
+ */
 interface IMessageType {
   /**
    * Byte code used to differentiate between message types.

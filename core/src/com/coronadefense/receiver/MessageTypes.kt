@@ -38,6 +38,9 @@ private fun parseBool(byte: Byte): Boolean {
   return byte == 0x01.toByte();
 }
 
+/**
+ * Enum for parsing of the bytes from all the different sorts of messages from the broadcaster.
+ */
 @ExperimentalUnsignedTypes
 enum class MessageType : IMessageType {
   PING {

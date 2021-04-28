@@ -15,6 +15,11 @@ import com.coronadefense.utils.Constants.MENU_BUTTON_WIDTH
 import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 import com.coronadefense.utils.Font
 
+/**
+ * State for the main menu of the game.
+ * Extends InputState to allow pressing the menu buttons.
+ * @param stateManager Manager of all game states.
+ */
 class MainMenuState(
   stateManager: StateManager
 ): InputState(stateManager) {
@@ -23,6 +28,7 @@ class MainMenuState(
   private val centerPositionX: Float = GAME_WIDTH * 0.5f
   private val buttonPositionsY: MutableList<Float> = mutableListOf()
 
+  // Maps menu button labels to whether they have been clicked.
   private val menuActions: MutableMap<String, Boolean> = mutableMapOf(
     "PLAY" to false,
     "HIGHSCORES" to false,
@@ -30,6 +36,7 @@ class MainMenuState(
   )
 
   init {
+    // Adds a button for each menu action, setting it to true on click.
     for ((index, menuAction) in menuActions.keys.withIndex()) {
       val button = Image()
       buttons += button
@@ -51,6 +58,7 @@ class MainMenuState(
   }
 
   override fun update(deltaTime: Float) {
+    // Checks whether a menu button has been clicked, and changes to the corresponding state.
     for ((menuAction, execute) in menuActions) {
       if (execute) {
         when (menuAction) {
@@ -68,6 +76,7 @@ class MainMenuState(
 
     sprites.draw(Textures.background("menu"), 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
 
+    // Renders textures and text for each menu button.
     for ((index, menuAction) in menuActions.keys.withIndex()) {
       sprites.draw(
         Textures.button("standard"),

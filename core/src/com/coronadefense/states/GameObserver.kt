@@ -9,14 +9,27 @@ import com.coronadefense.types.gameObjects.Tower
 import com.coronadefense.utils.DIFFICULTY
 import kotlinx.coroutines.runBlocking
 
+/**
+ * Class for observing the Receiver, and store the state of the game for use by the Lobby-/PlayStates.
+ * @param lobbyId ID of the lobby connected to this game.
+ * @param lobbyName Name of the lobby connected to this game.
+ * @param accessToken Token for the current connection, for use in API requests.
+ * @param playerCount Initial player count.
+ */
 class GameObserver(
   val lobbyId: Long,
   val lobbyName: String,
   val accessToken: Long,
   var playerCount: Int
 ): IReceiverObserver {
+  // Stage to be fetched after StartGameRequest.
   var gameStage: GameStage? = null
 
+  // State of the current game
+  // "fight" for wave phase
+  // "input" for placement phase
+  // "lobby" for game setup
+  // "leave" for terminating the game
   var gameState: String? = null
 
   val placedTowers: MutableList<Tower> = mutableListOf()
@@ -24,18 +37,24 @@ class GameObserver(
   var health: Int? = null
 
   var timeConfirmed: Float = 0f // time confirmed animations
-  val pathToPathAnimations = mutableListOf<PathToPathAnimationMessage>() //Intruders
-  val healthAnimations = mutableListOf<HealthAnimationMessage>()
-  val moneyAnimations = mutableListOf<MoneyAnimationMessage>()
-  val boardToPathAnimations = mutableListOf<BoardToPathAnimationMessage>()
 
+  // Lists of animations to be rendered in turn by PlayStateWave.
+  val pathToPathAnimations = mutableListOf<PathToPathAnimationMessage>() // Intruders
+  val boardToPathAnimations = mutableListOf<BoardToPathAnimationMessage>() // Projectiles
+  val healthAnimations = mutableListOf<HealthAnimationMessage>() // Health point updates
+  val moneyAnimations = mutableListOf<MoneyAnimationMessage>()  // Money updates
+
+  // Selected difficulty of the game.
   var difficulty: DIFFICULTY? = null
 
   var endGame = false
   var endGameMessage: EndGameMessage? = null
 
+  // Whether the lobby has timed out.
   var socketClosed = false
 
+  // Function to leave the lobby and disconnect from the Receiver.
+  // Empty catch block, since a failed LeaveLobbyRequest means that the lobby is already terminated backend.
   fun leaveLobby() {
     runBlocking {
       try {
@@ -56,6 +75,7 @@ class GameObserver(
     }
   }
 
+  // When the game is started, store the difficulty and fetch the GameStage.
   override fun handleGameModeMessage(message: GameModeMessage) {
     println(message)
 
@@ -120,6 +140,7 @@ class GameObserver(
     )
   }
 
+  // Sell tower functionality not implemented frontend due to time constraints.
   override fun handleTowerRemovedMessage(message: TowerRemovedMessage) {
     println(message)
   }
