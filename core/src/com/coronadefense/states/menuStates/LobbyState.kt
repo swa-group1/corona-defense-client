@@ -153,7 +153,7 @@ class LobbyState(
 
     for (playerIndex in 0 until gameObserver.playerCount) {
       if (playerPositionsY.size <= playerIndex) {
-        playerPositionsY += positionY(playerIndex + 1)
+        playerPositionsY += positionY(playerIndex / 2 + 1)
       }
       val playerText = "Player ${playerIndex + 1}"
       font.draw(
