@@ -37,7 +37,7 @@ class LobbyState(
   private var selectedDifficulty = 0
 
   private fun positionY(listOffset: Int): Float {
-    return GAME_HEIGHT / 2 + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT * (listOffset + 0.5f)
+    return GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET - LIST_ITEM_HEIGHT * (listOffset + 0.5f)
   }
 
   private val centerPositionX: Float = GAME_WIDTH * 0.5f
@@ -45,7 +45,7 @@ class LobbyState(
   private val rightPositionX: Float = centerPositionX + COLUMN_SPACING
 
   private val title = "LOBBY: ${gameObserver.lobbyName}"
-  private val titlePositionY = GAME_HEIGHT / 2 + MENU_TITLE_OFFSET
+  private val titlePositionY = GAME_HEIGHT * 0.5f + MENU_TITLE_OFFSET
 
   private val playerPositionsY: MutableList<Float> = mutableListOf()
 
@@ -197,20 +197,22 @@ class LobbyState(
       )
 
       for ((index, gameStage) in gameStages!!.withIndex()) {
-        sprites.draw(
-          if (selectedGameStage == gameStage.Number) Textures.button("standard") else Textures.button("gray"),
-          rightPositionX - COLUMN_ITEM_WIDTH * 0.5f,
-          gameStagePositionsY[index],
-          COLUMN_ITEM_WIDTH,
-          LIST_ITEM_HEIGHT
-        )
+        if (index < gameStagePositionsY.size) {
+          sprites.draw(
+            if (selectedGameStage == gameStage.Number) Textures.button("standard") else Textures.button("gray"),
+            rightPositionX - COLUMN_ITEM_WIDTH * 0.5f,
+            gameStagePositionsY[index],
+            COLUMN_ITEM_WIDTH,
+            LIST_ITEM_HEIGHT
+          )
 
-        font.draw(
-          sprites,
-          gameStage.Name,
-          rightPositionX - font.width(gameStage.Name) * 0.5f,
-          gameStagePositionsY[index] + (LIST_ITEM_HEIGHT + font.height(gameStage.Name)) * 0.5f
-        )
+          font.draw(
+            sprites,
+            gameStage.Name,
+            rightPositionX - font.width(gameStage.Name) * 0.5f,
+            gameStagePositionsY[index] + (LIST_ITEM_HEIGHT + font.height(gameStage.Name)) * 0.5f
+          )
+        }
       }
     }
 
