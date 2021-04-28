@@ -20,8 +20,10 @@ class Intruder(
       val position = gameStage.getPointAlongPath(currentPathPosition.toDouble())
       sprites.draw(
         Textures.intruder(spriteNumber),
-        position.X.toFloat() * gameStage.tileWidth - (gameStage.tileWidth / 2),
-        position.Y.toFloat() * gameStage.tileHeight - (gameStage.tileHeight / 2), gameStage.tileWidth, gameStage.tileHeight)
+        position.X.toFloat() * gameStage.tileWidth - (gameStage.tileWidth * 0.5f),
+        position.Y.toFloat() * gameStage.tileHeight - (gameStage.tileHeight * 0.5f),
+        gameStage.tileWidth, gameStage.tileHeight
+      )
     }
   }
 

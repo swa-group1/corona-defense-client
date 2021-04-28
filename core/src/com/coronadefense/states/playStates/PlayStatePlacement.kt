@@ -70,7 +70,8 @@ class PlayStatePlacement(
       }
 
       for ((index, tower) in towerList!!.withIndex()) {
-        val towerShopPositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 2 - (shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
+        val towerShopPositionY: Float =
+          GAME_HEIGHT - SIDEBAR_SPACING * 2 - (shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
         towerShopPositionsY += towerShopPositionY
 
         val towerButton = Image()
@@ -282,7 +283,7 @@ class PlayStatePlacement(
     font.draw(
       sprites,
       startWaveButtonText,
-      centerPositionX - font.width(startWaveButtonText) / 2,
+      centerPositionX - font.width(startWaveButtonText) * 0.5f,
       startWavePositionY + (START_WAVE_BUTTON_HEIGHT + font.height(startWaveButtonText)) * 0.5f
     )
 
