@@ -27,10 +27,17 @@ import kotlinx.coroutines.*
 import kotlin.math.ceil
 import kotlin.math.floor
 
+/**
+ * Game state for the "placement phase" of the gameplay.
+ * Extends PlayState for common playstate functionality.
+ * @param stateManager Manager of all states.
+ * @param gameObserver Observes the Receiver for game updates.
+ */
 class PlayStatePlacement(
   stateManager: StateManager,
   private val gameObserver: GameObserver
 ) : PlayState(stateManager, gameObserver) {
+  // Creates an Image for the stageMap to allow for adding listeners for tower placement.
   private val stageMap = Image()
 
   private val leftPositionX: Float = GAME_WIDTH - SIDEBAR_WIDTH * 0.75f
@@ -42,25 +49,33 @@ class PlayStatePlacement(
   private val healthMoneyPositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 1.5f
 
   private var towerList: List<TowerData>? = null
+
+  // State for whether a tower has been selected for placement, and whether to change between placement/idle mode.
   private var selectedTower: Int? = null
   private var changeMode: Boolean = false
+
+  // Number by which to modify the prices displayed in the shop, based on difficulty.
   private var towerPriceModifier: Float = when (gameObserver.difficulty) {
     DIFFICULTY.EASY -> EASY_PRICE_MODIFIER
     DIFFICULTY.HARD -> HARD_PRICE_MODIFIER
     else -> 1f
   }
+
   private val towerShopPositionsY: MutableList<Float> = mutableListOf()
   private var shopTowerSize = SIDEBAR_WIDTH * 0.5f - SHOP_TOWER_PADDING
   private val towerButtonSizeX: Float = SIDEBAR_WIDTH * 0.5f
 
+  // State for whether to start the next phase of the game round.
   private var startWave: Boolean = false
   private val startWaveButtonText = "READY"
   private val startWavePositionY: Float = LEAVE_GAME_BUTTON_HEIGHT
 
   init {
+    // Launches a blocking coroutine (since towers are essential to this phase) to fetch the tower config
     runBlocking {
       towerList = ApiClient.towerListRequest()
 
+      // Checks whether the size of the towers in the shop must shrink to fit the number of towers defined in the config
       val rows = ceil(towerList!!.size * 0.5f)
       val maxShopTowerSize = (
         GAME_HEIGHT - (SIDEBAR_SPACING + SHOP_TOWER_PADDING) * rows - SIDEBAR_SPACING * 2f - START_WAVE_BUTTON_HEIGHT - LEAVE_GAME_BUTTON_HEIGHT
@@ -69,8 +84,10 @@ class PlayStatePlacement(
         shopTowerSize = maxShopTowerSize
       }
 
+      // Adds a button for each tower in the shop.
       for ((index, tower) in towerList!!.withIndex()) {
-        val towerShopPositionY: Float = GAME_HEIGHT - SIDEBAR_SPACING * 2 - (shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
+        val towerShopPositionY: Float =
+          GAME_HEIGHT - SIDEBAR_SPACING * 2 - (shopTowerSize + SIDEBAR_SPACING + SHOP_TOWER_PADDING) * (1 + index / 2)
         towerShopPositionsY += towerShopPositionY
 
         val towerButton = Image()
@@ -95,10 +112,12 @@ class PlayStatePlacement(
       }
     }
 
+    // Adds the stageMap to the input stage for user input.
     stageMap.setSize(GAME_WIDTH - SIDEBAR_WIDTH, GAME_HEIGHT)
     stageMap.setPosition(0f, 0f)
     stage.addActor(stageMap)
 
+    // Adds a button to start the next phase of gameplay.
     val startWaveButton = Image()
     buttons += startWaveButton
 
@@ -114,19 +133,23 @@ class PlayStatePlacement(
     stage.addActor(startWaveButton)
   }
 
+  // Removes tower placement listeners from the game map once one is placed.
   private fun shopMode() {
     stageMap.clearListeners()
   }
 
+  // Adds listeners to the game map for placing towers.
   private fun placementMode() {
     gameObserver.gameStage?.let {
       stageMap.addListener(object: ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
+          // Checks coordinates of the click against the game stage's defined tile (cell) dimensions.
           val cellPositionX = floor(x / gameObserver.gameStage!!.tileWidth).toInt()
           val cellPositionY = floor(y / gameObserver.gameStage!!.tileHeight).toInt()
 
           println("clicked ($cellPositionX, $cellPositionY)")
 
+          // Launches a coroutine to inform the server that the user wishes to place a tower.
           selectedTower?.let {
             runBlocking {
               ApiClient.placeTowerRequest(
@@ -146,15 +169,18 @@ class PlayStatePlacement(
   }
 
   override fun update(deltaTime: Float) {
+    // If the Leave Game button is clicked, as defined in the PlayState superclass, let it execute and do nothing else.
     if (super.update()) {
       return
     }
 
+    // If the lobby times out during placement, return to main menu.
     if (gameObserver.socketClosed) {
       stateManager.set(MainMenuState(stateManager))
       return
     }
 
+    // If the Ready button is clicked, start the next phase
     gameObserver.gameStage?.let {
       if (startWave) {
         runBlocking {
@@ -164,11 +190,13 @@ class PlayStatePlacement(
       }
     }
 
+    // When the GameObserver has registered a change of phase, change to the relevant state.
     when (gameObserver.gameState) {
       "fight" -> stateManager.set(PlayStateWave(stateManager, gameObserver))
       "lobby" -> stateManager.set(LobbyState(stateManager, gameObserver))
     }
 
+    // Changes between placement and shop modes based on the user's previous input.
     if (changeMode) {
       if (selectedTower == null) {
         shopMode()
@@ -182,6 +210,7 @@ class PlayStatePlacement(
   override fun render(sprites: SpriteBatch) {
     sprites.projectionMatrix = camera.combined
 
+    // Render game map and sidebar.
     sprites.begin()
     sprites.draw(
       Textures.stage(gameObserver.gameStage!!.Number),
@@ -193,6 +222,7 @@ class PlayStatePlacement(
     super.renderSidebar(sprites)
     sprites.end()
 
+    // Render Leave Game button.
     super.draw()
 
     sprites.begin()
@@ -204,6 +234,7 @@ class PlayStatePlacement(
       shopTitlePositionY + font.height(shopTitle) * 0.5f
     )
 
+    // Checks for Health value in the GameObserver, and renders it with an icon.
     gameObserver.health?.let {
       sprites.draw(
         Textures.icon("heart"),
@@ -220,7 +251,7 @@ class PlayStatePlacement(
         healthMoneyPositionY + font.height(healthText) * 0.5f
       )
     }
-
+    // Checks for Money value in the GameObserver, and renders it with an icon.
     gameObserver.money?.let {
       sprites.draw(
         Textures.icon("money"),
@@ -238,6 +269,7 @@ class PlayStatePlacement(
       )
     }
 
+    // Checks for fetched towerList, and loops through it to add button textures and price display.
     towerList?.let {
       for ((index, tower) in towerList!!.withIndex()) {
         val positionX = if (index % 2 == 0) leftPositionX else rightPositionX
@@ -272,6 +304,7 @@ class PlayStatePlacement(
       }
     }
 
+    // Render Ready button.
     sprites.draw(
       Textures.button("standard"),
       GAME_WIDTH - SIDEBAR_WIDTH,
@@ -282,12 +315,14 @@ class PlayStatePlacement(
     font.draw(
       sprites,
       startWaveButtonText,
-      centerPositionX - font.width(startWaveButtonText) / 2,
+      centerPositionX - font.width(startWaveButtonText) * 0.5f,
       startWavePositionY + (START_WAVE_BUTTON_HEIGHT + font.height(startWaveButtonText)) * 0.5f
     )
 
-    // copies placedTowers list to avoid ConcurrentModificationException
+    // Copy placedTowers list to avoid ConcurrentModificationException, since placedTowers can be changed in coroutines
     val currentPlacedTowers = gameObserver.placedTowers.toList()
+
+    // Renders each placed tower on the map.
     for (tower in currentPlacedTowers) {
       sprites.draw(
         Textures.tower(tower.type),

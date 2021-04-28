@@ -5,10 +5,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.coronadefense.receiver.Receiver
 import com.coronadefense.states.StateManager
 import com.coronadefense.states.menuStates.MainMenuState
 
+/**
+ * Class for launching the game.
+ */
 class Game : ApplicationAdapter() {
   companion object {
     var sprites: SpriteBatch? = null

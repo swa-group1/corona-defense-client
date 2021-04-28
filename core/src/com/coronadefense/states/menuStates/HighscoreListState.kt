@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 /**
  * State to show the list of highscores between players in Corona Defense.
+ * Extends InputState to allow user input on the back button.
  * @param stateManager Manager of all game states.
  */
 class HighscoreListState(
@@ -30,9 +31,13 @@ class HighscoreListState(
   private val title = "HIGHSCORES"
 
   private var highscoreList: List<HighScore>? = null
+
+  // Calculates positions here to spare calculations in the render method.
   private val listPositionX: Float = (GAME_WIDTH - LIST_ITEM_WIDTH) * 0.5f
   private val listPositionsY: MutableList<Float> = mutableListOf()
+
   init {
+    // Launches a coroutine to fetch the high score list, and calculates the list items' Y positions based on its length.
     GlobalScope.launch {
       highscoreList = ApiClient.highScoreListRequest()
       for (index in highscoreList!!.indices) {
@@ -59,6 +64,7 @@ class HighscoreListState(
       (GAME_HEIGHT - font.height(title)) * 0.5f + MENU_TITLE_OFFSET
     )
 
+    // Checks that the highscoreList is fetched, then loops through it to display each highscore.
     highscoreList?.let {
       for ((index, highscore) in highscoreList!!.withIndex()) {
         font.draw(

@@ -15,6 +15,12 @@ import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 
+/**
+ * Abstract class with the common state and behavior for all phases of gameplay.
+ * Extends InputState to allow user interaction with the Leave Game button, and for subclasses to interact with the game.
+ * @param stateManager Manager of all game states.
+ * @param gameObserver Observes the Receiver for game updates.
+ */
 abstract class PlayState(
   stateManager: StateManager,
   private val gameObserver: GameObserver
@@ -26,6 +32,7 @@ abstract class PlayState(
   private val leaveButtonText = "LEAVE GAME"
 
   init {
+    // Adds a Leave Game button in the bottom right corner, for all gameplay phases.
     val leaveButton = Image()
     buttons += leaveButton
 
@@ -41,7 +48,9 @@ abstract class PlayState(
     stage.addActor(leaveButton)
   }
 
+  // Returns a boolean for subclasses to check whether the game is being terminated.
   fun update(): Boolean {
+    // If the Leave Game button has been clicked, move to main menu.
     if (gameObserver.gameState == "leave") {
       gameObserver.leaveLobby()
       stateManager.set(MainMenuState(stateManager))
@@ -50,6 +59,7 @@ abstract class PlayState(
     return false
   }
 
+  // Function for subclasses to place in their own render methods where appropriate, to render the sidebar.
   fun renderSidebar(sprites: SpriteBatch) {
     sprites.draw(
       Textures.background("sidebar"),

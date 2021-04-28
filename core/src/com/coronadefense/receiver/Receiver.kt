@@ -17,6 +17,8 @@ private const val SERVER_ADDRESS: String = "35.228.171.73"
  * Object that connects to the backend and listens to broadcaster sending game information.
  */
 object Receiver {
+  // Single observer, since one client will only ever have one observer to the Receiver.
+  // This makes it easier to remove the observer when the client no longer needs to listen.
   var observer: IReceiverObserver? = null
 
   private val socketBuilder = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
@@ -24,7 +26,7 @@ object Receiver {
 
   /**
    * Attempt to connect to backend broadcaster.
-   * @return The connection number of the
+   * @return The connection number of the socket
    */
   @ExperimentalUnsignedTypes
   suspend fun connectAsync(): Long {

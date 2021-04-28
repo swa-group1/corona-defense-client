@@ -9,6 +9,12 @@ import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Font
 import com.coronadefense.utils.Textures
 
+/**
+ * State for when the game ends, showing either a victory or a defeat screen.
+ * Extends InputState to enable user input on the back button.
+ * @param stateManager Manager of all game states.
+ * @param endGameMessage Message that triggered this state, to determine win/loss state.
+ */
 class EndGameState(
   stateManager: StateManager,
   endGameMessage: EndGameMessage
@@ -18,6 +24,8 @@ class EndGameState(
 
   private val font = Font(20)
   private val bigFont = Font(30)
+
+  // Determines the message to display to the user based on their placing.
   private val highscoreMessage: String = when (endGameMessage.onHighScoreList) {
     in 1..10 -> "You made the highscore list, your current position is ${endGameMessage.onHighScoreList}!"
     0 -> "You did not make it onto the highscore list."

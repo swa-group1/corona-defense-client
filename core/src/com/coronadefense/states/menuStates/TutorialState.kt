@@ -10,6 +10,7 @@ import com.coronadefense.utils.Textures
 
 /**
  * State to show a tutorial of how to play Corona Defense.
+ * Extends InputState to allow clicking the back button.
  * @param stateManager Manager of all game states.
  */
 class TutorialState(

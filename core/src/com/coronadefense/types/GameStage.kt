@@ -1,17 +1,11 @@
 package com.coronadefense.types
 
 import com.badlogic.gdx.math.Vector2
-import com.coronadefense.utils.Constants
 import com.coronadefense.utils.Constants.GAME_HEIGHT
 import com.coronadefense.utils.Constants.GAME_WIDTH
 import com.coronadefense.utils.Constants.SIDEBAR_WIDTH
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlin.math.sqrt
-
-private const val HALF_OF_STEP_SIZE: Int = 10
-private const val STEPS_IN_TILE: Int = 2 * HALF_OF_STEP_SIZE
 
 /**
  * Data class for stages.
@@ -55,17 +49,6 @@ class GameStage(
    */
   val PathPoints: List<Point>,
 ) {
-  companion object {
-    /**
-     * create a new GameStage object.
-     * @param jsonContent The string with JSON content.
-     * @return new GameStage object.
-     */
-    fun parse(jsonContent: String): GameStage {
-      return Json.decodeFromString(jsonContent)
-    }
-  }
-
   private val cumulativePathLengths: MutableList<Double> = mutableListOf()
   private val lineSegmentsX: MutableList<AffineLine> = mutableListOf()
   private val lineSegmentsY: MutableList<AffineLine> = mutableListOf()

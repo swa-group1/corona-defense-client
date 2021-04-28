@@ -25,7 +25,7 @@ import com.coronadefense.utils.Constants.MENU_TITLE_OFFSET
 
 /**
  * State to show the list of joinable lobbies.
- * Extends StageState for user input on the Stage.
+ * Extends InputState to allow users to join and create lobbies.
  * @param stateManager Manager of all game states.
  */
 class LobbyListState(
@@ -44,14 +44,19 @@ class LobbyListState(
   private val createLobbyButtonText = "CREATE LOBBY"
   private val createLobbyPositionY = GAME_HEIGHT * 0.5f + BOTTOM_BUTTON_OFFSET
 
+  // Listeners for text input when the user creates/joins a lobby.
   private val nameListener = TextInputListener()
   private val passwordListener = TextInputListener()
 
+  // Error message for feedback to the user on invalid input.
   private var errorMessage: String? = null
 
   private var lobbyList: List<LobbyData>? = null
+
+  // State for data of the lobby to join, to be passed on to LobbyState.
   private var selectedLobbyID: Long? = null
   private var selectedLobbyPlayerCount: Int? = null
+
   private val listPositionX: Float = centerPositionX - LIST_ITEM_WIDTH * 0.5f
   private val listPositionsY: MutableList<Float> = mutableListOf()
 
@@ -65,6 +70,7 @@ class LobbyListState(
       createLobbyPositionY
     )
 
+    // Once Create Lobby button is clicked, display the input for name and password.
     createLobbyButton.addListener(object : ClickListener() {
       override fun clicked(event: InputEvent?, x: Float, y: Float) {
         Gdx.input.getTextInput(passwordListener, "Lobby password", "", "password")
@@ -74,6 +80,8 @@ class LobbyListState(
 
     stage.addActor(createLobbyButton)
 
+    // Launches a coroutine to fetch the list of lobbies, and adds a button for each.
+    // Upon clicking a lobby, opens the password input field.
     GlobalScope.launch {
       lobbyList = ApiClient.lobbyListRequest()
       for ((index, lobby) in lobbyList!!.withIndex()) {
@@ -102,14 +110,19 @@ class LobbyListState(
 
   private fun createLobby() {
     println("Create lobby: name ${nameListener.value}")
+
+    // Launches a coroutine to send the Create Lobby request to the API.
     runBlocking {
-      selectedLobbyID = (ApiClient.createLobbyRequest(nameListener.value, passwordListener.value))
+      selectedLobbyID = ApiClient.createLobbyRequest(nameListener.value, passwordListener.value)
     }
+
     println("Lobby ID: $selectedLobbyID")
   }
 
   @ExperimentalUnsignedTypes
   private fun joinLobby() {
+    // Launches a coroutine to join the lobby. If unsuccessful, displays a message to the user.
+    // On a success, a GameObserver is instantiated to observe the Receiver for game messages, and the state is set to LobbyState.
     runBlocking {
       val connectionNumber = Receiver.connectAsync()
       try {
@@ -124,6 +137,7 @@ class LobbyListState(
     }
   }
 
+  // Utility method for canceling of a join.
   private fun resetLobbyInfo(){
     nameListener.input("")
     passwordListener.input("")
@@ -136,6 +150,8 @@ class LobbyListState(
   override fun update(deltaTime: Float) {
     backButton.update()
 
+    // Checks for user input in the name/password text fields.
+    // If no lobby is selected, then the user clicked Create Lobby, and that is executed first.
     if(passwordListener.value.isNotEmpty() && nameListener.value.isNotEmpty()) {
       if (selectedLobbyID == null) {
         createLobby()
@@ -153,6 +169,7 @@ class LobbyListState(
     sprites.draw(Textures.background("menu"), 0F, 0F, GAME_WIDTH, GAME_HEIGHT)
     backButton.render(sprites)
 
+    // Checks whether to show error message to user; if so, renders it.
     errorMessage?.let {
       font.draw(
         sprites,
@@ -175,6 +192,7 @@ class LobbyListState(
       titlePositionY + font.height(playerCountTitle) * 0.5f
     )
 
+    // Checks for fetched lobby list, then loops through it to render the button textures and text.
     lobbyList?.let {
       for ((index, lobby) in lobbyList!!.withIndex()) {
         sprites.draw(
@@ -200,6 +218,7 @@ class LobbyListState(
       }
     }
 
+    // Renders texture and text for the Create Lobby button.
     sprites.draw(
       Textures.button("standard"),
       centerPositionX - MENU_BUTTON_WIDTH * 0.5f,

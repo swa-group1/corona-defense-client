@@ -11,8 +11,17 @@ import ktx.math.minus
 import ktx.math.plus
 import ktx.math.times
 
+/**
+ * Class for rendering intruders in the wave phase of the game.
+ * @param spriteNumber The number corresponding to this intruder's sprite (determined backend).
+ * @param startTileX The X coordinate of the projectile's starting tile on the map.
+ * @param startTileY The Y coordinate of the projectile's starting tile on the map.
+ * @param endPosition The length along the game map's path to end the rendering.
+ * @param time The time between the start tile and the endPosition.
+ * @param gameStage The game map, for use in calculations.
+ */
 class Projectile(
-  private val spriteNumber: Int,
+  spriteNumber: Int,
   startTileX: Int,
   startTileY: Int,
   endPosition: Float,
