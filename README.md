@@ -1,14 +1,15 @@
-# Welcome to Corona Defense frontend
-Kotlin/LibGDX frontend.
+# Corona Defense Frontend
+
+Kotlin/LibGDX frontend for the Corona Defense game, made to work with the C# backend in [`swa-group1/BackEnd`](https://github.com/swa-group1/BackEnd).
 
 ## How to run
 
 ### Desktop
-* Download the .jar file from https://github.com/SWA-group-1/frontend/releases/tag/desktop-1.0
+* Download the .jar file from https://github.com/swa-group1/frontend/releases/tag/desktop-1.0
 * Run it (your system must have Java configured to run the .jar file)
 
 ### Android
-* Download the .apk file from https://github.com/SWA-group-1/frontend/releases/tag/android-1.0
+* Download the .apk file from https://github.com/swa-group1/frontend/releases/tag/android-1.0
 * Connect your device to your computer by USB, and turn on “File transfer” (should be a pop-up in your device’s notification list)
 * Transfer the file to your device’s Internal Storage (your device should be visible under “This PC” on Windows)
 * On your device, navigate to the internal storage (on modern Android devices, there should be an app called “Files”, where you can scroll down to “Internal Storage”)
