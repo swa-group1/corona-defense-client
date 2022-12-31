@@ -1,6 +1,36 @@
 # Corona Defense Game Client
 
-Client for the Corona Defense game, written in Kotlin and using the [libGDX](https://libgdx.com/) game development framework. Server implemented in [`swa-group1/corona-defense-server`](https://github.com/swa-group1/corona-defense-server).
+Client for the Corona Defense game, an online multiplayer variation of the classic tower defense genre. Written in Kotlin, using the [libGDX](https://libgdx.com/) game development framework. Server implemented at [`swa-group1/corona-defense-server`](https://github.com/swa-group1/corona-defense-server).
+
+**Contents**
+
+- [Screenshots](#screenshots)
+- [Project Structure](#project-structure)
+- [How To Run](#how-to-run)
+
+## Screenshots
+
+<p align="center">
+    <img alt="Main menu" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/main_menu.png">
+    <br />
+    <em>Main menu</em>
+</p>
+
+<br />
+
+<p align="center">
+    <img alt="NTNU map" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/ntnu_map.png">
+    <br />
+    <em>"NTNU" map, in the buy phase</em>
+</p>
+
+<br />
+
+<p align="center">
+    <img alt="Samfundet map" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/samfundet_map.png">
+    <br />
+    <em>"Samfundet" map, in the attack phase</em>
+</p>
 
 ## Project Structure
 
