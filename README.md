@@ -13,7 +13,7 @@ Client for the Corona Defense game, an online multiplayer variation of the class
 <p align="center">
     <img alt="Main menu" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/main_menu.png">
     <br />
-    <em>Main menu</em>
+    Main menu
 </p>
 
 <br />
@@ -21,7 +21,7 @@ Client for the Corona Defense game, an online multiplayer variation of the class
 <p align="center">
     <img alt="NTNU map" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/ntnu_map.png">
     <br />
-    <em>"NTNU" map, in the buy phase</em>
+    "NTNU" map, in the buy phase
 </p>
 
 <br />
@@ -29,7 +29,7 @@ Client for the Corona Defense game, an online multiplayer variation of the class
 <p align="center">
     <img alt="Samfundet map" src="https://raw.githubusercontent.com/swa-group1/corona-defense-client/assets/screenshots/samfundet_map.png">
     <br />
-    <em>"Samfundet" map, in the attack phase</em>
+    "Samfundet" map, in the attack phase
 </p>
 
 ## Project Structure
